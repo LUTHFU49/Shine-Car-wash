@@ -31,3 +31,4 @@ uv==0.10.4
 uvicorn==0.34.0
 watchfiles==1.2.0
 websockets==17.0.1
+whitenoise==6.12.0
