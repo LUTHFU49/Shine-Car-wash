@@ -1,0 +1,508 @@
+<header class="h-16 border-b border-slate-700/50 flex items-center justify-between px-4 sm:px-6 bg-slate-900/90 backdrop-blur-xl sticky top-0 z-40">
+  <!-- Left Section -->
+  <div class="flex items-center gap-3">
+    <!-- Mobile Sidebar Toggle -->
+    <button type="button" data-mobile-sidebar-toggle aria-label="Open menu"
+            class="lg:hidden w-9 h-9 rounded-xl border border-slate-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-slate-500 transition-all duration-300">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    
+    <!-- Page Title -->
+    <div class="flex items-center gap-3">
+      <h1 class="font-display font-semibold text-white text-lg">
+        {% block page_title %}Dashboard{% endblock %}
+      </h1>
+      
+      <!-- Breadcrumb (optional, can be added per page) -->
+      {% block breadcrumb %}{% endblock %}
+    </div>
+  </div>
+
+  <!-- Right Section -->
+  <div class="flex items-center gap-2 sm:gap-3">
+    <!-- Quick Actions -->
+    <div class="hidden sm:flex items-center gap-1">
+      <!-- Search Button (staff-only: this is a cross-model search over Customers/Vehicles/Bookings/etc) -->
+      {% if request.user.role in staff_roles %}
+      <button type="button" data-search-toggle aria-label="Search"
+              class="w-9 h-9 rounded-xl border border-slate-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-slate-500 transition-all duration-300 hover:bg-slate-800">
+        <i class="fa-solid fa-search text-sm"></i>
+      </button>
+      {% endif %}
+      
+      <!-- Quick Add Button (context-aware) -->
+      {% if request.user.role in staff_roles %}
+      <div class="relative" data-quick-add-root>
+        <button type="button" data-quick-add-toggle aria-label="Quick add"
+                class="w-9 h-9 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300 hover:scale-105">
+          <i class="fa-solid fa-plus text-sm"></i>
+        </button>
+        
+        <!-- Quick Add Dropdown -->
+        <div data-quick-add-dropdown class="hidden absolute right-0 mt-2 w-56 rounded-xl border border-slate-700 bg-slate-800 shadow-2xl z-50 overflow-hidden">
+          <div class="p-1.5">
+            <p class="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-gray-500">Quick Actions</p>
+            <a href="{% url 'bookings:create' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors">
+              <span class="w-7 h-7 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                <i class="fa-solid fa-calendar-plus text-pink-400 text-xs"></i>
+              </span>
+              New Booking
+            </a>
+            <a href="{% url 'customers:create' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors">
+              <span class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                <i class="fa-solid fa-user-plus text-emerald-400 text-xs"></i>
+              </span>
+              Add Customer
+            </a>
+            <a href="{% url 'vehicles:create' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors">
+              <span class="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <i class="fa-solid fa-car text-blue-400 text-xs"></i>
+              </span>
+              Add Vehicle
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Notifications -->
+    <div class="relative" data-notification-root>
+      <button type="button" data-notification-bell-toggle aria-label="Notifications" aria-expanded="false"
+              class="relative w-9 h-9 rounded-xl border border-slate-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-slate-500 transition-all duration-300 hover:bg-slate-800">
+        <i class="fa-solid fa-bell text-sm"></i>
+        <span data-notification-badge class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 text-white text-[10px] font-bold flex items-center justify-center shadow-lg shadow-pink-500/25 animate-pulse">
+          3
+        </span>
+      </button>
+
+      <!-- Notification Dropdown -->
+      <div data-notification-dropdown class="hidden absolute right-0 mt-2 w-80 sm:w-96 max-w-[90vw] rounded-xl border border-slate-700 bg-slate-800 shadow-2xl z-50 overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+          <p class="text-sm font-semibold text-white">Notifications</p>
+          <div class="flex items-center gap-2">
+            <button type="button" data-notification-mark-all class="text-xs font-medium text-blue-400 hover:text-pink-400 transition-colors">
+              Mark all read
+            </button>
+            <span class="w-px h-3 bg-slate-700"></span>
+            <button type="button" data-notification-settings class="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Notification Items -->
+        <div data-notification-items class="max-h-80 overflow-y-auto divide-y divide-slate-700 custom-scrollbar">
+          <!-- Example notification item -->
+          <div class="px-4 py-3 hover:bg-slate-700/50 transition-colors cursor-pointer group">
+            <div class="flex items-start gap-3">
+              <span class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fa-solid fa-calendar-check text-blue-400 text-xs"></i>
+              </span>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-gray-300 group-hover:text-white transition-colors">New booking confirmed</p>
+                <p class="text-xs text-gray-500 mt-0.5">KDG 221A — Premium Wash</p>
+                <p class="text-[10px] text-gray-600 mt-1">2 minutes ago</p>
+              </div>
+              <span class="w-2 h-2 rounded-full bg-blue-400 shrink-0 mt-2"></span>
+            </div>
+          </div>
+          
+          <div class="px-4 py-3 hover:bg-slate-700/50 transition-colors cursor-pointer group">
+            <div class="flex items-start gap-3">
+              <span class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fa-solid fa-money-bill-wave text-green-400 text-xs"></i>
+              </span>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-gray-300 group-hover:text-white transition-colors">Payment received</p>
+                <p class="text-xs text-gray-500 mt-0.5">KSh 1,500 — M-Pesa</p>
+                <p class="text-[10px] text-gray-600 mt-1">1 hour ago</p>
+              </div>
+            </div>
+          </div>
+          
+          <p class="px-4 py-6 text-sm text-gray-500 text-center" data-notification-empty>
+            <i class="fa-solid fa-bell-slash text-2xl mb-2 block"></i>
+            No new notifications
+          </p>
+        </div>
+        
+        <a href="{% url 'notifications:list' %}" class="flex items-center justify-center gap-1.5 text-xs font-medium text-blue-400 hover:text-pink-400 py-3 border-t border-slate-700 hover:bg-slate-700/50 transition-colors">
+          View all notifications
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Dark Mode Toggle (optional) -->
+    <button type="button" data-theme-toggle aria-label="Toggle theme"
+            class="hidden sm:flex w-9 h-9 rounded-xl border border-slate-700 items-center justify-center text-gray-400 hover:text-white hover:border-slate-500 transition-all duration-300 hover:bg-slate-800">
+      <i class="fa-solid fa-moon text-sm"></i>
+    </button>
+
+    <!-- User Menu -->
+    <div class="relative" data-user-menu-root>
+      <button type="button" data-user-menu-toggle aria-label="User menu" aria-expanded="false"
+              class="flex items-center gap-2.5 p-1.5 rounded-xl border border-slate-700 hover:border-slate-500 transition-all duration-300 hover:bg-slate-800 group">
+        {% if request.user.profile_photo %}
+          <img src="{{ request.user.profile_photo.url }}" alt="" class="w-8 h-8 rounded-lg object-cover border border-slate-600">
+        {% else %}
+          <span class="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white font-display font-semibold text-xs">
+            {{ request.user.initials }}
+          </span>
+        {% endif %}
+        <span class="hidden sm:block text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
+          {{ request.user.get_full_name|default:request.user.username }}
+        </span>
+        <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 group-hover:text-gray-400 transition-colors hidden sm:block"></i>
+      </button>
+
+      <!-- User Dropdown -->
+      <div data-user-menu-dropdown class="hidden absolute right-0 mt-2 w-56 rounded-xl border border-slate-700 bg-slate-800 shadow-2xl z-50 overflow-hidden">
+        <!-- User Info -->
+        <div class="px-4 py-3 border-b border-slate-700">
+          <p class="text-sm font-medium text-white">{{ request.user.get_full_name|default:request.user.username }}</p>
+          <p class="text-xs text-gray-500 mt-0.5">{{ request.user.email }}</p>
+          <span class="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gradient-to-r from-blue-500/20 to-pink-500/20 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 border border-pink-500/20">
+            {{ request.user.get_role_display|default:request.user.role|title }}
+          </span>
+        </div>
+        
+        <!-- Menu Items -->
+        <div class="p-1.5">
+          <a href="{% url 'accounts:profile' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-user text-gray-500 w-4"></i>
+            My Profile
+          </a>
+          {% comment %} <a href="{% url 'accounts:settings' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors"> {% endcomment %}
+            <i class="fa-solid fa-gear text-gray-500 w-4"></i>
+            Settings
+          </a>
+          {% if request.user.role in staff_roles %}
+          <a href="{% url 'dashboard:home' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-gauge-high text-gray-500 w-4"></i>
+            Dashboard
+          </a>
+          {% endif %}
+        </div>
+        
+        <!-- Logout -->
+        <div class="border-t border-slate-700 p-1.5">
+          <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors">
+              <i class="fa-solid fa-right-from-bracket w-4"></i>
+              Log Out
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Sidebar Overlay -->
+<div data-mobile-sidebar-panel class="hidden fixed inset-0 z-50 lg:hidden">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-mobile-sidebar-backdrop></div>
+  <div class="absolute inset-y-0 left-0 w-72 bg-slate-900 shadow-2xl overflow-y-auto animate-slide-in">
+    {% include 'partials/sidebar.html' %}
+  </div>
+</div>
+
+<!-- Search Overlay (optional) -->
+<div data-search-overlay class="hidden fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-sm">
+  <div class="max-w-2xl mx-auto mt-20 px-4">
+    <div class="relative">
+      <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+      <input type="text" data-search-input 
+             placeholder="Search customers, vehicles, bookings, employees, inventory, services, invoices…" 
+             class="w-full pl-12 pr-12 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none text-lg">
+      <button type="button" data-search-close class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
+        <i class="fa-solid fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <div data-search-results class="mt-4 max-h-[60vh] overflow-y-auto custom-scrollbar rounded-2xl bg-slate-800 border border-slate-700 divide-y divide-slate-700 hidden"></div>
+
+    <div data-search-loading class="hidden mt-6 text-center text-sm text-gray-500">
+      <i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Searching…
+    </div>
+
+    <div data-search-empty class="hidden mt-6 text-center">
+      <div class="w-12 h-12 mx-auto mb-3 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center">
+        <i class="fa-solid fa-magnifying-glass text-gray-500"></i>
+      </div>
+      <p class="text-sm text-gray-500">No matches. Try a name, phone number, plate, or code.</p>
+    </div>
+    <div class="mt-4 text-gray-500 text-sm text-center">
+      <kbd class="px-2 py-1 rounded bg-slate-800 border border-slate-700 text-xs">Esc</kbd> to close
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  
+  .animate-slide-in {
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 2px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ============ NOTIFICATION DROPDOWN ============
+    const notifRoot = document.querySelector('[data-notification-root]');
+    const notifBell = document.querySelector('[data-notification-bell-toggle]');
+    const notifDropdown = document.querySelector('[data-notification-dropdown]');
+
+    if (notifBell && notifDropdown) {
+      notifBell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !notifDropdown.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) {
+          notifDropdown.classList.remove('hidden');
+          notifBell.setAttribute('aria-expanded', 'true');
+        }
+      });
+    }
+
+    // ============ USER MENU DROPDOWN ============
+    const userMenuRoot = document.querySelector('[data-user-menu-root]');
+    const userMenuToggle = document.querySelector('[data-user-menu-toggle]');
+    const userMenuDropdown = document.querySelector('[data-user-menu-dropdown]');
+
+    if (userMenuToggle && userMenuDropdown) {
+      userMenuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !userMenuDropdown.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) {
+          userMenuDropdown.classList.remove('hidden');
+          userMenuToggle.setAttribute('aria-expanded', 'true');
+        }
+      });
+    }
+
+    // ============ QUICK ADD DROPDOWN ============
+    const quickAddRoot = document.querySelector('[data-quick-add-root]');
+    const quickAddToggle = document.querySelector('[data-quick-add-toggle]');
+    const quickAddDropdown = document.querySelector('[data-quick-add-dropdown]');
+
+    if (quickAddToggle && quickAddDropdown) {
+      quickAddToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !quickAddDropdown.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) {
+          quickAddDropdown.classList.remove('hidden');
+        }
+      });
+    }
+
+    // ============ SEARCH OVERLAY ============
+    const searchToggle = document.querySelector('[data-search-toggle]');
+    const searchOverlay = document.querySelector('[data-search-overlay]');
+    const searchClose = document.querySelector('[data-search-close]');
+    const searchInput = document.querySelector('[data-search-input]');
+    const searchResults = document.querySelector('[data-search-results]');
+    const searchLoading = document.querySelector('[data-search-loading]');
+    const searchEmpty = document.querySelector('[data-search-empty]');
+
+    const SEARCH_CATEGORY_LABELS = {
+      customers: 'Customers', vehicles: 'Vehicles', bookings: 'Bookings',
+      employees: 'Employees', inventory: 'Inventory', services: 'Services', invoices: 'Invoices',
+    };
+    const SEARCH_CATEGORY_ICONS = {
+      customers: 'fa-users', vehicles: 'fa-car', bookings: 'fa-calendar-check',
+      employees: 'fa-people-group', inventory: 'fa-boxes-stacked', services: 'fa-spray-can-sparkles',
+      invoices: 'fa-file-invoice',
+    };
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderSearchResults(data) {
+      searchLoading.classList.add('hidden');
+      if (!data.total) {
+        searchResults.classList.add('hidden');
+        searchResults.innerHTML = '';
+        searchEmpty.classList.remove('hidden');
+        return;
+      }
+      searchEmpty.classList.add('hidden');
+      let html = '';
+      Object.keys(SEARCH_CATEGORY_LABELS).forEach((key) => {
+        const items = data.results[key] || [];
+        if (!items.length) return;
+        html += `<div class="p-2">
+          <p class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500">${SEARCH_CATEGORY_LABELS[key]}</p>`;
+        items.forEach((item) => {
+          html += `<a href="${item.url}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-700/50 transition-colors">
+            <span class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+              <i class="fa-solid ${SEARCH_CATEGORY_ICONS[key]} text-blue-400 text-xs"></i>
+            </span>
+            <span class="min-w-0">
+              <span class="block text-sm text-white truncate">${escapeHtml(item.title)}</span>
+              <span class="block text-xs text-gray-500 truncate">${escapeHtml(item.subtitle)}</span>
+            </span>
+          </a>`;
+        });
+        html += `</div>`;
+      });
+      searchResults.innerHTML = html;
+      searchResults.classList.remove('hidden');
+    }
+
+    let searchDebounceTimer = null;
+    let searchAbortController = null;
+
+    function runSearch(query) {
+      if (searchAbortController) searchAbortController.abort();
+      searchAbortController = new AbortController();
+      searchLoading.classList.remove('hidden');
+      searchEmpty.classList.add('hidden');
+      searchResults.classList.add('hidden');
+      fetch(`/dashboard/search/?q=${encodeURIComponent(query)}`, {
+        signal: searchAbortController.signal,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`Search failed (${res.status})`);
+          return res.json();
+        })
+        .then(renderSearchResults)
+        .catch((err) => {
+          if (err.name === 'AbortError') return;
+          searchLoading.classList.add('hidden');
+          searchResults.classList.add('hidden');
+          searchEmpty.classList.remove('hidden');
+        });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim();
+        clearTimeout(searchDebounceTimer);
+        if (query.length < 2) {
+          searchLoading.classList.add('hidden');
+          searchEmpty.classList.add('hidden');
+          searchResults.classList.add('hidden');
+          searchResults.innerHTML = '';
+          return;
+        }
+        searchDebounceTimer = setTimeout(() => runSearch(query), 300);
+      });
+    }
+
+    if (searchToggle && searchOverlay) {
+      searchToggle.addEventListener('click', () => {
+        searchOverlay.classList.remove('hidden');
+        setTimeout(() => searchInput?.focus(), 100);
+      });
+    }
+
+    if (searchClose && searchOverlay) {
+      searchClose.addEventListener('click', () => {
+        searchOverlay.classList.add('hidden');
+        if (searchInput) searchInput.value = '';
+        searchResults.classList.add('hidden');
+        searchEmpty.classList.add('hidden');
+      });
+    }
+
+    // Close search on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && searchOverlay && !searchOverlay.classList.contains('hidden')) {
+        searchOverlay.classList.add('hidden');
+      }
+    });
+
+    // ============ MOBILE SIDEBAR ============
+    const sidebarToggle = document.querySelector('[data-mobile-sidebar-toggle]');
+    const sidebarPanel = document.querySelector('[data-mobile-sidebar-panel]');
+    const sidebarBackdrop = document.querySelector('[data-mobile-sidebar-backdrop]');
+
+    if (sidebarToggle && sidebarPanel) {
+      sidebarToggle.addEventListener('click', () => {
+        sidebarPanel.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    if (sidebarBackdrop && sidebarPanel) {
+      sidebarBackdrop.addEventListener('click', () => {
+        sidebarPanel.classList.add('hidden');
+        document.body.style.overflow = '';
+      });
+    }
+
+    // ============ CLOSE ALL DROPDOWNS ============
+    function closeAllDropdowns() {
+      document.querySelectorAll('[data-notification-dropdown], [data-user-menu-dropdown], [data-quick-add-dropdown]').forEach(d => {
+        d.classList.add('hidden');
+      });
+      document.querySelectorAll('[aria-expanded="true"]').forEach(el => {
+        el.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('[data-notification-root]') && 
+          !e.target.closest('[data-user-menu-root]') && 
+          !e.target.closest('[data-quick-add-root]')) {
+        closeAllDropdowns();
+      }
+    });
+
+    // ============ DARK MODE TOGGLE ============
+    const themeToggle = document.querySelector('[data-theme-toggle]');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const icon = themeToggle.querySelector('i');
+        if (icon) {
+          icon.className = document.documentElement.classList.contains('dark') 
+            ? 'fa-solid fa-sun text-sm' 
+            : 'fa-solid fa-moon text-sm';
+        }
+      });
+    }
+
+    // ============ NOTIFICATION MARK ALL READ ============
+    const markAllBtn = document.querySelector('[data-notification-mark-all]');
+    if (markAllBtn) {
+      markAllBtn.addEventListener('click', () => {
+        const unreadDots = document.querySelectorAll('[data-notification-items] .bg-blue-400');
+        unreadDots.forEach(dot => dot.classList.add('hidden'));
+        const badge = document.querySelector('[data-notification-badge]');
+        if (badge) badge.classList.add('hidden');
+      });
+    }
+  });
+</script>

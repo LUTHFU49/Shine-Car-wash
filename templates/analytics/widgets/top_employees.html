@@ -1,0 +1,21 @@
+<div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 {{ widget.span }}">
+  <div class="flex items-center gap-2 mb-4">
+    <i class="fa-solid {{ widget.icon }} text-blue-400"></i>
+    <h3 class="font-display font-semibold text-white text-sm">{{ widget.title }}</h3>
+  </div>
+  {% if widget.data.rows %}
+  <div class="space-y-3">
+    {% for row in widget.data.rows %}
+    <div class="flex items-center justify-between text-sm">
+      <div class="min-w-0">
+        <p class="text-white font-medium truncate">{{ row.user.get_full_name|default:row.user.username }}</p>
+        <p class="text-xs text-gray-500">{{ row.get_position_display }}</p>
+      </div>
+      <p class="text-white font-medium shrink-0 ml-3">{{ row.completed_count }} washes</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-sm text-gray-500">No completed, assigned bookings in the last 30 days.</p>
+  {% endif %}
+</div>

@@ -1,0 +1,513 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ SITE_NAME }} — Every wash, tracked. Every customer, remembered.{% endblock %}
+
+{% block content %}
+
+<!-- ============ HERO ============ -->
+<section class="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28">
+  <!-- Background Image -->
+  <div class="absolute inset-0 -z-10">
+    <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1920&q=80" 
+         alt="Car wash background" 
+         class="w-full h-full object-cover"
+         loading="eager">
+    <!-- Dark overlay for text readability -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-900/85 to-blue-900/90"></div>
+    <!-- Accent color overlay -->
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);"></div>
+  </div>
+  
+  <!-- Grid pattern overlay -->
+  <div class="absolute inset-0 -z-10">
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 32px 32px;"></div>
+    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="max-w-3xl">
+        <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-4">Run by BRENDA KANINI</p>
+        <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-white">
+          Every wash, tracked.<br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Every customer, remembered.</span>
+        </h1>
+        <p class="mt-6 text-lg text-gray-300 max-w-xl">
+          ShineHub is the operating system for modern car washes — online booking, live queue tracking,
+          M-Pesa payments, and business analytics, all in one place.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <a href="{% url 'accounts:register' %}" class="btn relative overflow-hidden px-6 py-3.5 text-sm text-white rounded-lg font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/25 hover:scale-105" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+            Get Started Free
+            <i class="fa-solid fa-arrow-right text-xs ml-2"></i>
+          </a>
+          <a href="{% url 'core:landing' %}#pricing" class="btn px-6 py-3.5 text-sm font-semibold rounded-lg border-2 transition-all duration-300 hover:shadow-lg hover:scale-105" style="border-color: #EC4899; color: #EC4899;">
+            <i class="fa-solid fa-tag text-xs mr-2"></i>
+            See Pricing
+          </a>
+        </div>
+      </div>
+      
+      <!-- Hero Image -->
+      <div class="hidden lg:block relative reveal">
+        <div class="absolute -inset-4 bg-gradient-to-r from-blue-500 to-pink-500 rounded-2xl blur-xl opacity-30 animate-pulse"></div>
+        <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=600&q=80" 
+             alt="Professional car wash in action" 
+             class="relative rounded-2xl shadow-2xl w-full h-auto"
+             loading="lazy"
+             width="600" height="450">
+      </div>
+    </div>
+
+    <!-- Live Bay Queue Panel -->
+    <div class="shine-sweep mt-16 rounded-2xl p-6 sm:p-8 reveal relative overflow-hidden" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); border: 1px solid rgba(236, 72, 153, 0.3);">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
+      
+      <div class="relative">
+        <div class="flex items-center justify-between mb-6">
+          <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400">Live Bay Queue — Branch: Westlands</p>
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+            Live
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="queue-chip rounded-xl p-4 border-l-2 backdrop-blur-sm hover:scale-105 transition-transform duration-300" style="background: rgba(59, 130, 246, 0.1); border-color: #3B82F6; border-top: 1px solid rgba(59, 130, 246, 0.2); border-right: 1px solid rgba(59, 130, 246, 0.2); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
+            <p class="eyebrow mb-1 text-blue-400">Queued</p>
+            <p class="font-display font-semibold text-white">KDG 221A</p>
+            <p class="text-xs mt-1 text-blue-200/60">Premium Wash</p>
+          </div>
+          <div class="queue-chip rounded-xl p-4 border-l-2 backdrop-blur-sm hover:scale-105 transition-transform duration-300" style="background: rgba(236, 72, 153, 0.1); border-color: #EC4899; border-top: 1px solid rgba(236, 72, 153, 0.2); border-right: 1px solid rgba(236, 72, 153, 0.2); border-bottom: 1px solid rgba(236, 72, 153, 0.2);">
+            <p class="eyebrow mb-1 text-pink-400">Washing</p>
+            <p class="font-display font-semibold text-white">KCE 004T</p>
+            <p class="text-xs mt-1 text-pink-200/60">Full Detailing</p>
+          </div>
+          <div class="queue-chip rounded-xl p-4 border-l-2 backdrop-blur-sm hover:scale-105 transition-transform duration-300" style="background: rgba(236, 72, 153, 0.1); border-color: #EC4899; border-top: 1px solid rgba(236, 72, 153, 0.2); border-right: 1px solid rgba(236, 72, 153, 0.2); border-bottom: 1px solid rgba(236, 72, 153, 0.2);">
+            <p class="eyebrow mb-1 text-pink-400">Rinsing</p>
+            <p class="font-display font-semibold text-white">KDA 771B</p>
+            <p class="text-xs mt-1 text-pink-200/60">Basic Wash</p>
+          </div>
+          <div class="queue-chip rounded-xl p-4 border-l-2 backdrop-blur-sm hover:scale-105 transition-transform duration-300" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; border-top: 1px solid rgba(34, 197, 94, 0.2); border-right: 1px solid rgba(34, 197, 94, 0.2); border-bottom: 1px solid rgba(34, 197, 94, 0.2);">
+            <p class="eyebrow mb-1 text-green-400">Ready</p>
+            <p class="font-display font-semibold text-white">KBZ 512M</p>
+            <p class="text-xs mt-1 text-green-200/60">Basic Wash</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #3B82F6 0%, #EC4899 50%, #3B82F6 100%);"></div>
+
+<!-- ============ STATS WITH ANIMATED COUNTERS ============ -->
+<section class="py-20 relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-10 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-10 right-10 w-72 h-72 bg-pink-500 rounded-full blur-3xl"></div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 sm:grid-cols-4 gap-8 relative">
+    {% for stat in stats %}
+    <div class="text-center reveal group">
+      <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-pink-500/10 border border-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+        <i class="fa-solid {{ stat.icon|default:'fa-chart-line' }} text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400"></i>
+      </div>
+      <p class="font-mono font-bold text-4xl sm:text-5xl bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300 counter" data-target="{{ stat.raw_value|default:stat.value }}">{{ stat.value }}</p>
+      <p class="text-sm text-gray-400 mt-2 font-medium">{{ stat.label }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section id="features" class="py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="max-w-2xl mb-16">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-600 mb-3">Features</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white mb-6">Everything a car wash needs to run itself.</h2>
+      <p class="text-lg text-ink-soft dark:text-gray-400">From the first booking to the final report, ShineHub keeps every branch moving.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for feature in features %}
+      <div class="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 reveal hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-500 border border-gray-100 dark:border-slate-700 hover:border-pink-500/50">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-pink-500 rounded-t-2xl transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+          <i class="fa-solid {{ feature.icon }} text-white text-xl"></i>
+        </div>
+        <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-3">{{ feature.title }}</h3>
+        <p class="text-ink-soft dark:text-gray-400 leading-relaxed">{{ feature.text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES WITH MODERN CARDS ============ -->
+<section id="services" class="py-24 relative overflow-hidden bg-gradient-to-b from-white to-slate-50 dark:from-slate-800 dark:to-slate-900">
+  <div class="absolute inset-0">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/5 to-pink-500/5 rounded-full blur-3xl"></div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="max-w-2xl mb-16">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 mb-3">Services</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white">A service tier for every vehicle.</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      {% for service in services %}
+      <div class="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 text-center reveal hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-slate-700 overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-blue-50 to-pink-50 dark:from-blue-900/20 dark:to-pink-900/20 border border-blue-200 dark:border-blue-800 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+          <i class="fa-solid {{ service.icon }} text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500"></i>
+        </div>
+        <h3 class="font-display font-semibold text-lg text-ink dark:text-white mb-3">{{ service.title }}</h3>
+        <p class="text-sm text-ink-soft dark:text-gray-400 leading-relaxed">{{ service.text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-12">
+      <a href="{% url 'services:catalog' %}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 text-white font-semibold hover:shadow-xl hover:shadow-pink-500/25 transition-all duration-300 hover:scale-105">
+        See full service list & pricing
+        <i class="fa-solid fa-arrow-right text-xs"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #EC4899 0%, #3B82F6 50%, #EC4899 100%);"></div>
+
+<!-- ============ PRICING ============ -->
+<section id="pricing" class="py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 relative overflow-hidden">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="max-w-2xl mb-16 mx-auto text-center">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-600 mb-3">Pricing</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white">Simple pricing, per wash or per fleet.</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      {% for tier in pricing_tiers %}
+      <div class="relative group reveal">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-pink-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+        <div class="relative bg-white dark:bg-slate-800 rounded-2xl p-8 {% if tier.highlighted %}ring-2 ring-pink-500 bg-gradient-to-b from-pink-50/50 to-white dark:from-pink-900/10 dark:to-slate-800{% endif %} hover:shadow-2xl transition-all duration-500">
+          {% if tier.highlighted %}
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-white px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 shadow-lg shadow-pink-500/25">Most Popular</span>
+          {% endif %}
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-4">{{ tier.name }}</h3>
+          <p class="mb-6">
+            <span class="font-display font-bold text-5xl bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent">{{ tier.price }}</span>
+            <span class="text-sm text-ink-soft dark:text-gray-400"> {{ tier.period }}</span>
+          </p>
+          <ul class="space-y-4 text-sm text-ink-soft dark:text-gray-400">
+            {% for item in tier.features %}
+            <li class="flex items-start gap-3">
+              <i class="fa-solid fa-check text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 mt-1 text-xs"></i>
+              {{ item }}
+            </li>
+            {% endfor %}
+          </ul>
+          <a href="{% url 'accounts:register' %}" class="block text-center mt-8 w-full {% if tier.highlighted %}text-white bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-xl hover:shadow-pink-500/25{% else %}border-2 border-pink-500 text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20{% endif %} py-3.5 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
+            Choose {{ tier.name }}
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section id="testimonials" class="py-24 relative overflow-hidden bg-gradient-to-b from-white to-slate-50 dark:from-slate-800 dark:to-slate-900">
+  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="max-w-2xl mb-16">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-600 mb-3">Testimonials</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white">Trusted by branch managers and customers alike.</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-8">
+      {% for t in testimonials %}
+      <div class="group relative bg-white dark:bg-slate-800 rounded-2xl p-8 reveal hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 border border-gray-100 dark:border-slate-700">
+        <div class="flex gap-1 mb-6">
+          {% for i in "12345" %}
+          <i class="fa-solid fa-star text-sm" style="color: #EC4899;"></i>
+          {% endfor %}
+        </div>
+        <p class="text-ink-soft dark:text-gray-400 italic leading-relaxed mb-6">&ldquo;{{ t.text }}&rdquo;</p>
+        <div class="pt-6 border-t border-gray-100 dark:border-slate-700">
+          <p class="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500">{{ t.name }}</p>
+          <p class="text-xs text-ink-soft dark:text-gray-500 mt-1">{{ t.role }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #3B82F6 0%, #EC4899 50%, #3B82F6 100%);"></div>
+
+<!-- ============ GALLERY ============ -->
+<section id="gallery" class="py-24 relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-500/[0.03] to-pink-500/[0.03]"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="max-w-2xl mb-16">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 mb-3">Gallery</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white">The work, up close.</h2>
+      <p class="mt-4 text-lg text-ink-soft dark:text-gray-400">A look at the wash bay in action — the same standard of care behind every booking ShineHub tracks.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for item in gallery_items %}
+      <button type="button" data-lightbox-trigger data-lightbox-src="https://images.unsplash.com/photo-{{ item.id }}?auto=format&fit=crop&w=1600&q=80" data-lightbox-alt="{{ item.alt }}" data-lightbox-caption="{{ item.caption }}"
+        class="gallery-item reveal group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 text-left cursor-zoom-in {% if forloop.counter == 1 %}sm:col-span-2 sm:row-span-2{% endif %}">
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
+        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20">
+          <span class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+            <i class="fa-solid fa-magnifying-glass-plus text-slate-900"></i>
+          </span>
+        </div>
+        <img src="https://images.unsplash.com/photo-{{ item.id }}?auto=format&fit=crop&w=900&q=80"
+             alt="{{ item.alt }}" loading="lazy" width="900" height="675"
+             class="w-full {% if forloop.counter == 1 %}h-full min-h-[20rem]{% else %}h-72{% endif %} object-cover transition-transform duration-700 group-hover:scale-110">
+        <span class="gallery-caption absolute bottom-4 left-4 z-20 bg-gradient-to-r from-blue-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">{{ item.caption }}</span>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Gallery Lightbox -->
+<div data-lightbox-overlay class="hidden fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-sm items-center justify-center p-4 sm:p-10">
+  <button type="button" data-lightbox-close class="absolute top-4 right-4 sm:top-6 sm:right-6 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+    <i class="fa-solid fa-times text-lg"></i>
+  </button>
+  <figure class="max-w-5xl w-full">
+    <img data-lightbox-image src="" alt="" class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
+    <figcaption data-lightbox-caption-text class="text-center text-gray-300 mt-4 text-sm font-medium"></figcaption>
+  </figure>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const overlay = document.querySelector('[data-lightbox-overlay]');
+    const image = document.querySelector('[data-lightbox-image]');
+    const captionText = document.querySelector('[data-lightbox-caption-text]');
+    const closeBtn = document.querySelector('[data-lightbox-close]');
+    if (!overlay || !image) return;
+
+    function openLightbox(trigger) {
+      image.src = trigger.dataset.lightboxSrc;
+      image.alt = trigger.dataset.lightboxAlt || '';
+      captionText.textContent = trigger.dataset.lightboxCaption || '';
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-lightbox-trigger]').forEach((trigger) => {
+      trigger.addEventListener('click', () => openLightbox(trigger));
+    });
+    closeBtn?.addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !overlay.classList.contains('hidden')) closeLightbox();
+    });
+  });
+</script>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #EC4899 0%, #3B82F6 50%, #EC4899 100%);"></div>
+
+<!-- ============ ABOUT ============ -->
+<section id="about" class="py-24 bg-gradient-to-b from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center relative">
+    <div class="reveal">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 mb-3">About ShineHub</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white mb-6">Built for real wash bays, not just spreadsheets.</h2>
+      <p class="text-ink-soft dark:text-gray-400 leading-relaxed text-lg">
+        ShineHub was built by BRENDA KANINI to replace the notebooks, WhatsApp groups, and
+        guesswork that most car washes still run on. Every booking, every vehicle, every payment,
+        and every employee shift lives in one system — so managers spend less time chasing information
+        and more time growing the business.
+      </p>
+    </div>
+    <div class="gallery-item reveal group relative overflow-hidden rounded-2xl shadow-2xl">
+      <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/30 to-pink-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 rounded-2xl"></div>
+      <img src="https://images.unsplash.com/photo-1732357624591-f2137085659b?auto=format&fit=crop&w=1000&q=80"
+           alt="A detailer carefully hand-cleaning a car with a microfiber cloth" loading="lazy" width="1000" height="800"
+           class="w-full h-auto rounded-2xl transition-transform duration-700 group-hover:scale-105"
+           style="aspect-ratio: 5 / 4;">
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" class="py-24 relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+  <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="mb-16 text-center">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-600 mb-3">FAQ</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white">Questions, answered.</h2>
+    </div>
+
+    <div class="space-y-4">
+      {% for faq in faqs %}
+      <details class="group bg-white dark:bg-slate-800 rounded-2xl p-6 reveal hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-slate-700">
+        <summary class="flex items-center justify-between cursor-pointer font-display font-semibold text-ink dark:text-white list-none">
+          {{ faq.q }}
+          <i class="fa-solid fa-plus text-xs bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent transition-transform duration-300 group-open:rotate-45"></i>
+        </summary>
+        <p class="mt-4 text-ink-soft dark:text-gray-400 leading-relaxed">{{ faq.a }}</p>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #3B82F6 0%, #EC4899 50%, #3B82F6 100%);"></div>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" class="py-24 bg-gradient-to-b from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-pink-500/[0.02]"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/5 to-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="mb-16 text-center">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 mb-3">Contact</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white">Talk to the ShineHub team.</h2>
+    </div>
+
+    <form method="post" action="{% url 'core:contact' %}" class="bg-white dark:bg-slate-800 rounded-2xl p-8 sm:p-10 grid sm:grid-cols-2 gap-6 shadow-2xl shadow-pink-500/5 border border-gray-100 dark:border-slate-700" novalidate>
+      {% csrf_token %}
+      <div class="sm:col-span-1">
+        <label for="name" class="block text-sm font-semibold text-ink dark:text-white mb-2">Full name</label>
+        <input type="text" id="name" name="name" required minlength="2"
+               value="{{ form_data.name|default:'' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300">
+      </div>
+      <div class="sm:col-span-1">
+        <label for="email" class="block text-sm font-semibold text-ink dark:text-white mb-2">Email address</label>
+        <input type="email" id="email" name="email" required
+               value="{{ form_data.email|default:'' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300">
+      </div>
+      <div class="sm:col-span-2">
+        <label for="subject" class="block text-sm font-semibold text-ink dark:text-white mb-2">Subject</label>
+        <input type="text" id="subject" name="subject" required minlength="3"
+               value="{{ form_data.subject|default:'' }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300">
+      </div>
+      <div class="sm:col-span-2">
+        <label for="message" class="block text-sm font-semibold text-ink dark:text-white mb-2">Message</label>
+        <textarea id="message" name="message" rows="5" required minlength="10" maxlength="2000" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300">{{ form_data.message|default:'' }}</textarea>
+      </div>
+      <div class="sm:col-span-2">
+        <button type="submit" class="w-full sm:w-auto px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+          Send Message
+          <i class="fa-solid fa-paper-plane text-xs ml-2"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Animated Counter Function
+  function animateCounter(element, target, duration = 2000) {
+    const start = 0;
+    const increment = target / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        element.textContent = target.toLocaleString();
+        clearInterval(timer);
+      } else {
+        element.textContent = Math.floor(current).toLocaleString();
+      }
+    }, 16);
+  }
+
+  // Intersection Observer for counters and reveal animations
+  const observerOptions = {
+    threshold: 0.3,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Handle counter animation
+        const counter = entry.target.querySelector('.counter');
+        if (counter && !counter.dataset.animated) {
+          const target = parseInt(counter.dataset.target);
+          if (target) {
+            counter.dataset.animated = 'true';
+            animateCounter(counter, target);
+          }
+        }
+        
+        // Handle reveal animation
+        entry.target.classList.add('active');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observe all reveal elements and stat counters
+  document.querySelectorAll('.reveal, .counter').forEach(el => {
+    observer.observe(el.closest('.reveal') || el);
+  });
+
+  // Also observe stat section specifically
+  const statSection = document.querySelector('.counter')?.closest('section');
+  if (statSection) {
+    observer.observe(statSection);
+  }
+</script>
+
+<style>
+  /* Reveal Animation */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger children animations */
+  .grid > .reveal:nth-child(1) { transition-delay: 0.1s; }
+  .grid > .reveal:nth-child(2) { transition-delay: 0.2s; }
+  .grid > .reveal:nth-child(3) { transition-delay: 0.3s; }
+  .grid > .reveal:nth-child(4) { transition-delay: 0.4s; }
+  .grid > .reveal:nth-child(5) { transition-delay: 0.5s; }
+  .grid > .reveal:nth-child(6) { transition-delay: 0.6s; }
+</style>
+{% endblock %}

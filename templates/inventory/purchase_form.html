@@ -1,0 +1,81 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{% if is_create %}New Purchase Order{% else %}Edit Purchase Order{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if is_create %}New Purchase Order{% else %}Edit Purchase Order{% endif %}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'inventory:purchase_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Purchases
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{% if is_create %}New{% else %}Editing{% endif %}</p>
+      <h1 class="font-display font-bold text-2xl text-white">{% if is_create %}Create a purchase order{% else %}{{ purchase.reference_code }}{% endif %}</h1>
+    </div>
+
+    <form method="post" novalidate class="space-y-6">
+      {% csrf_token %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+        <h2 class="font-display font-semibold text-white">Order details</h2>
+        {% include 'inventory/_form_fields.html' %}
+      </div>
+
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8">
+        <h2 class="font-display font-semibold text-white mb-4">Line items</h2>
+        {{ formset.management_form }}
+        {% if formset.non_form_errors %}
+        <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-3 mb-4">
+          {% for error in formset.non_form_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+        </div>
+        {% endif %}
+        <div id="formset-rows" class="space-y-4">
+          {% for line_form in formset %}
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start border-b border-slate-700 pb-4 formset-row">
+            <div class="sm:col-span-5">{{ line_form.item }}{% for error in line_form.item.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}</div>
+            <div class="sm:col-span-2">{{ line_form.quantity_ordered }}{% for error in line_form.quantity_ordered.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}</div>
+            <div class="sm:col-span-2">{{ line_form.unit_cost }}{% for error in line_form.unit_cost.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}</div>
+            <div class="sm:col-span-2">{{ line_form.expiry_date }}</div>
+            <div class="sm:col-span-1 flex items-center h-full">
+              {% if line_form.DELETE %}
+              <label class="text-xs text-gray-500 flex items-center gap-1">{{ line_form.DELETE }} Remove</label>
+              {% endif %}
+            </div>
+            {% for hidden in line_form.hidden_fields %}{{ hidden }}{% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+        <p class="text-xs text-gray-500 mt-3">Item &middot; Quantity &middot; Unit Cost (KSh) &middot; Expiry (if tracked)</p>
+        <button type="button" id="add-line-btn" class="mt-4 text-xs font-semibold text-blue-400 inline-flex items-center gap-1">
+          <i class="fa-solid fa-plus"></i> Add another line
+        </button>
+        <template id="empty-form-template">
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start border-b border-slate-700 pb-4 formset-row">
+            <div class="sm:col-span-5">{{ formset.empty_form.item }}</div>
+            <div class="sm:col-span-2">{{ formset.empty_form.quantity_ordered }}</div>
+            <div class="sm:col-span-2">{{ formset.empty_form.unit_cost }}</div>
+            <div class="sm:col-span-2">{{ formset.empty_form.expiry_date }}</div>
+            <div class="sm:col-span-1"></div>
+          </div>
+        </template>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          {% if is_create %}Create Purchase Order{% else %}Save Changes{% endif %}<i class="fa-solid fa-check text-xs"></i>
+        </button>
+        <a href="{% url 'inventory:purchase_list' %}" class="text-sm font-medium text-gray-500 hover:text-white">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  document.getElementById('add-line-btn')?.addEventListener('click', function () {
+    const totalForms = document.getElementById('id_items-TOTAL_FORMS');
+    const index = parseInt(totalForms.value, 10);
+    const template = document.getElementById('empty-form-template').innerHTML.replace(/__prefix__/g, index);
+    document.getElementById('formset-rows').insertAdjacentHTML('beforeend', template);
+    totalForms.value = index + 1;
+  });
+</script>
+{% endblock %}

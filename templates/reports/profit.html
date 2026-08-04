@@ -1,0 +1,53 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Profit Summary — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Profit Summary{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8 print-area">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:hub' %}" class="no-print text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reports
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ start }} to {{ end }}</p>
+      <h1 class="font-display font-bold text-2xl text-white">Profit Summary</h1>
+    </div>
+
+    {% include 'reports/_report_toolbar.html' with export_url_name='reports:profit_export' %}
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 mb-8">
+      <canvas id="profitChart" height="140"></canvas>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-slate-700">
+          <tr><td class="px-5 py-3 text-gray-500">Net Revenue</td><td class="px-5 py-3 text-right font-medium text-white">KSh {{ net_revenue|floatformat:2 }}</td></tr>
+          <tr><td class="px-5 py-3 text-gray-500">Manual Expenses</td><td class="px-5 py-3 text-right text-white">KSh {{ manual_expenses|floatformat:2 }}</td></tr>
+          <tr><td class="px-5 py-3 text-gray-500">Inventory Purchases</td><td class="px-5 py-3 text-right text-white">KSh {{ purchases_total|floatformat:2 }}</td></tr>
+          <tr><td class="px-5 py-3 text-white font-medium">Total Expenses</td><td class="px-5 py-3 text-right font-medium text-white">KSh {{ total_expenses|floatformat:2 }}</td></tr>
+          <tr class="bg-slate-700"><td class="px-5 py-4 font-display font-bold text-white">Net Profit</td><td class="px-5 py-4 text-right font-display font-bold text-lg {% if net_profit >= 0 %}text-green-400{% else %}text-pink-400{% endif %}">KSh {{ net_profit|floatformat:2 }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  const ctx = document.getElementById('profitChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Net Revenue', 'Total Expenses', 'Net Profit'],
+        datasets: [{
+          data: [{{ net_revenue }}, {{ total_expenses }}, {{ net_profit }}],
+          backgroundColor: ['#0013DE', '#FF0090', {{ net_profit }} >= 0 ? '#16A34A' : '#FF0090'],
+        }],
+      },
+      options: { plugins: { legend: { display: false } } },
+    });
+  }
+</script>
+{% endblock %}

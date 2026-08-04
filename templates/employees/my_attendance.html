@@ -1,0 +1,54 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}My Attendance — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Attendance</p>
+      <h1 class="font-display font-bold text-2xl text-white">My Attendance History</h1>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if attendance_records %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr>
+            <th class="px-5 py-3 font-medium">Date</th>
+            <th class="px-5 py-3 font-medium">Status</th>
+            <th class="px-5 py-3 font-medium">Clock In</th>
+            <th class="px-5 py-3 font-medium">Clock Out</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for record in attendance_records %}
+          <tr>
+            <td class="px-5 py-3 text-white">{{ record.date|date:"M j, Y" }}</td>
+            <td class="px-5 py-3">
+              {% if record.status == 'present' %}
+                <span class="text-xs font-medium text-green-400">Present</span>
+              {% elif record.status == 'late' %}
+                <span class="text-xs font-medium text-amber-400">Late</span>
+              {% elif record.status == 'on_leave' %}
+                <span class="text-xs font-medium text-blue-400">On Leave</span>
+              {% else %}
+                <span class="text-xs font-medium text-pink-400">Absent</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-3 text-gray-500">{{ record.clock_in_time|time:"g:i A"|default:"—" }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ record.clock_out_time|time:"g:i A"|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-12 text-center">
+        <p class="text-sm text-gray-500">No attendance recorded yet.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

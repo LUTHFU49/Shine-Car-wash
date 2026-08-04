@@ -1,0 +1,38 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{{ feedback.subject }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Feedback{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'feedback:feedback_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Complaints &amp; Suggestions
+    </a>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">{{ feedback.get_feedback_type_display }}{% if feedback.booking %} &middot; {{ feedback.booking.booking_code }}{% endif %}</p>
+          <h1 class="font-display font-bold text-xl text-white">{{ feedback.subject }}</h1>
+        </div>
+        <span class="text-xs font-medium {% if feedback.status == 'resolved' %}text-green-400{% elif feedback.status == 'closed' %}text-gray-500{% elif feedback.status == 'in_review' %}text-amber-400{% else %}text-blue-400{% endif %}">{{ feedback.get_status_display }}</span>
+      </div>
+      <p class="text-sm text-white">{{ feedback.message }}</p>
+      <p class="text-xs text-gray-500 mt-3">From {{ feedback.customer.first_name }} {{ feedback.customer.last_name }} &middot; {{ feedback.created_at|date:"M j, Y H:i" }}</p>
+    </div>
+
+    {% if feedback.has_response %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8">
+      <p class="text-xs font-medium text-blue-400 mb-2">Our response ({{ feedback.responded_at|date:"M j, Y" }})</p>
+      <p class="text-sm text-white">{{ feedback.response }}</p>
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'feedback:feedback_respond' feedback.public_id %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-4 mt-6">
+      {% csrf_token %}
+      <h2 class="font-display font-semibold text-white">{% if feedback.has_response %}Update Response{% else %}Respond{% endif %}</h2>
+      {% include 'inventory/_form_fields.html' %}
+      <button type="submit" class="text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Send Response</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

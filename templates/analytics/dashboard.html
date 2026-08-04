@@ -1,0 +1,43 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Analytics — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Advanced Analytics</p>
+        <h1 class="font-display font-bold text-2xl text-white">Dashboard</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'analytics:monthly' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Monthly</a>
+        <a href="{% url 'analytics:yearly' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Yearly</a>
+        <a href="{% url 'analytics:customize' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity"><i class="fa-solid fa-sliders text-xs"></i> Customize</a>
+      </div>
+    </div>
+    <p class="text-xs text-gray-500 mb-6">{{ kpis.period_label }}</p>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {% include 'analytics/_kpi_card.html' with label='Net Revenue' kpi=kpis.revenue prefix='KSh ' %}
+      {% include 'analytics/_kpi_card.html' with label='Net Profit' kpi=kpis.profit prefix='KSh ' %}
+      {% include 'analytics/_kpi_card.html' with label='Bookings' kpi=kpis.bookings prefix='' %}
+      {% include 'analytics/_kpi_card.html' with label='New Customers' kpi=kpis.new_customers prefix='' %}
+    </div>
+
+    {% if widgets %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {% for widget in widgets %}
+        {% include widget.template with widget=widget %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-12 text-center">
+      <p class="font-medium text-white mb-1">Your dashboard is empty</p>
+      <p class="text-sm text-gray-500 mb-6">Pick the widgets you want to see.</p>
+      <a href="{% url 'analytics:customize' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500"><i class="fa-solid fa-sliders text-xs"></i> Customize Dashboard</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

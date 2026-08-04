@@ -1,0 +1,79 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{{ payment.reference_code }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{{ payment.reference_code }}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'payments:payment_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Transactions
+    </a>
+
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ payment.invoice.booking.booking_code }}</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ payment.reference_code }}</h1>
+        <span class="inline-flex items-center gap-1 text-xs font-medium mt-2
+          {% if payment.status == 'completed' %}text-green-400{% elif payment.status == 'failed' or payment.status == 'cancelled' %}text-pink-400{% else %}text-blue-400{% endif %}">
+          <span class="w-1.5 h-1.5 rounded-full {% if payment.status == 'completed' %}bg-green-500{% elif payment.status == 'failed' or payment.status == 'cancelled' %}bg-pink-500{% else %}bg-blue-500{% endif %}"></span>
+          {{ payment.get_status_display }}
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        {% if payment.status == 'completed' %}
+        <a href="{% url 'payments:payment_receipt_pdf' payment.public_id %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2"><i class="fa-solid fa-file-pdf mr-1"></i> Receipt</a>
+        {% endif %}
+        {% if payment.method == 'mpesa' and payment.status == 'processing' %}
+        <form method="post" action="{% url 'payments:payment_verify' payment.public_id %}">{% csrf_token %}<button type="submit" class="text-sm font-semibold text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Verify with Daraja</button></form>
+        {% endif %}
+        {% if payment.status == 'completed' and payment.refundable_amount > 0 %}
+          {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+        <a href="{% url 'payments:payment_refund' payment.public_id %}" class="text-sm font-medium text-pink-400 border border-slate-700 rounded-lg px-4 py-2">Refund</a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Amount</p><p class="font-display font-bold text-white">KSh {{ payment.amount|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Method</p><p class="font-medium text-white">{{ payment.get_method_display }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Date</p><p class="font-medium text-white">{{ payment.created_at|date:"M j, Y H:i" }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Refunded</p><p class="font-medium text-white">KSh {{ payment.refunded_amount|floatformat:2 }}</p></div>
+    </div>
+
+    {% if payment.method == 'mpesa' %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 mb-8">
+      <h2 class="font-display font-semibold text-white mb-4">M-Pesa Details</h2>
+      <dl class="grid grid-cols-2 gap-4 text-sm">
+        <div><dt class="text-gray-500 text-xs mb-1">Phone Number</dt><dd class="text-white">{{ payment.phone_number|default:"—" }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-1">Receipt No.</dt><dd class="text-white">{{ payment.mpesa_receipt_number|default:"—" }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-1">Checkout Request ID</dt><dd class="text-white break-all">{{ payment.checkout_request_id|default:"—" }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-1">Result</dt><dd class="text-white">{{ payment.result_description|default:"—" }}</dd></div>
+      </dl>
+    </div>
+    {% endif %}
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 mb-8">
+      <h2 class="font-display font-semibold text-white mb-4">Booking &amp; Invoice</h2>
+      <dl class="grid grid-cols-2 gap-4 text-sm">
+        <div><dt class="text-gray-500 text-xs mb-1">Booking</dt><dd class="text-white">{{ payment.invoice.booking.booking_code }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-1">Customer</dt><dd class="text-white">{{ payment.invoice.booking.customer.first_name }} {{ payment.invoice.booking.customer.last_name }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-1">Invoice</dt><dd><a href="{% url 'payments:invoice_detail' payment.invoice.public_id %}" class="text-blue-400">{{ payment.invoice.invoice_number }}</a></dd></div>
+        <div><dt class="text-gray-500 text-xs mb-1">Invoice Balance</dt><dd class="text-white">KSh {{ payment.invoice.balance|floatformat:2 }}</dd></div>
+      </dl>
+    </div>
+
+    {% if payment.refunds.all %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Refunds</h2></div>
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-slate-700">
+          {% for refund in payment.refunds.all %}
+          <tr><td class="px-5 py-3 text-white">{{ refund.reference_code }}</td><td class="px-5 py-3 text-gray-500">{{ refund.reason }}</td><td class="px-5 py-3 text-white text-right">KSh {{ refund.amount|floatformat:2 }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

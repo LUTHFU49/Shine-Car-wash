@@ -1,0 +1,257 @@
+{% extends 'layouts/app_base.html' %}
+{% load static humanize %}
+{% block title %}Dashboard — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+  
+  <!-- Welcome Header -->
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800 via-slate-800 to-slate-800 border border-slate-700 p-6 sm:p-8">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-pink-500 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-2">
+          <i class="fa-solid fa-gauge-high mr-1.5"></i>Dashboard
+        </p>
+        <h1 class="font-display font-bold text-2xl sm:text-3xl text-white">
+          Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400">{{ request.user.first_name|default:request.user.username }}</span> 👋
+        </h1>
+        <p class="text-sm text-gray-400 mt-2">
+          Here's what's happening with your car wash today.
+        </p>
+      </div>
+      
+      <!-- Date & Time -->
+      <div class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-700/50 border border-slate-600/50 shrink-0">
+        <i class="fa-solid fa-calendar-day text-blue-400"></i>
+        <span class="text-sm text-gray-300" id="current-date"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Verification Alert -->
+  {% if not request.user.is_email_verified %}
+  <div class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex-wrap">
+    <div class="flex items-center gap-3">
+      <span class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+      </span>
+      <div>
+        <p class="text-sm font-medium text-amber-400">Email not verified</p>
+        <p class="text-xs text-amber-400/70">Some features may be limited until you verify your email.</p>
+      </div>
+    </div>
+    <form method="post" action="{% url 'accounts:resend_verification' %}">
+      {% csrf_token %}
+      <button type="submit" class="px-4 py-2 rounded-xl bg-amber-500/20 text-amber-400 text-sm font-medium hover:bg-amber-500/30 transition-colors border border-amber-500/20">
+        <i class="fa-solid fa-envelope mr-1.5"></i>
+        Resend verification
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Stats Overview -->
+  {% if show_kpis %}
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300 group">
+      <div class="flex items-center justify-between mb-3">
+        <span class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-calendar-check text-blue-400"></i>
+        </span>
+        {% if bookings_delta is not None %}
+        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full {% if bookings_delta >= 0 %}bg-emerald-500/10 text-emerald-400{% else %}bg-pink-500/10 text-pink-400{% endif %}">{% if bookings_delta >= 0 %}+{% endif %}{{ bookings_delta }}%</span>
+        {% endif %}
+      </div>
+      <p class="font-display font-bold text-2xl text-white">{{ total_bookings|intcomma }}</p>
+      <p class="text-xs text-gray-500 mt-1">Total Bookings</p>
+    </div>
+
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-pink-500/50 transition-all duration-300 group">
+      <div class="flex items-center justify-between mb-3">
+        <span class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-money-bill-wave text-pink-400"></i>
+        </span>
+        {% if revenue_delta is not None %}
+        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full {% if revenue_delta >= 0 %}bg-emerald-500/10 text-emerald-400{% else %}bg-pink-500/10 text-pink-400{% endif %}">{% if revenue_delta >= 0 %}+{% endif %}{{ revenue_delta }}%</span>
+        {% endif %}
+      </div>
+      <p class="font-display font-bold text-2xl text-white">KSh {{ revenue_total|floatformat:0|intcomma }}</p>
+      <p class="text-xs text-gray-500 mt-1">Revenue</p>
+    </div>
+
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-green-500/50 transition-all duration-300 group">
+      <div class="flex items-center justify-between mb-3">
+        <span class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-users text-green-400"></i>
+        </span>
+        {% if customers_delta is not None %}
+        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full {% if customers_delta >= 0 %}bg-emerald-500/10 text-emerald-400{% else %}bg-pink-500/10 text-pink-400{% endif %}">{% if customers_delta >= 0 %}+{% endif %}{{ customers_delta }}%</span>
+        {% endif %}
+      </div>
+      <p class="font-display font-bold text-2xl text-white">{{ active_customers|intcomma }}</p>
+      <p class="text-xs text-gray-500 mt-1">Active Customers</p>
+    </div>
+
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-purple-500/50 transition-all duration-300 group">
+      <div class="flex items-center justify-between mb-3">
+        <span class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <i class="fa-solid fa-clock text-purple-400"></i>
+        </span>
+        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400">Queue</span>
+      </div>
+      <p class="font-display font-bold text-2xl text-white">{{ in_queue_now }}</p>
+      <p class="text-xs text-gray-500 mt-1">In Queue Now</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Quick Actions -->
+  <div>
+    <h2 class="font-display font-semibold text-white mb-4 flex items-center gap-2">
+      <span class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+        <i class="fa-solid fa-bolt text-blue-400 text-sm"></i>
+      </span>
+      Quick Actions
+    </h2>
+    
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {% for action in quick_actions %}
+      <a href="{{ action.url }}" 
+         class="group p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-pink-500/50 hover:bg-slate-700/50 transition-all duration-300">
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-pink-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <i class="fa-solid {{ action.icon }} text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400"></i>
+          </span>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-white text-sm">{{ action.label }}</p>
+            <p class="text-xs text-gray-500 mt-0.5">Click to access</p>
+          </div>
+          <i class="fa-solid fa-arrow-right text-xs text-gray-600 group-hover:text-pink-400 group-hover:translate-x-1 transition-all duration-300"></i>
+        </div>
+      </a>
+      {% empty %}
+      <div class="col-span-full p-8 rounded-2xl bg-slate-800 border border-slate-700 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-cube text-2xl text-gray-500"></i>
+        </div>
+        <p class="text-sm text-gray-400">No quick actions available for your role yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Recent Activity & Today at a Glance -->
+  {% if show_kpis %}
+  <div class="grid lg:grid-cols-2 gap-6">
+    <!-- Recent Activity -->
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+        <h3 class="font-display font-semibold text-white flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-blue-400 text-sm"></i>
+          Recent Activity
+        </h3>
+        <a href="{% url 'bookings:list' %}" class="text-xs text-blue-400 hover:text-pink-400 transition-colors">View all</a>
+      </div>
+      
+      <div class="p-4 space-y-3">
+        {% for event in recent_activity %}
+        <div class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-700/50 transition-colors">
+          <span class="w-8 h-8 rounded-lg bg-{{ event.color }}-500/10 flex items-center justify-center shrink-0 mt-0.5">
+            <i class="fa-solid {{ event.icon }} text-{{ event.color }}-400 text-xs"></i>
+          </span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-300">{{ event.title }}</p>
+            <p class="text-xs text-gray-500 mt-0.5">{{ event.subtitle }}</p>
+          </div>
+          <span class="text-[10px] text-gray-600 shrink-0">{{ event.timestamp|timesince }} ago</span>
+        </div>
+        {% empty %}
+        <div class="p-8 text-center">
+          <div class="w-12 h-12 mx-auto mb-3 rounded-2xl bg-slate-700 flex items-center justify-center">
+            <i class="fa-solid fa-inbox text-gray-500"></i>
+          </div>
+          <p class="text-sm text-gray-500">Nothing to show yet — activity will appear here as bookings and customers come in.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Today at a Glance -->
+    <div class="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-800 border border-slate-700 overflow-hidden relative">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-blue-500 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-pink-500 rounded-full blur-3xl"></div>
+      </div>
+
+      <div class="relative p-8">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/10 to-pink-500/10 border border-pink-500/20 flex items-center justify-center mb-4">
+          <i class="fa-solid fa-chart-line text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400"></i>
+        </div>
+        <h3 class="font-display font-semibold text-lg text-white mb-2">Today at a Glance</h3>
+        {% if today_breakdown %}
+        <p class="text-sm text-gray-400 mb-5 leading-relaxed">{{ today_bookings_total }} booking{{ today_bookings_total|pluralize }} scheduled for today.</p>
+        <div class="space-y-2.5 mb-6">
+          {% for row in today_breakdown %}
+          <div class="flex items-center justify-between text-sm">
+            {% include 'bookings/_status_badge.html' with status=row.status %}
+            <span class="text-white font-medium">{{ row.value }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-400 mb-6 leading-relaxed">No bookings scheduled for today yet.</p>
+        {% endif %}
+
+        <div class="flex flex-wrap gap-2">
+          {% if request.user.role == 'super_admin' or request.user.role == 'manager' or request.user.role == 'cashier' %}
+          <a href="{% url 'reports:hub' %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-500/10 text-blue-400 text-sm font-medium hover:bg-blue-500/20 transition-colors">
+            <i class="fa-solid fa-chart-bar text-xs"></i>
+            Reports Hub
+          </a>
+          {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+          <a href="{% url 'analytics:dashboard' %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-pink-500/10 text-pink-400 text-sm font-medium hover:bg-pink-500/20 transition-colors">
+            <i class="fa-solid fa-chart-pie text-xs"></i>
+            Analytics
+          </a>
+          {% endif %}
+          {% endif %}
+          <a href="{% url 'accounts:profile' %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-700 text-gray-300 text-sm font-medium hover:bg-slate-600 transition-colors">
+            <i class="fa-solid fa-user text-xs"></i>
+            Your Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <!-- Customer view: no staff KPI/activity panel; quick actions above are enough -->
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Display current date
+  const dateElement = document.getElementById('current-date');
+  if (dateElement) {
+    const now = new Date();
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    dateElement.textContent = now.toLocaleDateString('en-US', options);
+  }
+
+  // Auto-refresh time every minute
+  function updateTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    // You can add a time display if needed
+  }
+  setInterval(updateTime, 60000);
+  updateTime();
+</script>
+{% endblock %}

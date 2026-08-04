@@ -1,0 +1,59 @@
+{% extends 'layouts/app_base.html' %}
+{% load core_extras %}
+{% block title %}Booking Calendar — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Calendar{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Calendar</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ month_label }}</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'bookings:list' %}" class="text-sm font-medium text-gray-500 hover:text-white px-3 py-2">Back to List</a>
+        <a href="?year={{ prev_year }}&month={{ prev_month }}" class="w-9 h-9 rounded-full border border-slate-700 flex items-center justify-center text-white hover:border-blue-500/50">
+          <i class="fa-solid fa-chevron-left text-xs"></i>
+        </a>
+        <a href="?year={{ next_year }}&month={{ next_month }}" class="w-9 h-9 rounded-full border border-slate-700 flex items-center justify-center text-white hover:border-blue-500/50">
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="grid grid-cols-7 bg-slate-700 text-xs font-medium text-gray-500">
+        <div class="px-3 py-2">Mon</div>
+        <div class="px-3 py-2">Tue</div>
+        <div class="px-3 py-2">Wed</div>
+        <div class="px-3 py-2">Thu</div>
+        <div class="px-3 py-2">Fri</div>
+        <div class="px-3 py-2">Sat</div>
+        <div class="px-3 py-2">Sun</div>
+      </div>
+      <div class="grid grid-cols-7">
+        {% for week in month_dates %}
+          {% for day in week %}
+          <a href="{% url 'bookings:day' day.isoformat %}"
+             class="min-h-[84px] p-2 border-t border-l border-slate-700 hover:bg-slate-700/60 transition-colors flex flex-col
+                    {% if day.month != month %}opacity-40{% endif %}
+                    {% if day == today %}bg-blue-500/5{% endif %}">
+            <span class="text-xs font-medium {% if day == today %}text-blue-400{% else %}text-gray-500{% endif %}">{{ day.day }}</span>
+            {% with day_count=counts|get_item:day %}
+            {% if day_count %}
+            <span class="mt-auto inline-flex items-center gap-1 text-xs font-medium text-blue-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> {{ day_count }}
+            </span>
+            {% endif %}
+            {% endwith %}
+          </a>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <p class="text-xs text-gray-500 mt-4">Click any day to see its bookings and manage the queue.</p>
+  </div>
+</section>
+{% endblock %}

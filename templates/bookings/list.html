@@ -1,0 +1,121 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Manage Bookings — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Bookings{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Bookings</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ total_count }} booking{{ total_count|pluralize }}</h1>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <a href="{% url 'bookings:calendar' %}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2.5 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+          <i class="fa-solid fa-calendar-days text-xs"></i> Calendar
+        </a>
+        <a href="{% url 'bookings:queue' %}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2.5 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+          <i class="fa-solid fa-list-check text-xs"></i> Today's Queue
+        </a>
+        <a href="{% url 'bookings:export_csv' %}?{{ querystring }}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2.5 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+          <i class="fa-solid fa-file-csv text-xs"></i> CSV
+        </a>
+        <a href="{% url 'bookings:export_excel' %}?{{ querystring }}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2.5 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+          <i class="fa-solid fa-file-excel text-xs"></i> Excel
+        </a>
+        <a href="{% url 'bookings:create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          <i class="fa-solid fa-plus text-xs"></i> New Booking
+        </a>
+      </div>
+    </div>
+
+    <form method="get" class="rounded-2xl bg-slate-800 border border-slate-700 p-4 mb-6 grid sm:grid-cols-4 gap-3">
+      <div class="sm:col-span-2">
+        <label for="id_q" class="sr-only">Search</label>
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+          <input type="text" id="id_q" name="q" value="{{ search_form.q.value|default:'' }}"
+                 placeholder="Search plate, customer, or service"
+                 class="w-full rounded-lg border border-slate-700 bg-slate-900/60 pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+        </div>
+      </div>
+      <div>
+        <select name="status" class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
+          {% for value, label in search_form.fields.status.choices %}
+          <option value="{{ value }}" {% if search_form.status.value == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex gap-2">
+        <input type="date" name="date_from" value="{{ search_form.date_from.value|default:'' }}" class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
+        <input type="date" name="date_to" value="{{ search_form.date_to.value|default:'' }}" class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
+      </div>
+      <div class="sm:col-span-4 flex items-center gap-3">
+        <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          Filter
+        </button>
+        {% if request.GET %}
+        <a href="{% url 'bookings:list' %}" class="text-sm text-gray-500 hover:text-white">Clear</a>
+        {% endif %}
+      </div>
+    </form>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if page_obj.object_list %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr>
+            <th class="px-5 py-3 font-medium">Booking</th>
+            <th class="px-5 py-3 font-medium">Customer</th>
+            <th class="px-5 py-3 font-medium">Date & Time</th>
+            <th class="px-5 py-3 font-medium">Status</th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for booking in page_obj.object_list %}
+          <tr class="hover:bg-slate-700/60 transition-colors">
+            <td class="px-5 py-3">
+              <a href="{% url 'bookings:detail' booking.public_id %}" class="font-medium text-white hover:text-blue-400">{{ booking.service.name }}</a>
+              <p class="text-xs text-gray-500 font-mono">{{ booking.booking_code }} · {{ booking.vehicle.license_plate }}</p>
+            </td>
+            <td class="px-5 py-3 text-gray-500">{{ booking.customer.full_name }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ booking.scheduled_date|date:"M j, Y" }}<br><span class="text-xs">{{ booking.scheduled_time|time:"g:i A" }}</span></td>
+            <td class="px-5 py-3">
+              {% include 'bookings/_status_badge.html' with status=booking.status %}
+            </td>
+            <td class="px-5 py-3 text-right">
+              <a href="{% url 'bookings:detail' booking.public_id %}" class="text-gray-500 hover:text-blue-400"><i class="fa-solid fa-chevron-right text-xs"></i></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-12 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-slate-700 flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-calendar text-gray-500"></i>
+        </div>
+        <p class="font-medium text-white mb-1">No bookings found</p>
+        <p class="text-sm text-gray-500">Try adjusting your search or filters.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-between mt-6 text-sm">
+      <p class="text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+      <div class="flex items-center gap-2">
+        {% if page_obj.has_previous %}
+        <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-blue-500/50">Previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-blue-500/50">Next</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

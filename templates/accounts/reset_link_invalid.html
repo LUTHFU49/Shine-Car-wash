@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Link Expired — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="py-24">
+  <div class="max-w-md mx-auto px-4 text-center">
+    <div class="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center mx-auto mb-6">
+      <i class="fa-solid fa-link-slash text-white text-xl"></i>
+    </div>
+    <h1 class="font-display font-bold text-2xl text-ink dark:text-white mb-3">This reset link is invalid or has expired</h1>
+    <p class="text-ink-soft dark:text-gray-400 mb-8">Password reset links expire after 2 hours for your security. Request a new one below.</p>
+    <a href="{% url 'accounts:password_reset' %}" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+      Request New Link <i class="fa-solid fa-arrow-right text-xs"></i>
+    </a>
+  </div>
+</section>
+{% endblock %}

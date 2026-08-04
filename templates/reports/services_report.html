@@ -1,0 +1,46 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Services Report — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Services Report{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8 print-area">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:hub' %}" class="no-print text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reports
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ start }} to {{ end }}</p>
+      <h1 class="font-display font-bold text-2xl text-white">Service Popularity Report</h1>
+    </div>
+
+    {% include 'reports/_report_toolbar.html' with export_url_name='reports:services_report_export' %}
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 mb-8">
+      <h2 class="font-display font-semibold text-white mb-4">Revenue by Service</h2>
+      <canvas id="serviceChart" height="90"></canvas>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Service</th><th class="px-5 py-3 font-medium">Category</th><th class="px-5 py-3 font-medium">Bookings</th><th class="px-5 py-3 font-medium">Completed</th><th class="px-5 py-3 font-medium">Revenue</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for row in rows %}
+          <tr><td class="px-5 py-3 text-white">{{ row.name }}</td><td class="px-5 py-3 text-gray-500">{{ row.category.name }}</td><td class="px-5 py-3 text-gray-500">{{ row.booking_count }}</td><td class="px-5 py-3 text-gray-500">{{ row.completed_count }}</td><td class="px-5 py-3 text-white font-medium">{{ row.revenue|floatformat:2 }}</td></tr>
+          {% empty %}
+          <tr><td colspan="5" class="px-5 py-8 text-center text-gray-500">No bookings for any service in this range.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  new Chart(document.getElementById('serviceChart'), {
+    type: 'bar',
+    data: { labels: [{% for row in rows %}'{{ row.name }}',{% endfor %}], datasets: [{ label: 'Revenue (KSh)', data: [{% for row in rows %}{{ row.revenue }},{% endfor %}], backgroundColor: '#0013DE' }] },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } } },
+  });
+</script>
+{% endblock %}

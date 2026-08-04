@@ -1,0 +1,25 @@
+{% extends 'emails/base_email.html' %}
+{% block email_body %}
+<h1 style="margin:0 0 16px 0; font-size:22px; font-family: Arial, Helvetica, sans-serif;">We've got your booking request</h1>
+<p style="margin:0 0 16px 0; font-size:15px; line-height:1.6; color:#0B1120; font-family: Arial, Helvetica, sans-serif;">
+  Hi {{ customer.first_name }}, thanks for booking with {{ SITE_NAME }}. Your request is awaiting approval —
+  we'll email you as soon as it's confirmed.
+</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F6FB; border-radius:8px; margin:0 0 20px 0;">
+  <tr>
+    <td style="padding:20px; font-family: Arial, Helvetica, sans-serif;">
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Booking Reference</p>
+      <p style="margin:0 0 16px 0; font-size:16px; font-weight:bold; color:#0B1120;">{{ booking.booking_code }}</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Service</p>
+      <p style="margin:0 0 16px 0; font-size:15px; color:#0B1120;">{{ service.name }}</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Vehicle</p>
+      <p style="margin:0 0 16px 0; font-size:15px; color:#0B1120;">{{ vehicle.display_name }} ({{ vehicle.license_plate }})</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Requested Date & Time</p>
+      <p style="margin:0; font-size:15px; color:#0B1120;">{{ booking.scheduled_date|date:"l, F j, Y" }} at {{ booking.scheduled_time|time:"g:i A" }}</p>
+    </td>
+  </tr>
+</table>
+<p style="margin:0; font-size:13px; line-height:1.6; color:#4B5468; font-family: Arial, Helvetica, sans-serif;">
+  If your plans change, you can reschedule or cancel from your {{ SITE_NAME }} dashboard at any time before it's confirmed.
+</p>
+{% endblock %}

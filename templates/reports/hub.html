@@ -1,0 +1,79 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Reports — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Business Intelligence</p>
+      <h1 class="font-display font-bold text-2xl text-white">Report Center</h1>
+      <p class="text-sm text-gray-500 mt-2">Every report is date-filterable and exports to CSV, Excel, PDF, or print.</p>
+    </div>
+
+    {% if is_management %}
+    <p class="text-xs font-semibold uppercase tracking-wider text-pink-400 mb-3">Financial</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <a href="{% url 'reports:revenue' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-sack-dollar text-blue-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Revenue</h3>
+        <p class="text-xs text-gray-500">Collections by day, cash vs M-Pesa, refunds</p>
+      </a>
+      <a href="{% url 'reports:expenses_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-receipt text-blue-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Expenses</h3>
+        <p class="text-xs text-gray-500">Manual expenses plus inventory purchases</p>
+      </a>
+      <a href="{% url 'reports:profit' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-scale-balanced text-blue-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Profit Summary</h3>
+        <p class="text-xs text-gray-500">Net revenue against total spend</p>
+      </a>
+      <a href="{% url 'reports:employees_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-user-tie text-blue-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Employee Productivity</h3>
+        <p class="text-xs text-gray-500">Completed bookings and revenue per employee</p>
+      </a>
+      <a href="{% url 'reports:expense_list' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-file-invoice-dollar text-blue-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Manage Expenses</h3>
+        <p class="text-xs text-gray-500">Record and review operating expenses</p>
+      </a>
+    </div>
+    {% endif %}
+
+    <p class="text-xs font-semibold uppercase tracking-wider text-pink-400 mb-3">Operations</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a href="{% url 'reports:bookings_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-calendar-check text-pink-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Bookings</h3>
+        <p class="text-xs text-gray-500">Volume trends, status mix, peak hours &amp; days</p>
+      </a>
+      <a href="{% url 'reports:services_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-soap text-pink-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Services</h3>
+        <p class="text-xs text-gray-500">Popularity and revenue by service</p>
+      </a>
+      <a href="{% url 'reports:customers_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-users text-pink-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Customers</h3>
+        <p class="text-xs text-gray-500">Growth, repeat customers, top spenders</p>
+      </a>
+      <a href="{% url 'reports:vehicles_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-car text-pink-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Vehicles</h3>
+        <p class="text-xs text-gray-500">Fleet composition and most-serviced vehicles</p>
+      </a>
+      <a href="{% url 'reports:inventory_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-boxes-stacked text-pink-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Inventory</h3>
+        <p class="text-xs text-gray-500">Valuation, low stock, top consumed items</p>
+      </a>
+      <a href="{% url 'reports:suppliers_report' %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 hover:border-blue-500/50 transition-colors">
+        <i class="fa-solid fa-truck-field text-pink-400 mb-3 text-lg"></i>
+        <h3 class="font-display font-semibold text-white mb-1">Suppliers</h3>
+        <p class="text-xs text-gray-500">Purchase order value and frequency</p>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

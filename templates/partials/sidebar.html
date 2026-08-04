@@ -1,0 +1,352 @@
+{% load static %}
+<div class="flex flex-col h-full bg-slate-900">
+  <!-- Logo Header -->
+  <div class="h-16 flex items-center gap-2.5 px-6 border-b border-slate-700/50 shrink-0">
+    <span class="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center shrink-0">
+      <i class="fa-solid fa-car-on text-white text-sm"></i>
+    </span>
+    <span class="font-display font-bold text-white text-lg">{{ SITE_NAME }}</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 custom-scrollbar" aria-label="Primary application navigation">
+    
+    <!-- Dashboard -->
+    <a href="{% url 'dashboard:home' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-blue-500/10 to-blue-600/10">
+        <i class="fa-solid fa-gauge-high text-blue-400"></i>
+      </span>
+      <span class="flex-1">Dashboard</span>
+      {% if request.resolver_match.app_name == 'dashboard' %}
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+      {% endif %}
+    </a>
+
+    {% if request.user.role in staff_roles %}
+    <!-- Operations Section -->
+    <div class="sidebar-section">Operations</div>
+
+    <a href="{% url 'customers:list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'customers' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-emerald-500/10 to-green-600/10">
+        <i class="fa-solid fa-users text-emerald-400"></i>
+      </span>
+      <span class="flex-1">Customers</span>
+    </a>
+
+    <a href="{% url 'vehicles:list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'vehicles' and 'my' not in request.path %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-blue-500/10 to-cyan-600/10">
+        <i class="fa-solid fa-car text-blue-400"></i>
+      </span>
+      <span class="flex-1">Vehicles</span>
+    </a>
+
+    <a href="{% url 'services:list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'services' and 'manage' in request.path %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-purple-500/10 to-violet-600/10">
+        <i class="fa-solid fa-spray-can-sparkles text-purple-400"></i>
+      </span>
+      <span class="flex-1">Services</span>
+    </a>
+
+    <a href="{% url 'bookings:list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'bookings' and 'my' not in request.path %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-pink-500/10 to-rose-600/10">
+        <i class="fa-solid fa-calendar-check text-pink-400"></i>
+      </span>
+      <span class="flex-1">Bookings</span>
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-pink-500/20 text-pink-400">Live</span>
+    </a>
+
+    {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+    <a href="{% url 'employees:list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'employees' and 'my' not in request.path %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-amber-500/10 to-yellow-600/10">
+        <i class="fa-solid fa-people-group text-amber-400"></i>
+      </span>
+      <span class="flex-1">Employees</span>
+    </a>
+    {% endif %}
+
+    <a href="{% url 'inventory:dashboard' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-orange-500/10 to-red-600/10">
+        <i class="fa-solid fa-boxes-stacked text-orange-400"></i>
+      </span>
+      <span class="flex-1">Inventory</span>
+    </a>
+
+    <a href="{% url 'payments:dashboard' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'payments' and 'my' not in request.path %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-green-500/10 to-emerald-600/10">
+        <i class="fa-solid fa-money-bill-wave text-green-400"></i>
+      </span>
+      <span class="flex-1">Payments</span>
+    </a>
+
+    <a href="{% url 'reports:hub' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-indigo-500/10 to-blue-600/10">
+        <i class="fa-solid fa-chart-line text-indigo-400"></i>
+      </span>
+      <span class="flex-1">Reports</span>
+    </a>
+
+    {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+    <a href="{% url 'analytics:dashboard' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'analytics' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-rose-500/10 to-pink-600/10">
+        <i class="fa-solid fa-chart-pie text-rose-400"></i>
+      </span>
+      <span class="flex-1">Analytics</span>
+    </a>
+
+    <a href="{% url 'loyalty:member_list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'loyalty' and 'my' not in request.path %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-yellow-500/10 to-amber-600/10">
+        <i class="fa-solid fa-gift text-yellow-400"></i>
+      </span>
+      <span class="flex-1">Loyalty</span>
+    </a>
+
+    <a href="{% url 'feedback:satisfaction' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'feedback' and 'my' not in request.path %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-teal-500/10 to-cyan-600/10">
+        <i class="fa-solid fa-comment-dots text-teal-400"></i>
+      </span>
+      <span class="flex-1">Feedback</span>
+    </a>
+    {% endif %}
+    {% endif %}
+
+    {% if request.user.role == 'employee' %}
+    <div class="sidebar-section">My Work</div>
+
+    <a href="{% url 'employees:my_assignments' %}"
+       class="sidebar-link {% if request.resolver_match.url_name == 'my_assignments' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-blue-500/10 to-blue-600/10">
+        <i class="fa-solid fa-clipboard-list text-blue-400"></i>
+      </span>
+      <span class="flex-1">My Assignments</span>
+    </a>
+
+    <a href="{% url 'employees:my_profile' %}"
+       class="sidebar-link {% if request.resolver_match.url_name == 'my_profile' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-purple-500/10 to-purple-600/10">
+        <i class="fa-solid fa-id-badge text-purple-400"></i>
+      </span>
+      <span class="flex-1">My Profile & Schedule</span>
+    </a>
+
+    <a href="{% url 'employees:my_attendance' %}"
+       class="sidebar-link {% if request.resolver_match.url_name == 'my_attendance' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-green-500/10 to-green-600/10">
+        <i class="fa-solid fa-calendar-check text-green-400"></i>
+      </span>
+      <span class="flex-1">My Attendance</span>
+    </a>
+
+    <a href="{% url 'employees:my_performance' %}"
+       class="sidebar-link {% if request.resolver_match.url_name == 'my_performance' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-yellow-500/10 to-yellow-600/10">
+        <i class="fa-solid fa-star text-yellow-400"></i>
+      </span>
+      <span class="flex-1">My Performance</span>
+    </a>
+    {% endif %}
+
+    {% if request.user.role == 'customer' %}
+    <div class="sidebar-section">My Wash</div>
+
+    <a href="{% url 'vehicles:my_list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'vehicles' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-blue-500/10 to-blue-600/10">
+        <i class="fa-solid fa-car text-blue-400"></i>
+      </span>
+      <span class="flex-1">My Vehicles</span>
+    </a>
+
+    <a href="{% url 'services:catalog' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'services' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-purple-500/10 to-purple-600/10">
+        <i class="fa-solid fa-spray-can-sparkles text-purple-400"></i>
+      </span>
+      <span class="flex-1">Browse Services</span>
+    </a>
+
+    <a href="{% url 'bookings:my_create' %}"
+       class="sidebar-link {% if request.resolver_match.url_name == 'my_create' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-pink-500/10 to-pink-600/10">
+        <i class="fa-solid fa-calendar-plus text-pink-400"></i>
+      </span>
+      <span class="flex-1">Book a Wash</span>
+    </a>
+
+    <a href="{% url 'bookings:my_list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'bookings' and request.resolver_match.url_name != 'my_create' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-amber-500/10 to-amber-600/10">
+        <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
+      </span>
+      <span class="flex-1">My Bookings</span>
+    </a>
+
+    <a href="{% url 'loyalty:my_dashboard' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'loyalty' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-yellow-500/10 to-yellow-600/10">
+        <i class="fa-solid fa-gift text-yellow-400"></i>
+      </span>
+      <span class="flex-1">My Rewards</span>
+    </a>
+
+    <a href="{% url 'feedback:my_list' %}"
+       class="sidebar-link {% if request.resolver_match.app_name == 'feedback' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-teal-500/10 to-teal-600/10">
+        <i class="fa-solid fa-comment-dots text-teal-400"></i>
+      </span>
+      <span class="flex-1">My Feedback</span>
+    </a>
+    {% endif %}
+
+    {% if request.user.role == 'super_admin' %}
+    <div class="sidebar-section">Administration</div>
+    
+    <a href="/admin/"
+       class="sidebar-link">
+      <span class="sidebar-icon bg-gradient-to-br from-red-500/10 to-red-600/10">
+        <i class="fa-solid fa-user-shield text-red-400"></i>
+      </span>
+      <span class="flex-1">Django Admin</span>
+      <i class="fa-solid fa-external-link text-[10px] text-gray-600"></i>
+    </a>
+    {% endif %}
+
+    <!-- Account Section -->
+    <div class="sidebar-section">Account</div>
+
+    <a href="{% url 'accounts:profile' %}"
+       class="sidebar-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+      <span class="sidebar-icon bg-gradient-to-br from-gray-500/10 to-gray-600/10">
+        <i class="fa-solid fa-user text-gray-400"></i>
+      </span>
+      <span class="flex-1">My Profile</span>
+    </a>
+  </nav>
+
+  <!-- User Info & Logout -->
+  <div class="p-3 border-t border-slate-700/50">
+    <!-- User Mini Profile -->
+    <div class="flex items-center gap-3 px-3 py-2.5 mb-2 rounded-xl bg-slate-800/50">
+      {% if request.user.profile_photo %}
+        <img src="{{ request.user.profile_photo.url }}" alt="" class="w-9 h-9 rounded-lg object-cover border border-slate-600">
+      {% else %}
+        <span class="w-9 h-9 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white text-xs font-semibold">
+          {{ request.user.initials }}
+        </span>
+      {% endif %}
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-white truncate">{{ request.user.get_full_name|default:request.user.username }}</p>
+        <p class="text-[11px] text-gray-500 capitalize">{{ request.user.get_role_display|default:request.user.role }}</p>
+      </div>
+    </div>
+
+    <!-- Logout Button -->
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 group">
+        <span class="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
+          <i class="fa-solid fa-right-from-bracket text-xs text-red-400"></i>
+        </span>
+        <span>Log Out</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* Custom Scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.2);
+    border-radius: 2px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.3);
+  }
+
+  /* Section Header */
+  .sidebar-section {
+    padding: 1rem 0.75rem 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748B;
+  }
+
+  /* Sidebar Link */
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #94A3B8;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #E2E8F0;
+  }
+
+  .sidebar-link.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+    color: white;
+    border: 1px solid rgba(236, 72, 153, 0.2);
+  }
+
+  .sidebar-link.active .sidebar-icon {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+    border-color: rgba(236, 72, 153, 0.3);
+  }
+
+  /* Sidebar Icon */
+  .sidebar-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .sidebar-link:hover .sidebar-icon {
+    transform: scale(1.05);
+  }
+
+  .sidebar-link.active .sidebar-icon {
+    border-color: rgba(236, 72, 153, 0.3);
+  }
+</style>

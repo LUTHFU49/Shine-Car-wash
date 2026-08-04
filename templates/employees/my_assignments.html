@@ -1,0 +1,33 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}My Assignments — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}My Assignments{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Assignments</p>
+      <h1 class="font-display font-bold text-2xl text-white">{{ assignments|length }} active assignment{{ assignments|length|pluralize }}</h1>
+    </div>
+
+    {% if assignments %}
+    <div class="space-y-3">
+      {% for booking in assignments %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p class="font-display font-semibold text-white truncate">{{ booking.service.name }}</p>
+          <p class="text-xs text-gray-500">{{ booking.vehicle.license_plate }} · {{ booking.scheduled_date|date:"M j, Y" }} at {{ booking.scheduled_time|time:"g:i A" }}</p>
+        </div>
+        {% include 'bookings/_status_badge.html' with status=booking.status %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-12 text-center">
+      <p class="text-sm text-gray-500">No active assignments right now.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

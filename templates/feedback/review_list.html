@@ -1,0 +1,47 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Reviews — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Reviews{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'feedback:satisfaction' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Satisfaction Dashboard
+    </a>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Feedback</p>
+        <h1 class="font-display font-bold text-2xl text-white">Reviews</h1>
+      </div>
+      <a href="{% url 'feedback:feedback_list' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Complaints &amp; Suggestions</a>
+    </div>
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if page_obj.object_list %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Date</th><th class="px-5 py-3 font-medium">Booking</th><th class="px-5 py-3 font-medium">Customer</th><th class="px-5 py-3 font-medium">Rating</th><th class="px-5 py-3 font-medium">Responded</th><th class="px-5 py-3 font-medium">Visible</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for review in page_obj.object_list %}
+          <tr class="hover:bg-slate-700/60 transition-colors cursor-pointer" onclick="window.location='{% url 'feedback:review_detail' review.public_id %}'">
+            <td class="px-5 py-3 text-gray-500">{{ review.created_at|date:"M j, Y" }}</td>
+            <td class="px-5 py-3 text-white">{{ review.booking.booking_code }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ review.customer.first_name }} {{ review.customer.last_name }}</td>
+            <td class="px-5 py-3 text-amber-500">{% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</td>
+            <td class="px-5 py-3">{% if review.has_response %}<span class="text-xs font-medium text-green-400">Yes</span>{% else %}<span class="text-xs font-medium text-gray-500">No</span>{% endif %}</td>
+            <td class="px-5 py-3">{% if review.is_published %}<span class="text-xs font-medium text-green-400">Published</span>{% else %}<span class="text-xs font-medium text-gray-500">Hidden</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-12 text-center text-sm text-gray-500">No reviews yet.</p>
+      {% endif %}
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-center gap-2 mt-6">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">&laquo; Prev</a>{% endif %}
+      <span class="text-sm text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">Next &raquo;</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

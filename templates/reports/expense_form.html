@@ -1,0 +1,26 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{% if is_create %}Record Expense{% else %}Edit Expense{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if is_create %}Record Expense{% else %}Edit Expense{% endif %}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-lg mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:expense_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Expenses
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{% if is_create %}New Expense{% else %}Editing{% endif %}</p>
+      <h1 class="font-display font-bold text-2xl text-white">{% if is_create %}Record an expense{% else %}{{ expense.description }}{% endif %}</h1>
+    </div>
+    <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+      {% csrf_token %}
+      {% include 'inventory/_form_fields.html' %}
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          {% if is_create %}Record Expense{% else %}Save Changes{% endif %}<i class="fa-solid fa-check text-xs"></i>
+        </button>
+        <a href="{% url 'reports:expense_list' %}" class="text-sm font-medium text-gray-500 hover:text-white">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Edit Profile — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+{% block content %}
+<section class="py-16">
+  <div class="max-w-xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-3">Account Settings</p>
+      <h1 class="font-display font-bold text-3xl text-white">Edit Profile</h1>
+    </div>
+
+    <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+      {% csrf_token %}
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">First name</label>
+          {{ form.first_name }}
+          {% for error in form.first_name.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Last name</label>
+          {{ form.last_name }}
+          {% for error in form.last_name.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+      <div>
+        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Phone number</label>
+        {{ form.phone_number }}
+        {% for error in form.phone_number.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="flex gap-3">
+        <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          Save Changes
+        </button>
+        <a href="{% url 'accounts:profile' %}" class="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-slate-700 text-sm font-semibold text-white hover:border-blue-500/50 transition-colors">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

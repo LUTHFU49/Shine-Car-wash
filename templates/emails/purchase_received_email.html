@@ -1,0 +1,22 @@
+{% extends 'emails/base_email.html' %}
+{% block email_body %}
+<h1 style="margin:0 0 16px 0; font-size:22px; font-family: Arial, Helvetica, sans-serif;">Purchase order received</h1>
+<p style="margin:0 0 16px 0; font-size:15px; line-height:1.6; color:#0B1120; font-family: Arial, Helvetica, sans-serif;">
+  Hi {{ user.first_name|default:user.username }}, the stock from your purchase order has been added to inventory.
+</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F6FB; border-radius:8px; margin:0 0 20px 0;">
+  <tr>
+    <td style="padding:20px; font-family: Arial, Helvetica, sans-serif;">
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Purchase Order</p>
+      <p style="margin:0 0 16px 0; font-size:16px; font-weight:bold; color:#0B1120;">{{ purchase.reference_code }}</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Supplier</p>
+      <p style="margin:0 0 16px 0; font-size:15px; color:#0B1120;">{{ purchase.supplier.name }}</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Total Value</p>
+      <p style="margin:0; font-size:15px; color:#0B1120;">KSh {{ purchase.total_amount|floatformat:2 }}</p>
+    </td>
+  </tr>
+</table>
+<p style="margin:0; font-size:13px; line-height:1.6; color:#4B5468; font-family: Arial, Helvetica, sans-serif;">
+  Stock levels have been updated automatically -- no further action needed.
+</p>
+{% endblock %}

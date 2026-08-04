@@ -1,0 +1,215 @@
+{% extends 'layouts/app_base.html' %}
+{% load static %}
+{% block title %}{{ service.name }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Service Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+  
+  <!-- Back Button -->
+  <a href="{% url 'services:list' %}" 
+     class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors group">
+    <span class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center group-hover:border-slate-500 transition-colors">
+      <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-0.5 transition-transform"></i>
+    </span>
+    Back to Services
+  </a>
+
+  <!-- Service Header Card -->
+  <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+    <!-- Cover Image or Gradient -->
+    {% if service.image %}
+    <div class="relative h-48 sm:h-56 overflow-hidden">
+      <img src="{{ service.image.url }}" alt="{{ service.name }}" 
+           class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+    </div>
+    {% else %}
+    <div class="h-32 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-pink-300 rounded-full blur-3xl"></div>
+      </div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <i class="fa-solid {{ service.category.icon }} text-5xl text-white/30"></i>
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- Service Info -->
+    <div class="p-6 sm:p-8 {% if service.image %}-mt-20 relative z-10{% endif %}">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+        <div class="flex items-start gap-4">
+          <!-- Service Icon/Avatar -->
+          {% if service.image %}
+          <img src="{{ service.image.url }}" alt="" 
+               class="w-16 h-16 rounded-2xl object-cover border-2 border-slate-800 shadow-xl shrink-0">
+          {% else %}
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center shadow-xl shrink-0">
+            <i class="fa-solid {{ service.category.icon }} text-white text-xl"></i>
+          </div>
+          {% endif %}
+          
+          <div>
+            <h1 class="font-display font-bold text-2xl text-white">{{ service.name }}</h1>
+            <p class="text-sm text-gray-400 mt-0.5">{{ service.category.name }}</p>
+            
+            <!-- Status Badges -->
+            <div class="flex items-center gap-2 mt-3">
+              {% if service.status == 'active' %}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Active
+                </span>
+              {% else %}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-700 text-gray-400 border border-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                  Inactive
+                </span>
+              {% endif %}
+              
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <i class="fa-solid {{ service.category.icon }} text-[10px]"></i>
+                {{ service.category.name }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+        <div class="flex items-center gap-2 shrink-0">
+          <a href="{% url 'services:edit' service.public_id %}" 
+             class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-all duration-300 hover:scale-105 border border-slate-600">
+            <i class="fa-solid fa-pen-to-square text-xs"></i>
+            Edit
+          </a>
+          
+          {% if service.status != 'active' %}
+          <form method="post" action="{% url 'services:set_status' service.public_id 'active' %}">
+            {% csrf_token %}
+            <button type="submit" 
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-sm font-medium transition-all duration-300 hover:scale-105 border border-emerald-500/20">
+              <i class="fa-solid fa-check text-xs"></i>
+              Activate
+            </button>
+          </form>
+          {% else %}
+          <form method="post" action="{% url 'services:set_status' service.public_id 'inactive' %}" 
+                onsubmit="return confirm('Deactivate {{ service.name|escapejs }}? It will be hidden from the public catalog.');">
+            {% csrf_token %}
+            <button type="submit" 
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-medium transition-all duration-300 hover:scale-105 border border-red-500/20">
+              <i class="fa-solid fa-ban text-xs"></i>
+              Deactivate
+            </button>
+          </form>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Description -->
+      {% if service.description %}
+      <div class="mt-6 pt-6 border-t border-slate-700">
+        <h3 class="text-sm font-semibold text-gray-300 mb-2">Description</h3>
+        <p class="text-sm text-gray-400 leading-relaxed">{{ service.description }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300 group">
+      <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+        <i class="fa-solid fa-tag text-blue-400"></i>
+      </div>
+      <p class="text-xs text-gray-500 mb-1">Price</p>
+      <p class="font-mono font-bold text-xl text-white">KSh {{ service.price|floatformat:0 }}</p>
+    </div>
+    
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-pink-500/50 transition-all duration-300 group">
+      <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+        <i class="fa-solid fa-clock text-pink-400"></i>
+      </div>
+      <p class="text-xs text-gray-500 mb-1">Duration</p>
+      <p class="font-semibold text-white">{{ service.duration_display }}</p>
+    </div>
+    
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-green-500/50 transition-all duration-300 group">
+      <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+        <i class="fa-solid fa-calendar-check text-green-400"></i>
+      </div>
+      <p class="text-xs text-gray-500 mb-1">Available</p>
+      <p class="font-semibold text-white text-sm">{{ service.available_days_display }}</p>
+    </div>
+    
+    <div class="p-5 rounded-2xl bg-slate-800 border border-slate-700 hover:border-purple-500/50 transition-all duration-300 group">
+      <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+        <i class="fa-solid fa-chart-bar text-purple-400"></i>
+      </div>
+      <p class="text-xs text-gray-500 mb-1">Total Bookings</p>
+      <p class="font-display font-bold text-xl text-white">{{ service.bookings.count }}</p>
+    </div>
+  </div>
+
+  <!-- History Section -->
+  <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-700 flex items-center gap-3">
+      <span class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+        <i class="fa-solid fa-clock-rotate-left text-amber-400 text-sm"></i>
+      </span>
+      <h2 class="font-display font-semibold text-white">Activity History</h2>
+    </div>
+    
+    <div class="p-6">
+      {% if history %}
+      <div class="space-y-4">
+        {% for entry in history %}
+        <div class="flex gap-4 group">
+          <!-- Timeline Dot -->
+          <div class="flex flex-col items-center">
+            <div class="w-9 h-9 rounded-xl bg-slate-700 border border-slate-600 flex items-center justify-center shrink-0 group-hover:border-amber-500/50 group-hover:bg-amber-500/10 transition-colors">
+              <i class="fa-solid fa-clock-rotate-left text-xs text-gray-400 group-hover:text-amber-400 transition-colors"></i>
+            </div>
+            {% if not forloop.last %}
+            <div class="w-px flex-1 bg-slate-700 my-1"></div>
+            {% endif %}
+          </div>
+          
+          <div class="flex-1 pb-4">
+            <p class="text-sm text-gray-300">{{ entry.description }}</p>
+            <div class="flex items-center gap-3 mt-1.5">
+              <span class="text-xs text-gray-500">
+                <i class="fa-solid fa-calendar text-[10px] mr-1"></i>
+                {{ entry.created_at|date:"M j, Y" }}
+              </span>
+              <span class="text-xs text-gray-500">
+                <i class="fa-solid fa-clock text-[10px] mr-1"></i>
+                {{ entry.created_at|date:"g:i A" }}
+              </span>
+              {% if entry.user %}
+              <span class="text-xs text-gray-500">
+                <i class="fa-solid fa-user text-[10px] mr-1"></i>
+                {{ entry.user.get_full_name|default:entry.user.username }}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-8">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-700/50 flex items-center justify-center">
+          <i class="fa-solid fa-clock-rotate-left text-2xl text-gray-500"></i>
+        </div>
+        <p class="text-sm text-gray-500">No activity recorded yet.</p>
+        <p class="text-xs text-gray-600 mt-1">Changes to this service will appear here.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

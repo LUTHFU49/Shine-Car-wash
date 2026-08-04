@@ -1,0 +1,52 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Loyalty Members — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Loyalty Members{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Membership</p>
+        <h1 class="font-display font-bold text-2xl text-white">Loyalty Members</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="{% url 'loyalty:tier_list' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Tiers</a>
+        <a href="{% url 'loyalty:coupon_list' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Coupons</a>
+        <a href="{% url 'loyalty:promotion_history' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Promotion History</a>
+      </div>
+    </div>
+    <form method="get" class="mb-6">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search by name or referral code..."
+             class="w-full sm:w-80 rounded-lg border border-slate-700 bg-slate-900/60 px-3.5 py-2.5 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+    </form>
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if page_obj.object_list %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Customer</th><th class="px-5 py-3 font-medium">Tier</th><th class="px-5 py-3 font-medium">Points Balance</th><th class="px-5 py-3 font-medium">Lifetime Points</th><th class="px-5 py-3 font-medium">Wallet</th><th class="px-5 py-3 font-medium">Referral Code</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for profile in page_obj.object_list %}
+          <tr class="hover:bg-slate-700/60 transition-colors">
+            <td class="px-5 py-3 text-white">{{ profile.customer.first_name }} {{ profile.customer.last_name }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ profile.tier.name|default:"—" }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ profile.points_balance }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ profile.lifetime_points }}</td>
+            <td class="px-5 py-3 text-gray-500">KSh {{ profile.wallet_balance|floatformat:2 }}</td>
+            <td class="px-5 py-3 text-gray-500 font-mono text-xs">{{ profile.referral_code }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-12 text-center text-sm text-gray-500">No loyalty members yet.</p>
+      {% endif %}
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-center gap-2 mt-6">
+      {% if page_obj.has_previous %}<a href="?q={{ q }}&page={{ page_obj.previous_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">&laquo; Prev</a>{% endif %}
+      <span class="text-sm text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?q={{ q }}&page={{ page_obj.next_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">Next &raquo;</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

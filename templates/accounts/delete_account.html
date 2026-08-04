@@ -1,0 +1,40 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Deactivate Account — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Deactivate Account{% endblock %}
+{% block content %}
+<section class="py-16">
+  <div class="max-w-xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-wider text-pink-400 mb-3">Account Settings</p>
+      <h1 class="font-display font-bold text-3xl text-white">Deactivate Account</h1>
+      <p class="text-sm text-gray-500 mt-3">
+        This will immediately log you out and disable your account. Your booking and payment
+        history is retained for record-keeping, but you will no longer be able to log in.
+      </p>
+    </div>
+
+    <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5 border-pink-500/30">
+      {% csrf_token %}
+      <div>
+        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Confirm your password</label>
+        {{ form.password }}
+        {% for error in form.password.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="flex items-start gap-2">
+        {{ form.confirm }}
+        <label for="{{ form.confirm.id_for_label }}" class="text-sm text-gray-500">I understand this will deactivate my account.</label>
+      </div>
+      {% for error in form.confirm.errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+
+      <div class="flex gap-3">
+        <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-pink-500 hover:opacity-90 transition-opacity">
+          Deactivate My Account
+        </button>
+        <a href="{% url 'accounts:profile' %}" class="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-slate-700 text-sm font-semibold text-white hover:border-blue-500/50 transition-colors">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

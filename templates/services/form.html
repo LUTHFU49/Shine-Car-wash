@@ -1,0 +1,320 @@
+{% extends 'layouts/app_base.html' %}
+{% load static %}
+{% block title %}{% if is_create %}Add Service{% else %}Edit Service{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if is_create %}Add Service{% else %}Edit Service{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+  
+  <!-- Back Button (Edit mode only) -->
+  {% if not is_create %}
+  <a href="{% url 'services:detail' service.public_id %}" 
+     class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6 transition-colors group">
+    <span class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center group-hover:border-slate-500 transition-colors">
+      <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-0.5 transition-transform"></i>
+    </span>
+    Back to {{ service.name }}
+  </a>
+  {% endif %}
+
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+        <i class="fa-solid fa-{% if is_create %}plus{% else %}pen-to-square{% endif %} text-white text-sm"></i>
+      </span>
+      <p class="text-xs font-semibold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400">
+        {% if is_create %}New Service{% else %}Editing{% endif %}
+      </p>
+    </div>
+    <h1 class="font-display font-bold text-2xl text-white">
+      {% if is_create %}Add a new service{% else %}{{ service.name }}{% endif %}
+    </h1>
+    <p class="text-sm text-gray-400 mt-2">
+      {% if is_create %}
+        Fill in the details to add a new service to your catalog.
+      {% else %}
+        Update the details for this service.
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- Form Card -->
+  <form method="post" enctype="multipart/form-data" novalidate 
+        class="bg-slate-800 rounded-2xl border border-slate-700 p-6 sm:p-8 space-y-6 relative overflow-hidden">
+    
+    <!-- Decorative gradient bar -->
+    <div class="absolute top-0 left-8 right-8 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-b-lg"></div>
+    
+    {% csrf_token %}
+
+    <!-- Category -->
+    <div>
+      <label for="{{ form.category.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+        <i class="fa-solid fa-folder text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+        Category <span class="text-pink-400">*</span>
+      </label>
+      <select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}"
+              class="w-full px-4 py-3 rounded-xl bg-slate-700/50 border border-slate-600 text-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 appearance-none cursor-pointer"
+              style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394A3B8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem;">
+        {% for option in form.category %}
+          {{ option }}
+        {% endfor %}
+      </select>
+      {% for error in form.category.errors %}
+        <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Service Name -->
+    <div>
+      <label for="{{ form.name.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+        <i class="fa-solid fa-spray-can-sparkles text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+        Service name <span class="text-pink-400">*</span>
+      </label>
+      <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}"
+             value="{{ form.name.value|default:'' }}"
+             placeholder="e.g., Premium Wash, Full Detailing"
+             class="w-full px-4 py-3 rounded-xl bg-slate-700/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300"
+             required>
+      {% for error in form.name.errors %}
+        <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+        <i class="fa-solid fa-align-left text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+        Description <span class="text-gray-500 font-normal">(optional)</span>
+      </label>
+      <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" rows="3"
+                placeholder="Describe what this service includes..."
+                class="w-full px-4 py-3 rounded-xl bg-slate-700/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 resize-none">{{ form.description.value|default:'' }}</textarea>
+      {% for error in form.description.errors %}
+        <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Price & Duration Row -->
+    <div class="grid sm:grid-cols-2 gap-5">
+      <div>
+        <label for="{{ form.price.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+          <i class="fa-solid fa-tag text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+          Price (KSh) <span class="text-pink-400">*</span>
+        </label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">KSh</span>
+          <input type="number" name="{{ form.price.name }}" id="{{ form.price.id_for_label }}"
+                 value="{{ form.price.value|default:'' }}"
+                 placeholder="0"
+                 min="0" step="1"
+                 class="w-full pl-14 pr-4 py-3 rounded-xl bg-slate-700/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300"
+                 required>
+        </div>
+        {% for error in form.price.errors %}
+          <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+            <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+          </p>
+        {% endfor %}
+      </div>
+      
+      <div>
+        <label for="{{ form.duration_minutes.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+          <i class="fa-solid fa-clock text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+          Duration (minutes) <span class="text-pink-400">*</span>
+        </label>
+        <div class="relative">
+          <input type="number" name="{{ form.duration_minutes.name }}" id="{{ form.duration_minutes.id_for_label }}"
+                 value="{{ form.duration_minutes.value|default:'' }}"
+                 placeholder="30"
+                 min="1" step="1"
+                 class="w-full px-4 pr-12 py-3 rounded-xl bg-slate-700/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300"
+                 required>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">min</span>
+        </div>
+        {% for error in form.duration_minutes.errors %}
+          <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+            <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+          </p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Status (Edit mode only) -->
+    {% if not is_create %}
+    <div>
+      <label for="{{ form.status.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+        <i class="fa-solid fa-toggle-on text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+        Status
+      </label>
+      <div class="flex gap-3">
+        {% for radio in form.status %}
+        <label class="flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-700/50 border border-slate-600 cursor-pointer hover:border-pink-500/50 transition-all duration-300 flex-1">
+          {{ radio.tag }}
+          <span class="text-sm text-gray-300">{{ radio.choice_label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% for error in form.status.errors %}
+        <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Availability -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-300 mb-2">
+        <i class="fa-solid fa-calendar-week text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+        Available Days
+      </label>
+      <p class="text-xs text-gray-500 mb-3">{{ form.available_days.help_text }}</p>
+      <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+        {% for checkbox in form.available_days %}
+        <label class="flex flex-col items-center gap-2 p-3 rounded-xl bg-slate-700/50 border border-slate-600 cursor-pointer hover:border-pink-500/50 has-[:checked]:border-pink-500 has-[:checked]:bg-pink-500/10 transition-all duration-300">
+          {{ checkbox.tag }}
+          <span class="text-xs font-medium text-gray-400">{{ checkbox.choice_label|slice:":3" }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% for error in form.available_days.errors %}
+        <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Image Upload -->
+    <div>
+      <label for="{{ form.image.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+        <i class="fa-solid fa-image text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+        Photo <span class="text-gray-500 font-normal">(optional)</span>
+      </label>
+      
+      {% if service.image %}
+      <div class="relative mb-3 rounded-xl overflow-hidden group">
+        <img src="{{ service.image.url }}" alt="Current service photo" 
+             class="w-full h-40 object-cover rounded-xl border border-slate-600">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
+          <p class="text-xs text-white font-medium">Current photo</p>
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="relative">
+        <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}"
+               accept="image/jpeg,image/png,image/webp"
+               class="w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20 file:transition-colors file:cursor-pointer cursor-pointer">
+      </div>
+      <p class="text-xs text-gray-500 mt-2">JPEG, PNG or WebP. Max 5MB.</p>
+      {% for error in form.image.errors %}
+        <p class="text-xs text-pink-400 mt-1.5 flex items-center gap-1">
+          <i class="fa-solid fa-circle-exclamation text-[10px]"></i>{{ error }}
+        </p>
+      {% endfor %}
+    </div>
+
+    <!-- Non-field errors -->
+    {% if form.non_field_errors %}
+      <div class="rounded-xl border border-pink-500/30 bg-pink-500/10 p-4">
+        {% for error in form.non_field_errors %}
+          <p class="text-xs text-pink-400 flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>{{ error }}
+          </p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-3 pt-2">
+      <button type="submit" 
+              class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105 bg-gradient-to-r from-blue-500 to-pink-500">
+        {% if is_create %}
+          <i class="fa-solid fa-plus text-xs"></i>
+          Add Service
+        {% else %}
+          <i class="fa-solid fa-check text-xs"></i>
+          Save Changes
+        {% endif %}
+      </button>
+      <a href="{% if is_create %}{% url 'services:list' %}{% else %}{% url 'services:detail' service.public_id %}{% endif %}"
+         class="px-6 py-3.5 rounded-xl font-medium text-gray-400 hover:text-white border border-slate-600 hover:border-slate-500 transition-all duration-300 text-sm">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Price formatting (add commas as user types)
+    const priceInput = document.getElementById('{{ form.price.id_for_label }}');
+    if (priceInput) {
+      priceInput.addEventListener('blur', function() {
+        if (this.value) {
+          const num = parseInt(this.value);
+          if (!isNaN(num)) {
+            this.value = num;
+          }
+        }
+      });
+    }
+
+    // Image preview
+    const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+    if (imageInput) {
+      imageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+          // Validate file size
+          if (file.size > 5 * 1024 * 1024) {
+            alert('Image must be less than 5MB.');
+            this.value = '';
+            return;
+          }
+          
+          // Validate file type
+          const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+          if (!allowedTypes.includes(file.type)) {
+            alert('Please select a JPEG, PNG, or WebP image.');
+            this.value = '';
+            return;
+          }
+        }
+      });
+    }
+
+    // Confirm before leaving with unsaved changes
+    const form = document.querySelector('form');
+    let formChanged = false;
+
+    if (form) {
+      const inputs = form.querySelectorAll('input, textarea, select');
+      inputs.forEach(input => {
+        input.addEventListener('change', () => { formChanged = true; });
+        input.addEventListener('input', () => { formChanged = true; });
+      });
+
+      window.addEventListener('beforeunload', function(e) {
+        if (formChanged) {
+          e.preventDefault();
+          e.returnValue = '';
+        }
+      });
+
+      // Reset flag on form submission
+      form.addEventListener('submit', () => { formChanged = false; });
+    }
+  });
+</script>
+{% endblock %}

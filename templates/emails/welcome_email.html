@@ -1,0 +1,10 @@
+{% extends 'emails/base_email.html' %}
+{% block email_body %}
+<h1 style="margin:0 0 16px 0; font-size:22px; font-family: Arial, Helvetica, sans-serif;">Welcome, {{ user.first_name|default:user.username }}!</h1>
+<p style="margin:0 0 16px 0; font-size:15px; line-height:1.6; color:#0B1120; font-family: Arial, Helvetica, sans-serif;">
+  Thanks for creating a {{ SITE_NAME }} account. You can now book washes, track your vehicles, and manage your visits — all in one place.
+</p>
+<p style="margin:0; font-size:15px; line-height:1.6; color:#4B5468; font-family: Arial, Helvetica, sans-serif;">
+  We've also sent a separate email to verify your address — please confirm it so you don't miss booking confirmations and reminders.
+</p>
+{% endblock %}

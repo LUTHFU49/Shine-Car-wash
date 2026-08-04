@@ -1,0 +1,247 @@
+<footer class="relative bg-gradient-to-br from-slate-900 to-slate-800 border-t border-slate-700/50 mt-24 overflow-hidden">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 opacity-5">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
+  </div>
+  
+  <!-- Grid pattern -->
+  <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 32px 32px;"></div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    
+    <!-- Newsletter Section -->
+    <div class="mb-14 p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm reveal">
+      <div class="grid lg:grid-cols-2 gap-8 items-center">
+        <div>
+          <h3 class="font-display font-bold text-2xl text-white mb-2">
+            <i class="fa-solid fa-paper-plane text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-2"></i>
+            Stay in the fast lane
+          </h3>
+          <p class="text-gray-400 text-sm">Get the latest features, tips, and car wash industry insights delivered to your inbox.</p>
+        </div>
+        <div>
+          <form class="flex gap-3" onsubmit="event.preventDefault(); alert('Newsletter signup coming soon!');">
+            <input type="email" placeholder="Enter your email" 
+                   class="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 text-sm">
+            <button type="submit" class="px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105 bg-gradient-to-r from-blue-500 to-pink-500 text-sm">
+              Subscribe
+              <i class="fa-solid fa-arrow-right text-xs ml-1.5"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Footer Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-10 mb-14">
+      
+      <!-- Brand Column -->
+      <div class="col-span-2 reveal">
+        <a href="{% url 'core:landing' %}" class="flex items-center gap-2.5 font-display font-bold text-xl mb-4 group">
+          <span class="w-9 h-9 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+            <i class="fa-solid fa-car-on text-white text-sm"></i>
+          </span>
+          <span class="text-white">{{ SITE_NAME }}</span>
+        </a>
+        <p class="text-sm text-gray-400 max-w-xs leading-relaxed mb-6">
+          The operating system for modern car washes — booking, queueing, payments and reporting, all in one lane.
+        </p>
+        
+        <!-- Social Links -->
+        <div class="flex items-center gap-2.5">
+          <a href="https://www.facebook.com/profile.php?id=61577428223990" aria-label="Facebook" 
+             class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400/50 hover:bg-blue-500/10 transition-all duration-300 hover:scale-110">
+            <i class="fa-brands fa-facebook-f text-sm"></i>
+          </a>
+          <a href="https://twitter.com/" aria-label="X (Twitter)" 
+             class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400/50 hover:bg-blue-500/10 transition-all duration-300 hover:scale-110">
+            <i class="fa-brands fa-x-twitter text-sm"></i>
+          </a>
+          <a href="https://www.instagram.com/" aria-label="Instagram" 
+             class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-pink-400 hover:border-pink-400/50 hover:bg-pink-500/10 transition-all duration-300 hover:scale-110">
+            <i class="fa-brands fa-instagram text-sm"></i>
+          </a>
+          <a href="#" aria-label="LinkedIn" 
+             class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-pink-400 hover:border-pink-400/50 hover:bg-pink-500/10 transition-all duration-300 hover:scale-110">
+            <i class="fa-brands fa-linkedin-in text-sm"></i>
+          </a>
+          <a href="#" aria-label="TikTok" 
+             class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-pink-400 hover:border-pink-400/50 hover:bg-pink-500/10 transition-all duration-300 hover:scale-110">
+            <i class="fa-brands fa-tiktok text-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Product Links -->
+      <div class="reveal">
+        <h4 class="text-sm font-semibold text-white mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-cube text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-500"></i>
+          Product
+        </h4>
+        <ul class="space-y-3">
+          <li>
+            <a href="{% url 'core:landing' %}#features" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-star text-[10px] text-gray-600 group-hover:text-blue-400 transition-colors"></i>
+              Features
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:landing' %}#services" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-wrench text-[10px] text-gray-600 group-hover:text-pink-400 transition-colors"></i>
+              Services
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:landing' %}#gallery" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-images text-[10px] text-gray-600 group-hover:text-purple-400 transition-colors"></i>
+              Gallery
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:landing' %}#pricing" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-tag text-[10px] text-gray-600 group-hover:text-green-400 transition-colors"></i>
+              Pricing
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'accounts:login' %}" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-right-to-bracket text-[10px] text-gray-600 group-hover:text-blue-400 transition-colors"></i>
+              Log in
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Company Links -->
+      <div class="reveal">
+        <h4 class="text-sm font-semibold text-white mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-building text-xs text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-500"></i>
+          Company
+        </h4>
+        <ul class="space-y-3">
+          <li>
+            <a href="{% url 'core:about' %}" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-circle-info text-[10px] text-gray-600 group-hover:text-blue-400 transition-colors"></i>
+              About
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:faq' %}" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-circle-question text-[10px] text-gray-600 group-hover:text-pink-400 transition-colors"></i>
+              FAQ
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'core:contact' %}" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-envelope text-[10px] text-gray-600 group-hover:text-purple-400 transition-colors"></i>
+              Contact
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-blog text-[10px] text-gray-600 group-hover:text-green-400 transition-colors"></i>
+              Blog
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-briefcase text-[10px] text-gray-600 group-hover:text-blue-400 transition-colors"></i>
+              Careers
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Legal & Support -->
+      <div class="reveal">
+        <h4 class="text-sm font-semibold text-white mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-scale-balanced text-xs text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400"></i>
+          Legal
+        </h4>
+        <ul class="space-y-3">
+          <li>
+            <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-shield-halved text-[10px] text-gray-600 group-hover:text-blue-400 transition-colors"></i>
+              Privacy Policy
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-file-contract text-[10px] text-gray-600 group-hover:text-pink-400 transition-colors"></i>
+              Terms of Service
+            </a>
+          </li>
+          <li>
+            <a href="#" class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group">
+              <i class="fa-solid fa-cookie-bite text-[10px] text-gray-600 group-hover:text-purple-400 transition-colors"></i>
+              Cookie Policy
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="relative my-10 reveal">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-slate-700/50"></div>
+      </div>
+      <div class="relative flex justify-center">
+        <span class="px-4 bg-slate-900 text-gray-500">
+          <i class="fa-solid fa-car-side text-sm"></i>
+        </span>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 reveal">
+      <p>&copy; {% now "Y" %} {{ SITE_NAME }}. All rights reserved.</p>
+      
+      <!-- Payment Methods -->
+      <div class="flex items-center gap-3">
+        <span class="text-gray-600">Powered by:</span>
+        <span class="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400">{{ COMPANY_NAME }}</span>
+        <span class="w-px h-4 bg-slate-700"></span>
+        <span class="flex items-center gap-2 text-gray-500">
+          <i class="fa-solid fa-shield-halved text-blue-400"></i>
+          Secure
+        </span>
+      </div>
+      
+      <!-- Scroll to Top -->
+      <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+              class="flex items-center gap-1.5 text-gray-500 hover:text-pink-400 transition-colors group">
+        <span>Back to top</span>
+        <i class="fa-solid fa-arrow-up text-[10px] group-hover:-translate-y-0.5 transition-transform"></i>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  // Footer reveal animations
+  const footerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('footer .reveal').forEach(el => {
+    footerObserver.observe(el);
+  });
+</script>

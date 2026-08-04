@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Error 404 — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="py-32">
+  <div class="max-w-lg mx-auto px-4 text-center">
+    <p class="font-mono text-6xl font-semibold text-gradient-brand mb-4">404</p>
+    <h1 class="font-display font-bold text-2xl text-ink dark:text-white mb-3">This page took a wrong turn</h1>
+    <p class="text-ink-soft dark:text-gray-400 mb-8">The page you're looking for doesn't exist or may have moved.</p>
+    <a href="{% url 'core:landing' %}" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+      Back to Home <i class="fa-solid fa-arrow-right text-xs"></i>
+    </a>
+  </div>
+</section>
+{% endblock %}

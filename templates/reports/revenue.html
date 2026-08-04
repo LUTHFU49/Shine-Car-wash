@@ -1,0 +1,62 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Revenue Report — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Revenue Report{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8 print-area">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:hub' %}" class="no-print text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reports
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ start }} to {{ end }}</p>
+      <h1 class="font-display font-bold text-2xl text-white">Revenue Report</h1>
+    </div>
+
+    {% include 'reports/_report_toolbar.html' with export_url_name='reports:revenue_export' %}
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Gross Revenue</p><p class="font-display font-bold text-xl text-white">KSh {{ summary.gross_revenue|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Refunded</p><p class="font-display font-bold text-xl text-pink-400">KSh {{ summary.refunded|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Net Revenue</p><p class="font-display font-bold text-xl text-white">KSh {{ summary.net_revenue|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Transactions</p><p class="font-display font-bold text-xl text-white">{{ summary.transaction_count }}</p></div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 mb-8">
+      <h2 class="font-display font-semibold text-white mb-4">Daily Collections</h2>
+      <canvas id="revenueChart" height="90"></canvas>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Date</th><th class="px-5 py-3 font-medium">Cash</th><th class="px-5 py-3 font-medium">M-Pesa</th><th class="px-5 py-3 font-medium">Total</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for row in daily %}
+          <tr><td class="px-5 py-3 text-white">{{ row.date }}</td><td class="px-5 py-3 text-gray-500">{{ row.cash_total|floatformat:2 }}</td><td class="px-5 py-3 text-gray-500">{{ row.mpesa_total|floatformat:2 }}</td><td class="px-5 py-3 text-white font-medium">{{ row.total|floatformat:2 }}</td></tr>
+          {% empty %}
+          <tr><td colspan="4" class="px-5 py-8 text-center text-gray-500">No completed payments in this range.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  const ctx = document.getElementById('revenueChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [{% for row in daily %}'{{ row.date|date:"M j" }}',{% endfor %}],
+        datasets: [
+          { label: 'Cash', data: [{% for row in daily %}{{ row.cash_total }},{% endfor %}], backgroundColor: '#0013DE' },
+          { label: 'M-Pesa', data: [{% for row in daily %}{{ row.mpesa_total }},{% endfor %}], backgroundColor: '#FF0090' },
+        ],
+      },
+      options: { scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' } } },
+    });
+  }
+</script>
+{% endblock %}

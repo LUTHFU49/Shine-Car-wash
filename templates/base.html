@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% include 'partials/head.html' %}
+</head>
+<body class="font-body bg-[var(--color-surface)] text-[var(--color-ink)] antialiased transition-colors duration-300">
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+{% include 'partials/navbar.html' %}
+
+<div id="toast-container" class="fixed top-20 right-4 z-[100] flex flex-col gap-3 w-full max-w-sm px-4 sm:px-0"></div>
+{% if messages %}
+  <div id="server-messages" class="hidden">
+    {% for message in messages %}
+      <div data-tag="{{ message.tags }}" data-text="{{ message }}"></div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<main id="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+{% include 'partials/footer.html' %}
+
+<script src="{% static 'js/ui.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
+<script src="{% static 'js/validation.js' %}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

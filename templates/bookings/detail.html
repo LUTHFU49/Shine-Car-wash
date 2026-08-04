@@ -1,0 +1,153 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{{ booking.booking_code }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Booking Details{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+
+    <a href="{% url 'bookings:list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Bookings
+    </a>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-6">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">{{ booking.booking_code }} · {{ booking.get_booking_type_display }}</p>
+          <h1 class="font-display font-bold text-2xl text-white">{{ booking.service.name }}</h1>
+          <a href="{% url 'customers:detail' booking.customer.public_id %}" class="text-sm text-blue-400 hover:underline">{{ booking.customer.full_name }}</a>
+        </div>
+        <div class="text-sm">{% include 'bookings/_status_badge.html' with status=booking.status %}</div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6 pb-6 border-b border-slate-700">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Vehicle</p>
+          <a href="{% url 'vehicles:detail' booking.vehicle.public_id %}" class="text-sm text-blue-400 hover:underline">{{ booking.vehicle.display_name }} ({{ booking.vehicle.license_plate }})</a>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Price</p>
+          <p class="text-sm font-mono text-white">KSh {{ booking.price_at_booking|floatformat:0 }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Date & Time</p>
+          <p class="text-sm text-white">{{ booking.scheduled_date|date:"l, F j, Y" }} at {{ booking.scheduled_time|time:"g:i A" }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Duration</p>
+          <p class="text-sm text-white">{{ booking.duration_minutes_at_booking }} minutes</p>
+        </div>
+      </div>
+
+      <div class="py-4 border-b border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Assigned Employee</p>
+        <form method="post" action="{% url 'bookings:assign_employee' booking.public_id %}" class="flex items-center gap-2">
+          {% csrf_token %}
+          <select name="employee" class="rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+            <option value="">— Unassigned —</option>
+            {% for emp in active_employees %}
+            <option value="{{ emp.public_id }}" {% if booking.assigned_employee_id == emp.id %}selected{% endif %}>{{ emp.full_name }} ({{ emp.get_position_display }})</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="text-xs font-semibold text-white px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Save</button>
+        </form>
+      </div>
+
+      {% if booking.notes %}
+      <div class="py-4 border-b border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Customer Notes</p>
+        <p class="text-sm text-gray-500">{{ booking.notes }}</p>
+      </div>
+      {% endif %}
+      {% if booking.staff_notes %}
+      <div class="py-4 border-b border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Staff Notes</p>
+        <p class="text-sm text-gray-500">{{ booking.staff_notes }}</p>
+      </div>
+      {% endif %}
+      {% if booking.status == 'cancelled' %}
+      <div class="py-4 border-b border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Cancellation</p>
+        <p class="text-sm text-gray-500">
+          By {% if booking.cancelled_by %}{{ booking.cancelled_by.get_full_name|default:booking.cancelled_by.username }}{% else %}the customer{% endif %}
+          on {{ booking.cancelled_at|date:"M j, Y g:i A" }}{% if booking.cancellation_reason %} — {{ booking.cancellation_reason }}{% endif %}
+        </p>
+      </div>
+      {% endif %}
+
+      <div class="flex items-center gap-2 flex-wrap pt-6">
+        {% if booking.status == 'pending' %}
+          <form method="post" action="{% url 'bookings:set_status' booking.public_id 'confirmed' %}">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+              <i class="fa-solid fa-check text-xs"></i> Approve
+            </button>
+          </form>
+        {% elif booking.status == 'confirmed' %}
+          <form method="post" action="{% url 'bookings:set_status' booking.public_id 'in_queue' %}">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+              <i class="fa-solid fa-car text-xs"></i> Vehicle Arrived — Add to Queue
+            </button>
+          </form>
+        {% elif booking.status == 'in_queue' %}
+          <form method="post" action="{% url 'bookings:set_status' booking.public_id 'in_progress' %}">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+              <i class="fa-solid fa-spray-can-sparkles text-xs"></i> Start Washing
+            </button>
+          </form>
+          <form method="post" action="{% url 'bookings:set_status' booking.public_id 'no_show' %}">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500/50">
+              Mark No-Show
+            </button>
+          </form>
+        {% elif booking.status == 'in_progress' %}
+          <form method="post" action="{% url 'bookings:set_status' booking.public_id 'completed' %}">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+              <i class="fa-solid fa-flag-checkered text-xs"></i> Mark Completed
+            </button>
+          </form>
+        {% endif %}
+
+        {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+          <a href="{% url 'bookings:reschedule' booking.public_id %}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500/50">
+            <i class="fa-solid fa-calendar-days text-xs"></i> Reschedule
+          </a>
+        {% endif %}
+        {% if booking.status != 'completed' and booking.status != 'cancelled' and booking.status != 'no_show' %}
+          <a href="{% url 'bookings:cancel' booking.public_id %}" class="inline-flex items-center gap-2 text-sm font-medium text-pink-400 px-4 py-2 rounded-lg border border-pink-500/30 hover:bg-pink-500/5">
+            <i class="fa-solid fa-xmark text-xs"></i> Cancel
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8">
+      <h2 class="font-display font-semibold text-lg text-white mb-5">History</h2>
+      {% if history %}
+      <div class="space-y-4">
+        {% for entry in history %}
+        <div class="flex gap-3">
+          <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-clock-rotate-left text-gray-500 text-xs"></i>
+          </div>
+          <div>
+            <p class="text-sm text-white">{{ entry.description }}</p>
+            <p class="text-xs text-gray-500">
+              {{ entry.created_at|date:"M j, Y g:i A" }}
+              {% if entry.user %} · by {{ entry.user.get_full_name|default:entry.user.username }}{% endif %}
+            </p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-sm text-gray-500">No activity recorded yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

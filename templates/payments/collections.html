@@ -1,0 +1,54 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Daily Collections — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Daily Collections{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'payments:dashboard' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Payments
+    </a>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Reports</p>
+        <h1 class="font-display font-bold text-2xl text-white">Daily Collections</h1>
+      </div>
+      <a href="{% url 'payments:collections_export_csv' %}?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-csv mr-1"></i> Export CSV</a>
+    </div>
+
+    <form method="get" class="rounded-2xl bg-slate-800 border border-slate-700 p-4 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {{ form.date_from }}
+      {{ form.date_to }}
+      <button type="submit" class="text-xs font-semibold text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 justify-self-start">Apply</button>
+    </form>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Gross Revenue</p><p class="font-display font-bold text-white">KSh {{ summary.gross_revenue|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Refunded</p><p class="font-display font-bold text-white">KSh {{ summary.refunded|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Net Revenue</p><p class="font-display font-bold text-white">KSh {{ summary.net_revenue|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Transactions</p><p class="font-display font-bold text-white">{{ summary.transaction_count }}</p></div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if rows %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr><th class="px-5 py-3 font-medium">Date</th><th class="px-5 py-3 font-medium">Cash</th><th class="px-5 py-3 font-medium">M-Pesa</th><th class="px-5 py-3 font-medium">Total</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for row in rows %}
+          <tr>
+            <td class="px-5 py-3 text-white">{{ row.date }}</td>
+            <td class="px-5 py-3 text-gray-500">KSh {{ row.cash_total|floatformat:2 }}</td>
+            <td class="px-5 py-3 text-gray-500">KSh {{ row.mpesa_total|floatformat:2 }}</td>
+            <td class="px-5 py-3 text-white font-medium">KSh {{ row.total|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-12 text-center text-sm text-gray-500">No collections recorded in this date range.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

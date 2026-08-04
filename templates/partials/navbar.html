@@ -1,0 +1,143 @@
+<header class="sticky top-0 z-50 backdrop-blur-xl bg-slate-900/80 border-b border-slate-700/50">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between" aria-label="Primary">
+
+    <a href="{% url 'core:landing' %}" class="flex items-center gap-2.5 font-display font-bold text-lg">
+      <span class="shine-hover w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-car-on text-white text-sm"></i>
+      </span>
+      <span class="text-white">{{ SITE_NAME }}</span>
+    </a>
+
+    <div class="hidden lg:flex items-center gap-8 text-sm font-medium">
+      <a href="{% url 'core:landing' %}#features" class="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-star text-xs text-blue-400"></i>
+        Features
+      </a>
+      <a href="{% url 'core:landing' %}#services" class="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-wrench text-xs text-pink-400"></i>
+        Services
+      </a>
+      <a href="{% url 'core:landing' %}#gallery" class="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-images text-xs text-purple-400"></i>
+        Gallery
+      </a>
+      <a href="{% url 'core:landing' %}#pricing" class="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-tag text-xs text-green-400"></i>
+        Pricing
+      </a>
+      <a href="{% url 'core:landing' %}#testimonials" class="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-comments text-xs text-yellow-400"></i>
+        Testimonials
+      </a>
+      <a href="{% url 'core:faq' %}" class="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-circle-question text-xs text-cyan-400"></i>
+        FAQ
+      </a>
+      <a href="{% url 'core:contact' %}" class="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-envelope text-xs text-rose-400"></i>
+        Contact
+      </a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      {% if request.user.is_authenticated %}
+        <div class="hidden sm:flex items-center gap-3">
+          <a href="{% url 'dashboard:home' %}" class="text-sm font-medium text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-gauge-high text-xs text-blue-400"></i>
+            Dashboard
+          </a>
+          <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2">
+            {% if request.user.profile_photo %}
+              <img src="{{ request.user.profile_photo.url }}" alt="" class="w-8 h-8 rounded-lg object-cover border border-slate-600">
+            {% else %}
+              <span class="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white text-xs font-semibold">{{ request.user.initials }}</span>
+            {% endif %}
+          </a>
+          <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-sm font-medium text-gray-300 hover:text-white transition-colors flex items-center gap-1.5">
+              <i class="fa-solid fa-right-from-bracket text-xs text-red-400"></i>
+              Log out
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+          <i class="fa-solid fa-right-to-bracket text-xs text-blue-400"></i>
+          Log in
+        </a>
+        <a href="{% url 'accounts:register' %}" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-white text-sm transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/25" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+          <i class="fa-solid fa-user-plus text-xs"></i>
+          Get Started
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      {% endif %}
+
+      <button type="button" data-mobile-nav-toggle aria-label="Open menu" aria-expanded="false"
+              class="lg:hidden w-9 h-9 rounded-lg border border-slate-600 flex items-center justify-center text-gray-300 hover:text-white hover:border-slate-500 transition-colors">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <div data-mobile-nav-menu class="hidden lg:hidden border-t border-slate-700/50 bg-slate-900/95 backdrop-blur-xl">
+    <div class="px-4 py-4 flex flex-col gap-4 text-sm font-medium">
+      <a href="{% url 'core:landing' %}#features" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+        <i class="fa-solid fa-star text-xs w-4 text-blue-400"></i>
+        Features
+      </a>
+      <a href="{% url 'core:landing' %}#services" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+        <i class="fa-solid fa-wrench text-xs w-4 text-pink-400"></i>
+        Services
+      </a>
+      <a href="{% url 'core:landing' %}#gallery" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+        <i class="fa-solid fa-images text-xs w-4 text-purple-400"></i>
+        Gallery
+      </a>
+      <a href="{% url 'core:landing' %}#pricing" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+        <i class="fa-solid fa-tag text-xs w-4 text-green-400"></i>
+        Pricing
+      </a>
+      <a href="{% url 'core:landing' %}#testimonials" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+        <i class="fa-solid fa-comments text-xs w-4 text-yellow-400"></i>
+        Testimonials
+      </a>
+      <a href="{% url 'core:faq' %}" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+        <i class="fa-solid fa-circle-question text-xs w-4 text-cyan-400"></i>
+        FAQ
+      </a>
+      <a href="{% url 'core:contact' %}" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+        <i class="fa-solid fa-envelope text-xs w-4 text-rose-400"></i>
+        Contact
+      </a>
+      <hr class="border-slate-700">
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'dashboard:home' %}" class="flex items-center gap-2 text-white">
+          <i class="fa-solid fa-gauge-high text-xs w-4 text-blue-400"></i>
+          Dashboard
+        </a>
+        <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2 text-white">
+          <i class="fa-solid fa-user text-xs w-4 text-pink-400"></i>
+          My Profile
+        </a>
+        <form method="post" action="{% url 'accounts:logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="flex items-center gap-2 text-left text-white w-full">
+            <i class="fa-solid fa-right-from-bracket text-xs w-4 text-red-400"></i>
+            Log out
+          </button>
+        </form>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="flex items-center gap-2 text-white">
+          <i class="fa-solid fa-right-to-bracket text-xs w-4 text-blue-400"></i>
+          Log in
+        </a>
+        <a href="{% url 'accounts:register' %}" class="flex items-center gap-2 justify-center px-4 py-2.5 rounded-lg font-semibold text-white text-sm" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+          <i class="fa-solid fa-user-plus text-xs"></i>
+          Get Started
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,127 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Employees — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Employees{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Employees</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ total_count }} employee{{ total_count|pluralize }}</h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="{% url 'employees:export_csv' %}?{{ querystring }}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2.5 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+          <i class="fa-solid fa-file-csv text-xs"></i> CSV
+        </a>
+        <a href="{% url 'employees:export_excel' %}?{{ querystring }}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2.5 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+          <i class="fa-solid fa-file-excel text-xs"></i> Excel
+        </a>
+        <a href="{% url 'employees:create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          <i class="fa-solid fa-user-plus text-xs"></i> Add Employee
+        </a>
+      </div>
+    </div>
+
+    <form method="get" class="rounded-2xl bg-slate-800 border border-slate-700 p-4 mb-6 grid sm:grid-cols-4 gap-3">
+      <div class="sm:col-span-2">
+        <label for="id_q" class="sr-only">Search</label>
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+          <input type="text" id="id_q" name="q" value="{{ search_form.q.value|default:'' }}"
+                 placeholder="Search name, email, or phone"
+                 class="w-full rounded-lg border border-slate-700 bg-slate-900/60 pl-9 pr-4 py-2.5 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+        </div>
+      </div>
+      <div>
+        <select name="position" class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
+          {% for value, label in search_form.fields.position.choices %}
+          <option value="{{ value }}" {% if search_form.position.value == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <select name="status" class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
+          {% for value, label in search_form.fields.status.choices %}
+          <option value="{{ value }}" {% if search_form.status.value == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="sm:col-span-4 flex items-center gap-3">
+        <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          Filter
+        </button>
+        {% if request.GET %}
+        <a href="{% url 'employees:list' %}" class="text-sm text-gray-500 hover:text-white">Clear</a>
+        {% endif %}
+      </div>
+    </form>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if page_obj.object_list %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr>
+            <th class="px-5 py-3 font-medium">Employee</th>
+            <th class="px-5 py-3 font-medium">Position</th>
+            <th class="px-5 py-3 font-medium">Hire Date</th>
+            <th class="px-5 py-3 font-medium">Status</th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for employee in page_obj.object_list %}
+          <tr class="hover:bg-slate-700/60 transition-colors">
+            <td class="px-5 py-3">
+              <a href="{% url 'employees:detail' employee.public_id %}" class="font-medium text-white hover:text-blue-400">{{ employee.full_name }}</a>
+              <p class="text-xs text-gray-500 font-mono">{{ employee.employee_code }}</p>
+            </td>
+            <td class="px-5 py-3 text-gray-500">{{ employee.get_position_display }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ employee.hire_date|date:"M j, Y" }}</td>
+            <td class="px-5 py-3">
+              {% if employee.employment_status == 'active' %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+              {% elif employee.employment_status == 'on_leave' %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> On Leave</span>
+              {% else %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Terminated</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-3 text-right">
+              <a href="{% url 'employees:detail' employee.public_id %}" class="text-gray-500 hover:text-blue-400"><i class="fa-solid fa-chevron-right text-xs"></i></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-12 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-slate-700 flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-people-group text-gray-500"></i>
+        </div>
+        <p class="font-medium text-white mb-1">No employees found</p>
+        <p class="text-sm text-gray-500 mb-6">Try adjusting your search or filters, or add your first employee.</p>
+        <a href="{% url 'employees:create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+          <i class="fa-solid fa-user-plus text-xs"></i> Add Employee
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-between mt-6 text-sm">
+      <p class="text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+      <div class="flex items-center gap-2">
+        {% if page_obj.has_previous %}
+        <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-blue-500/50">Previous</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-blue-500/50">Next</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Payment Status — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Payment Status{% endblock %}
+{% block content %}
+<section class="py-16">
+  <div class="max-w-md mx-auto px-4 sm:px-6 text-center">
+    <div id="status-icon" class="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-5">
+      <i class="fa-solid fa-mobile-screen text-2xl text-blue-400"></i>
+    </div>
+    <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ payment.reference_code }}</p>
+    <h1 id="status-heading" class="font-display font-bold text-2xl text-white mb-2">
+      {% if payment.status == 'processing' %}Check your phone{% elif payment.status == 'completed' %}Payment received{% else %}Payment did not go through{% endif %}
+    </h1>
+    <p id="status-message" class="text-sm text-gray-500 mb-8">
+      {% if payment.status == 'processing' %}Enter your M-Pesa PIN on your phone to complete the payment of KSh {{ payment.amount|floatformat:2 }}.{% elif payment.status == 'completed' %}KSh {{ payment.amount|floatformat:2 }} was received successfully. A receipt has been emailed to you.{% else %}{{ payment.result_description|default:"Please try again." }}{% endif %}
+    </p>
+    <a href="{% url 'bookings:my_detail' payment.invoice.booking.public_id %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+      Back to Booking
+    </a>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  const pollUrl = "{% url 'payments:my_payment_poll' payment.public_id %}";
+  let status = "{{ payment.status }}";
+
+  function refresh() {
+    if (status !== 'processing') return;
+    fetch(pollUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then((response) => response.json())
+      .then((data) => {
+        status = data.status;
+        if (status === 'completed') {
+          document.getElementById('status-heading').textContent = 'Payment received';
+          document.getElementById('status-message').textContent = 'Your payment was received successfully. A receipt has been emailed to you.';
+        } else if (status === 'failed' || status === 'cancelled') {
+          document.getElementById('status-heading').textContent = 'Payment did not go through';
+          document.getElementById('status-message').textContent = data.result_description || 'Please try again.';
+        } else {
+          setTimeout(refresh, 4000);
+        }
+      })
+      .catch(() => setTimeout(refresh, 4000));
+  }
+  refresh();
+</script>
+{% endblock %}

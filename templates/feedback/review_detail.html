@@ -1,0 +1,46 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Review — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Review{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'feedback:review_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reviews
+    </a>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">{{ review.booking.booking_code }}</p>
+          <h1 class="font-display font-bold text-xl text-white">{{ review.customer.first_name }} {{ review.customer.last_name }}</h1>
+        </div>
+        <span class="text-amber-500 text-lg">{% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
+      </div>
+      {% if review.comment %}<p class="text-sm text-white mt-3">{{ review.comment }}</p>{% endif %}
+      <p class="text-xs text-gray-500 mt-3">{{ review.created_at|date:"M j, Y H:i" }} &middot; {{ review.booking.service.name }}</p>
+
+      <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-700">
+        {% if review.is_published %}
+        <form method="post" action="{% url 'feedback:review_set_published' review.public_id 'hidden' %}">{% csrf_token %}<button type="submit" class="text-xs font-medium text-pink-400">Hide from listings</button></form>
+        {% else %}
+        <form method="post" action="{% url 'feedback:review_set_published' review.public_id 'published' %}">{% csrf_token %}<button type="submit" class="text-xs font-medium text-green-400">Publish</button></form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if review.has_response %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8">
+      <p class="text-xs font-medium text-blue-400 mb-2">Manager response ({{ review.responded_at|date:"M j, Y" }})</p>
+      <p class="text-sm text-white">{{ review.manager_response }}</p>
+    </div>
+    {% else %}
+    <form method="post" action="{% url 'feedback:review_respond' review.public_id %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-4">
+      {% csrf_token %}
+      <h2 class="font-display font-semibold text-white">Respond</h2>
+      {% include 'inventory/_form_fields.html' %}
+      <button type="submit" class="text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Send Response</button>
+    </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

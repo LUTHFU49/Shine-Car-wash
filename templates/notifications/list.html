@@ -1,0 +1,49 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Notifications — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Notification Center</p>
+        <h1 class="font-display font-bold text-2xl text-white">Notifications</h1>
+      </div>
+      <form method="post" action="{% url 'notifications:mark_all_read' %}">
+        {% csrf_token %}
+        <button type="submit" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Mark all as read</button>
+      </form>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden divide-y divide-slate-700">
+      {% for notification in page_obj.object_list %}
+      <div class="p-5 flex items-start gap-3 {% if not notification.is_read %}bg-slate-700/40{% endif %}">
+        <span class="mt-1 w-2 h-2 rounded-full shrink-0
+          {% if notification.level == 'danger' %}bg-pink-500{% elif notification.level == 'warning' %}bg-amber-500{% elif notification.level == 'success' %}bg-green-500{% else %}bg-blue-500{% endif %}"></span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-white">{{ notification.title }}</p>
+          {% if notification.message %}<p class="text-sm text-gray-500 mt-0.5">{{ notification.message }}</p>{% endif %}
+          <p class="text-xs text-gray-500 mt-1">{{ notification.created_at|date:"M j, Y H:i" }}</p>
+        </div>
+        {% if not notification.is_read %}
+        <form method="post" action="{% url 'notifications:mark_read' notification.public_id %}">
+          {% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="text-xs font-medium text-blue-400">Mark read</button>
+        </form>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p class="p-12 text-center text-sm text-gray-500">You're all caught up.</p>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-center gap-2 mt-6">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">&laquo; Prev</a>{% endif %}
+      <span class="text-sm text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">Next &raquo;</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

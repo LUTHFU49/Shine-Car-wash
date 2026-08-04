@@ -1,0 +1,85 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{% if is_create %}Add Vehicle{% else %}Edit Vehicle{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if is_create %}Add Vehicle{% else %}Edit Vehicle{% endif %}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <a href="{% url 'vehicles:my_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to My Vehicles
+    </a>
+
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{% if is_create %}New Vehicle{% else %}Editing{% endif %}</p>
+      <h1 class="font-display font-bold text-2xl text-white">
+        {% if is_create %}Add a vehicle{% else %}{{ vehicle.display_name }}{% endif %}
+      </h1>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+      {% csrf_token %}
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.license_plate.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">License plate</label>
+          {{ form.license_plate }}
+          <p class="text-xs text-gray-500 mt-1">Format: KDA 001A</p>
+          {% for error in form.license_plate.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.year.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Year</label>
+          {{ form.year }}
+          {% for error in form.year.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.make.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Make</label>
+          {{ form.make }}
+          {% for error in form.make.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.model.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Model</label>
+          {{ form.model }}
+          {% for error in form.model.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.color.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Color</label>
+          {{ form.color }}
+          {% for error in form.color.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.vehicle_type.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Vehicle Type</label>
+          {{ form.vehicle_type }}
+          {% for error in form.vehicle_type.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <label for="{{ form.photo.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Photo <span class="text-gray-500 font-normal">(optional)</span></label>
+        {% if vehicle.photo %}<img src="{{ vehicle.photo.url }}" alt="" class="w-24 h-24 rounded-lg object-cover mb-2 border border-slate-700">{% endif %}
+        {{ form.photo }}
+        {% for error in form.photo.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-3">
+          {% for error in form.non_field_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          {% if is_create %}Add Vehicle{% else %}Save Changes{% endif %}
+          <i class="fa-solid fa-check text-xs"></i>
+        </button>
+        <a href="{% url 'vehicles:my_list' %}" class="text-sm font-medium text-gray-500 hover:text-white">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

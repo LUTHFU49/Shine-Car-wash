@@ -1,0 +1,28 @@
+<div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 {{ widget.span }}">
+  <div class="flex items-center gap-2 mb-4">
+    <i class="fa-solid {{ widget.icon }} text-blue-400"></i>
+    <h3 class="font-display font-semibold text-white text-sm">{{ widget.title }}</h3>
+  </div>
+  <canvas id="widget-chart-{{ widget.key }}" height="90"></canvas>
+</div>
+<script>
+  (function () {
+    const ctx = document.getElementById('widget-chart-{{ widget.key }}');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: '{{ widget.chart_type }}',
+      data: {
+        labels: {{ widget.data.labels|safe }},
+        datasets: [{
+          label: '{{ widget.title|escapejs }}',
+          data: {{ widget.data.values|safe }},
+          backgroundColor: '{{ widget.color }}{% if widget.chart_type == "line" %}22{% endif %}',
+          borderColor: '{{ widget.color }}',
+          fill: {% if widget.chart_type == "line" %}true{% else %}false{% endif %},
+          tension: 0.3,
+        }],
+      },
+      options: { plugins: { legend: { display: false } }, maintainAspectRatio: true },
+    });
+  })();
+</script>

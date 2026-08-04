@@ -1,0 +1,18 @@
+<div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 {{ widget.span }}">
+  <div class="flex items-center gap-2 mb-4">
+    <i class="fa-solid {{ widget.icon }} text-blue-400"></i>
+    <h3 class="font-display font-semibold text-white text-sm">{{ widget.title }}</h3>
+  </div>
+  {% if widget.data.rows %}
+  <div class="space-y-3">
+    {% for row in widget.data.rows %}
+    <div class="flex items-center justify-between text-sm">
+      <p class="text-white font-medium truncate">{{ row.item__name }}</p>
+      <p class="text-gray-500 shrink-0 ml-3">{{ row.total_used }} {{ row.item__unit }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-sm text-gray-500">No booking-linked stock usage in the last 30 days.</p>
+  {% endif %}
+</div>

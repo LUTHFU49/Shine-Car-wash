@@ -1,0 +1,15 @@
+{% if status == 'pending' %}
+  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pending</span>
+{% elif status == 'confirmed' %}
+  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Confirmed</span>
+{% elif status == 'in_queue' %}
+  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-400"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> In Queue</span>
+{% elif status == 'in_progress' %}
+  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-pink-400"><span class="w-1.5 h-1.5 rounded-full bg-pink-500"></span> Washing</span>
+{% elif status == 'completed' %}
+  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400"><span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span> Completed</span>
+{% elif status == 'no_show' %}
+  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-red-400"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> No Show</span>
+{% else %}
+  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span> Cancelled</span>
+{% endif %}

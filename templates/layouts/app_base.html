@@ -1,0 +1,270 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta_description %}{{ SITE_NAME }} — Car wash management platform{% endblock %}">
+  <meta name="theme-color" content="#0F172A">
+  
+  <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            body: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ink: {
+              DEFAULT: '#1E293B',
+              soft: '#64748B',
+            },
+            surface: {
+              DEFAULT: '#FFFFFF',
+              alt: '#F8FAFC',
+            },
+            border: '#E2E8F0',
+            token: '#E2E8F0',
+          },
+        },
+      },
+    }
+  </script>
+  
+  <!-- Custom Styles -->
+  <style>
+    :root {
+      --color-surface: #0F172A;
+      --color-surface-alt: #1E293B;
+      --color-ink: #F1F5F9;
+      --color-ink-soft: #94A3B8;
+      --color-border: #334155;
+      --color-token: #334155;
+      --color-blue: #3B82F6;
+      --color-pink: #EC4899;
+      --gradient-brand: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);
+      --radius-base: 0.75rem;
+      --radius-card: 1rem;
+    }
+
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+    }
+
+    *::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.2);
+      border-radius: 2px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.3);
+    }
+
+    body {
+      background-color: var(--color-surface);
+      color: var(--color-ink);
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Skip Link */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      z-index: 200;
+      padding: 0.5rem 1rem;
+      background: var(--gradient-brand);
+      color: white;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+
+    /* Toast Container */
+    #toast-container {
+      z-index: 9999;
+    }
+
+    /* Print Styles */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* Focus Styles */
+    :focus-visible {
+      outline: 2px solid var(--color-pink);
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    /* Selection */
+    ::selection {
+      background: rgba(236, 72, 153, 0.2);
+      color: white;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(100%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .animate-slide-in-right {
+      animation: slideInRight 0.3s ease-out;
+    }
+  </style>
+  
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="font-body bg-slate-900 text-slate-100 antialiased">
+
+<!-- Skip to main content -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Loading Indicator -->
+<div id="page-loader" class="fixed inset-0 bg-slate-900 z-[9999] flex items-center justify-center transition-opacity duration-300">
+  <div class="flex flex-col items-center gap-4">
+    <div class="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center animate-pulse">
+      <i class="fa-solid fa-car-on text-white text-xl"></i>
+    </div>
+    <p class="text-sm text-gray-400 font-medium">{{ SITE_NAME }}</p>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="flex min-h-screen">
+  
+  <!-- Sidebar -->
+  <aside class="hidden lg:flex lg:flex-col w-64 shrink-0 h-screen sticky top-0 no-print">
+    {% include 'partials/sidebar.html' %}
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 min-w-0 flex flex-col">
+    
+    <!-- Topbar -->
+    <div class="no-print sticky top-0 z-40">
+      {% include 'partials/topbar.html' %}
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-[100] flex flex-col gap-3 w-full max-w-sm px-4 sm:px-0 pointer-events-none">
+      <!-- Toasts injected here by JavaScript -->
+    </div>
+
+    <!-- Server Messages (converted to toasts) -->
+    {% if messages %}
+      <div id="server-messages" class="hidden">
+        {% for message in messages %}
+          <div data-tag="{{ message.tags }}" data-text="{{ message }}"></div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main id="main-content" class="flex-1">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'js/ui.js' %}"></script>
+<script src="{% static 'js/toast.js' %}"></script>
+<script src="{% static 'js/validation.js' %}"></script>
+<script src="{% static 'js/app-shell.js' %}"></script>
+<script src="{% static 'js/notifications.js' %}"></script>
+
+<!-- Page Loader Handler -->
+<script>
+  // Hide loader when page is ready
+  window.addEventListener('load', function() {
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 300);
+    }
+  });
+
+  // Show loader on navigation
+  document.addEventListener('beforeunload', function() {
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+      loader.style.opacity = '1';
+      loader.style.display = 'flex';
+    }
+  });
+</script>
+
+<!-- Server Messages to Toast -->
+{% if messages %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const serverMessages = document.getElementById('server-messages');
+    if (serverMessages) {
+      const messages = serverMessages.querySelectorAll('[data-tag]');
+      messages.forEach(function(msg) {
+        const tag = msg.dataset.tag;
+        const text = msg.dataset.text;
+        const type = tag.includes('success') ? 'success' : 
+                     tag.includes('error') ? 'error' : 
+                     tag.includes('warning') ? 'warning' : 'info';
+        
+        // Dispatch toast event if toast system is available
+        if (typeof window.showToast === 'function') {
+          window.showToast(text, type);
+        }
+      });
+    }
+  });
+</script>
+{% endif %}
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

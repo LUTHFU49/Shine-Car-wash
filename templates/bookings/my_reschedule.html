@@ -1,0 +1,50 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Reschedule — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Reschedule Booking{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-lg mx-auto px-4 sm:px-6">
+
+    <a href="{% url 'bookings:my_detail' booking.public_id %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to {{ booking.booking_code }}
+    </a>
+
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Reschedule</p>
+      <h1 class="font-display font-bold text-2xl text-white">{{ booking.service.name }}</h1>
+      <p class="text-sm text-gray-500 mt-1">Currently {{ booking.scheduled_date|date:"M j, Y" }} at {{ booking.scheduled_time|time:"g:i A" }}</p>
+    </div>
+
+    <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+      {% csrf_token %}
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.scheduled_date.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">New date</label>
+          {{ form.scheduled_date }}
+          {% for error in form.scheduled_date.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.scheduled_time.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">New time</label>
+          {{ form.scheduled_time }}
+          {% for error in form.scheduled_time.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-3">
+          {% for error in form.non_field_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          Confirm New Time
+          <i class="fa-solid fa-check text-xs"></i>
+        </button>
+        <a href="{% url 'bookings:my_detail' booking.public_id %}" class="text-sm font-medium text-gray-500 hover:text-white">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

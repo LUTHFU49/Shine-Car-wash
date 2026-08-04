@@ -1,0 +1,68 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}My Feedback — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}My Feedback{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Feedback</p>
+        <h1 class="font-display font-bold text-2xl text-white">My Feedback</h1>
+      </div>
+      <a href="{% url 'feedback:my_submit' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity"><i class="fa-solid fa-plus text-xs"></i> New Feedback</a>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden mb-8">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">My Reviews</h2></div>
+      {% if reviews %}
+      <div class="divide-y divide-slate-700">
+        {% for review in reviews %}
+        <div class="p-5">
+          <div class="flex items-center justify-between mb-1">
+            <p class="text-sm font-medium text-white">{{ review.booking.booking_code }} &middot; {{ review.booking.service.name }}</p>
+            <span class="text-amber-500">{% for _ in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
+          </div>
+          {% if review.comment %}<p class="text-sm text-gray-500">{{ review.comment }}</p>{% endif %}
+          {% if review.has_response %}
+          <div class="mt-3 pl-3 border-l-2 border-blue-500">
+            <p class="text-xs font-medium text-blue-400 mb-1">Manager response</p>
+            <p class="text-sm text-gray-500">{{ review.manager_response }}</p>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="p-6 text-sm text-gray-500">You haven't left any reviews yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">My Submitted Feedback</h2></div>
+      {% if feedback_items %}
+      <div class="divide-y divide-slate-700">
+        {% for item in feedback_items %}
+        <div class="p-5">
+          <div class="flex items-center justify-between mb-1">
+            <p class="text-sm font-medium text-white">{{ item.subject }}</p>
+            <span class="text-xs font-medium
+              {% if item.status == 'resolved' %}text-green-400{% elif item.status == 'closed' %}text-gray-500{% else %}text-blue-400{% endif %}">{{ item.get_status_display }}</span>
+          </div>
+          <p class="text-xs text-gray-500 mb-2">{{ item.get_feedback_type_display }} &middot; {{ item.created_at|date:"M j, Y" }}</p>
+          <p class="text-sm text-gray-500">{{ item.message }}</p>
+          {% if item.has_response %}
+          <div class="mt-3 pl-3 border-l-2 border-blue-500">
+            <p class="text-xs font-medium text-blue-400 mb-1">Our response</p>
+            <p class="text-sm text-gray-500">{{ item.response }}</p>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="p-6 text-sm text-gray-500">You haven't submitted any feedback yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

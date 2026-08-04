@@ -1,0 +1,283 @@
+{% extends 'layouts/app_base.html' %}
+{% load static %}
+{% block title %}Manage Services — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Services{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+  
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-3 mb-2">
+        <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+          <i class="fa-solid fa-spray-can-sparkles text-white text-sm"></i>
+        </span>
+        <p class="text-xs font-semibold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400">Services</p>
+      </div>
+      <h1 class="font-display font-bold text-2xl text-white">
+        {{ total_count }} service{{ total_count|pluralize }}
+      </h1>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <a href="{% url 'services:category_list' %}" 
+         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-all duration-300 border border-slate-600 hover:scale-105">
+        <i class="fa-solid fa-layer-group text-xs"></i>
+        Categories
+      </a>
+      
+      <!-- Export Dropdown -->
+      <div class="relative" data-export-dropdown>
+        <button type="button" data-export-toggle
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-all duration-300 border border-slate-600 hover:scale-105">
+          <i class="fa-solid fa-download text-xs"></i>
+          Export
+          <i class="fa-solid fa-chevron-down text-[10px]"></i>
+        </button>
+        <div data-export-menu class="hidden absolute right-0 mt-2 w-44 rounded-xl bg-slate-800 border border-slate-700 shadow-2xl z-50 overflow-hidden">
+          <a href="{% url 'services:export_csv' %}?{{ querystring }}" 
+             class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors">
+            <span class="w-7 h-7 rounded-lg bg-green-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-file-csv text-green-400 text-xs"></i>
+            </span>
+            Export CSV
+          </a>
+          <a href="{% url 'services:export_excel' %}?{{ querystring }}" 
+             class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-slate-700 transition-colors">
+            <span class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <i class="fa-solid fa-file-excel text-emerald-400 text-xs"></i>
+            </span>
+            Export Excel
+          </a>
+        </div>
+      </div>
+      
+      {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+      <a href="{% url 'services:create' %}" 
+         class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105 bg-gradient-to-r from-blue-500 to-pink-500">
+        <i class="fa-solid fa-plus text-xs"></i>
+        Add Service
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <form method="get" class="bg-slate-800 rounded-2xl border border-slate-700 p-5 space-y-4">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <!-- Search -->
+      <div class="sm:col-span-2 lg:col-span-2">
+        <label for="id_q" class="sr-only">Search</label>
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+          <input type="text" id="id_q" name="q" value="{{ search_form.q.value|default:'' }}"
+                 placeholder="Search service name or description..."
+                 class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-700/50 border border-slate-600 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 text-sm">
+        </div>
+      </div>
+      
+      <!-- Category Filter -->
+      <div>
+        <select name="category" 
+                class="w-full px-4 py-2.5 rounded-xl bg-slate-700/50 border border-slate-600 text-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 text-sm cursor-pointer appearance-none"
+                style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394A3B8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem;">
+          <option value="">All categories</option>
+          {% for cat in search_form.fields.category.queryset %}
+          <option value="{{ cat.pk }}" {% if search_form.category.value|stringformat:"s" == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      
+      <!-- Status Filter -->
+      <div>
+        <select name="status" 
+                class="w-full px-4 py-2.5 rounded-xl bg-slate-700/50 border border-slate-600 text-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 text-sm cursor-pointer appearance-none"
+                style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394A3B8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem;">
+          {% for value, label in search_form.fields.status.choices %}
+          <option value="{{ value }}" {% if search_form.status.value == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    
+    <!-- Sort & Actions Row -->
+    <div class="flex items-center gap-3 flex-wrap">
+      <select name="sort" 
+              class="px-4 py-2.5 rounded-xl bg-slate-700/50 border border-slate-600 text-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300 text-sm cursor-pointer appearance-none"
+              style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2394A3B8%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem;">
+        {% for value, label in search_form.fields.sort.choices %}
+        <option value="{{ value }}" {% if search_form.sort.value == value or not search_form.sort.value and value == 'name' %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      
+      <button type="submit" 
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-lg hover:shadow-pink-500/25 text-sm">
+        <i class="fa-solid fa-filter text-xs"></i>
+        Apply Filters
+      </button>
+      
+      {% if request.GET %}
+      <a href="{% url 'services:list' %}" 
+         class="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1.5">
+        <i class="fa-solid fa-times-circle text-xs"></i>
+        Clear filters
+      </a>
+      {% endif %}
+      
+      {% if page_obj.object_list %}
+      <span class="text-xs text-gray-500 ml-auto">
+        Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ total_count }}
+      </span>
+      {% endif %}
+    </div>
+  </form>
+
+  <!-- Services Table -->
+  <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden">
+    {% if page_obj.object_list %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-700 bg-slate-800/50">
+            <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Service</th>
+            <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Category</th>
+            <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Price</th>
+            <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Duration</th>
+            <th class="px-5 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+            <th class="px-5 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for service in page_obj.object_list %}
+          <tr class="hover:bg-slate-700/50 transition-colors group">
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-3">
+                {% if service.image %}
+                <img src="{{ service.image.url }}" alt="" class="w-9 h-9 rounded-lg object-cover border border-slate-600 shrink-0">
+                {% else %}
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500/10 to-pink-500/10 flex items-center justify-center shrink-0">
+                  <i class="fa-solid {{ service.category.icon }} text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400"></i>
+                </div>
+                {% endif %}
+                <a href="{% url 'services:detail' service.public_id %}" 
+                   class="font-medium text-white hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-blue-400 hover:to-pink-400 transition-all duration-300">
+                  {{ service.name }}
+                </a>
+              </div>
+            </td>
+            <td class="px-5 py-4">
+              <span class="inline-flex items-center gap-1.5 text-gray-400">
+                <i class="fa-solid {{ service.category.icon }} text-[10px]"></i>
+                {{ service.category.name }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="font-mono font-medium text-white">KSh {{ service.price|floatformat:0 }}</span>
+            </td>
+            <td class="px-5 py-4 text-gray-400">{{ service.duration_display }}</td>
+            <td class="px-5 py-4">
+              {% if service.status == 'active' %}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  Active
+                </span>
+              {% else %}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-700 text-gray-400 border border-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                  Inactive
+                </span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-4 text-right">
+              <a href="{% url 'services:detail' service.public_id %}" 
+                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-700 hover:bg-slate-600 text-gray-400 hover:text-white transition-all duration-300">
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="py-16 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-700/50 flex items-center justify-center">
+        <i class="fa-solid fa-spray-can-sparkles text-2xl text-gray-500"></i>
+      </div>
+      <h3 class="font-display font-semibold text-white mb-1">No services found</h3>
+      <p class="text-sm text-gray-400 mb-6">Try adjusting your search or filters.</p>
+      {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+      <a href="{% url 'services:create' %}" 
+         class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-lg transition-all duration-300 text-sm">
+        <i class="fa-solid fa-plus text-xs"></i>
+        Add First Service
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class="flex items-center justify-between">
+    <p class="text-sm text-gray-400">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </p>
+    <div class="flex items-center gap-2">
+      {% if page_obj.has_previous %}
+      <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" 
+         class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-gray-300 hover:text-white hover:border-slate-500 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        Previous
+      </a>
+      {% else %}
+      <span class="px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-gray-600 text-sm flex items-center gap-1.5 cursor-not-allowed">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        Previous
+      </span>
+      {% endif %}
+      
+      {% if page_obj.has_next %}
+      <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" 
+         class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-gray-300 hover:text-white hover:border-slate-500 transition-all duration-300 text-sm flex items-center gap-1.5">
+        Next
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </a>
+      {% else %}
+      <span class="px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-gray-600 text-sm flex items-center gap-1.5 cursor-not-allowed">
+        Next
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Export dropdown toggle
+    const exportToggle = document.querySelector('[data-export-toggle]');
+    const exportMenu = document.querySelector('[data-export-menu]');
+    
+    if (exportToggle && exportMenu) {
+      exportToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        exportMenu.classList.toggle('hidden');
+      });
+      
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('[data-export-dropdown]')) {
+          exportMenu.classList.add('hidden');
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

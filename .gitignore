@@ -1,0 +1,25 @@
+# Environments
+.env
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+logs/*.log
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Node (if a Tailwind CLI build step is added later)
+node_modules/

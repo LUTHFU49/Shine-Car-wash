@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Inventory Report — {{ SITE_NAME }}</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; color: #0A0A0F; margin: 32px; }
+  .brand { font-size: 20px; font-weight: bold; background: linear-gradient(135deg,#0013DE 0%,#0013DE 62%,#FF0090 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h1 { font-size: 18px; margin: 24px 0 4px; }
+  .meta { color: #5B6072; font-size: 12px; margin-bottom: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #0013DE; color: #fff; text-align: left; padding: 8px; }
+  td { padding: 8px; border-bottom: 1px solid #E3E3E9; }
+  tr:nth-child(even) td { background: #F5F5F8; }
+  .total { font-weight: bold; margin-top: 16px; text-align: right; }
+  .print-btn { margin: 16px 0; padding: 8px 16px; border-radius: 6px; border: none; background: #0013DE; color: #fff; cursor: pointer; }
+  @media print { .print-btn { display: none; } }
+</style>
+</head>
+<body>
+  <div class="brand">{{ SITE_NAME }}</div>
+  <div class="meta">{{ COMPANY_NAME }}</div>
+  <h1>Inventory Stock Report</h1>
+  <p class="meta">Generated {{ generated_at|date:"F j, Y H:i" }} &middot; {{ items|length }} item{{ items|length|pluralize }}</p>
+  <button class="print-btn" onclick="window.print()">Print</button>
+
+  <table>
+    <thead>
+      <tr><th>SKU</th><th>Name</th><th>Category</th><th>Stock</th><th>Available</th><th>Reorder Lvl</th><th>Avg Cost</th><th>Value (KSh)</th></tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.sku }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.category.name }}</td>
+        <td>{{ item.current_stock }}</td>
+        <td>{{ item.available_stock }}</td>
+        <td>{{ item.reorder_level }}</td>
+        <td>{{ item.average_unit_cost|floatformat:2 }}</td>
+        <td>{{ item.stock_value|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p class="total">Total Valuation: KSh {{ valuation_total|floatformat:2 }}</p>
+  <p class="meta">&copy; {% now "Y" %} {{ SITE_NAME }}. All rights reserved. Developed by {{ COMPANY_NAME }}.</p>
+</body>
+</html>

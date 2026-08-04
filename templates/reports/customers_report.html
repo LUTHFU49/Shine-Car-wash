@@ -1,0 +1,52 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Customers Report — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Customers Report{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8 print-area">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:hub' %}" class="no-print text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reports
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ start }} to {{ end }}</p>
+      <h1 class="font-display font-bold text-2xl text-white">Customers Report</h1>
+    </div>
+
+    {% include 'reports/_report_toolbar.html' with export_url_name='reports:customers_report_export' %}
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">New Customers</p><p class="font-display font-bold text-xl text-white">{{ new_customer_count }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Repeat Customers</p><p class="font-display font-bold text-xl text-white">{{ repeat_customer_count }}</p></div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 mb-8">
+      <h2 class="font-display font-semibold text-white mb-4">New Customers Over Time</h2>
+      <canvas id="growthChart" height="90"></canvas>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Top Customers by Spend</h2></div>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Customer</th><th class="px-5 py-3 font-medium">Completed Bookings</th><th class="px-5 py-3 font-medium">Total Spend</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for customer in top_customers %}
+          <tr><td class="px-5 py-3 text-white">{{ customer.first_name }} {{ customer.last_name }}{% if customer.booking_count >= 2 %} <span class="text-xs text-blue-400 font-medium">(repeat)</span>{% endif %}</td><td class="px-5 py-3 text-gray-500">{{ customer.booking_count }}</td><td class="px-5 py-3 text-white font-medium">{{ customer.total_spend|floatformat:2 }}</td></tr>
+          {% empty %}
+          <tr><td colspan="3" class="px-5 py-8 text-center text-gray-500">No completed bookings in this range.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  new Chart(document.getElementById('growthChart'), {
+    type: 'line',
+    data: { labels: [{% for row in by_day %}'{{ row.day|date:"M j" }}',{% endfor %}], datasets: [{ label: 'New Customers', data: [{% for row in by_day %}{{ row.count }},{% endfor %}], borderColor: '#FF0090', backgroundColor: 'rgba(255,0,144,0.15)', fill: true, tension: 0.3 }] },
+    options: { plugins: { legend: { display: false } } },
+  });
+</script>
+{% endblock %}

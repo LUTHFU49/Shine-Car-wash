@@ -1,0 +1,43 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}My Profile — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}My Employee Profile{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">My Profile</p>
+      <h1 class="font-display font-bold text-2xl text-white">{{ employee.full_name }}</h1>
+      <p class="text-sm text-gray-500 font-mono mt-1">{{ employee.employee_code }}</p>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8">
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Position</p>
+          <p class="text-sm text-white">{{ employee.get_position_display }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Status</p>
+          <p class="text-sm text-white">{{ employee.get_employment_status_display }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Hire Date</p>
+          <p class="text-sm text-white">{{ employee.hire_date|date:"F j, Y" }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Schedule</p>
+          <p class="text-sm text-white">
+            {{ employee.scheduled_days_display }}
+            {% if employee.shift_start_time %} · {{ employee.shift_start_time|time:"g:i A" }}–{{ employee.shift_end_time|time:"g:i A" }}{% endif %}
+          </p>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 mt-6 pt-6 border-t border-slate-700">
+        Need something updated? Contact your manager — HR details are managed by staff.
+      </p>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

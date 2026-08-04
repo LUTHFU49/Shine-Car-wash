@@ -1,0 +1,61 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}My Bookings — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}My Bookings{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">My Bookings</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ bookings|length }} booking{{ bookings|length|pluralize }}</h1>
+      </div>
+      <a href="{% url 'bookings:my_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+        <i class="fa-solid fa-calendar-plus text-xs"></i> Book a Wash
+      </a>
+    </div>
+
+    <div class="flex items-center gap-2 mb-6 border-b border-slate-700">
+      <a href="?tab=upcoming" class="px-4 py-2.5 text-sm font-medium border-b-2 -mb-px {% if active_tab == 'upcoming' %}border-blue-500 text-blue-400{% else %}border-transparent text-gray-500 hover:text-white{% endif %}">Upcoming</a>
+      <a href="?tab=past" class="px-4 py-2.5 text-sm font-medium border-b-2 -mb-px {% if active_tab == 'past' %}border-blue-500 text-blue-400{% else %}border-transparent text-gray-500 hover:text-white{% endif %}">Past</a>
+      <a href="?tab=cancelled" class="px-4 py-2.5 text-sm font-medium border-b-2 -mb-px {% if active_tab == 'cancelled' %}border-blue-500 text-blue-400{% else %}border-transparent text-gray-500 hover:text-white{% endif %}">Cancelled</a>
+    </div>
+
+    {% if bookings %}
+    <div class="space-y-3">
+      {% for booking in bookings %}
+      <a href="{% url 'bookings:my_detail' booking.public_id %}" class="rounded-2xl bg-slate-800 border border-slate-700 p-5 flex items-center justify-between gap-4 hover:border-blue-500/50 transition-colors block">
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white shrink-0">
+            <i class="fa-solid fa-spray-can-sparkles"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="font-display font-semibold text-white truncate">{{ booking.service.name }}</p>
+            <p class="text-xs text-gray-500">{{ booking.vehicle.license_plate }} · {{ booking.scheduled_date|date:"M j, Y" }} at {{ booking.scheduled_time|time:"g:i A" }}</p>
+          </div>
+        </div>
+        <div class="text-right shrink-0">
+          {% include 'bookings/_status_badge.html' with status=booking.status %}
+          <p class="text-xs font-mono text-gray-500 mt-1">{{ booking.booking_code }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-12 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-slate-700 flex items-center justify-center mx-auto mb-4">
+        <i class="fa-solid fa-calendar text-gray-500"></i>
+      </div>
+      <p class="font-medium text-white mb-1">No {{ active_tab }} bookings</p>
+      {% if active_tab == 'upcoming' %}
+      <p class="text-sm text-gray-500 mb-6">Book your next wash in under a minute.</p>
+      <a href="{% url 'bookings:my_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+        <i class="fa-solid fa-calendar-plus text-xs"></i> Book a Wash
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

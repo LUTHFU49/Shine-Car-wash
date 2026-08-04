@@ -1,0 +1,55 @@
+{% load static %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ SITE_NAME }} — Modern Car Wash Management{% endblock %}</title>
+<meta name="description" content="{% block meta_description %}ShineHub is the all-in-one car wash management platform: online booking, live queue tracking, M-Pesa payments, and business analytics in one place.{% endblock %}">
+<meta name="theme-color" content="#0013DE">
+
+<!-- Open Graph / SEO -->
+<meta property="og:title" content="{{ SITE_NAME }} — Modern Car Wash Management">
+<meta property="og:description" content="Booking, queueing, payments, and analytics for modern car washes.">
+<meta property="og:type" content="website">
+<meta name="robots" content="index, follow">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Tailwind (Play CDN — swap for a compiled build step in production, see docs/DEPLOYMENT.md) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brandblue: '#0013DE',
+          brandpurple: '#0013DE',
+          brandpink: '#FF0090',
+          ink: '#0A0A0F',
+        },
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          body: ['Manrope', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+        // Tighter, more "instrument panel" radius scale. Every rounded-lg /
+        // rounded-xl / rounded-2xl already used across all 150+ templates
+        // picks this up automatically — this one override reshapes the
+        // whole app's corners without touching a single template file.
+        borderRadius: {
+          lg: '0.375rem',
+          xl: '0.5rem',
+          '2xl': '0.75rem',
+          '3xl': '1rem',
+        },
+      },
+    },
+  }
+</script>
+
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+{% block extra_head %}{% endblock %}

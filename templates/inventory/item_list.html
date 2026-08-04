@@ -1,0 +1,118 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Inventory Items — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Inventory Items{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'inventory:dashboard' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Inventory
+    </a>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Items</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ total_count }} item{{ total_count|pluralize }}</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="{% url 'inventory:item_export_csv' %}?{{ querystring }}" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-csv mr-1"></i> CSV</a>
+        <a href="{% url 'inventory:item_export_excel' %}?{{ querystring }}" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-excel mr-1"></i> Excel</a>
+        <a href="{% url 'inventory:item_export_pdf' %}?{{ querystring }}" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-pdf mr-1"></i> PDF</a>
+        <a href="{% url 'inventory:item_print_report' %}?{{ querystring }}" target="_blank" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-print mr-1"></i> Print</a>
+        {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+        <a href="{% url 'inventory:item_csv_import' %}" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-import mr-1"></i> Import</a>
+        <a href="{% url 'inventory:item_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity"><i class="fa-solid fa-plus text-xs"></i> Add Item</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <form method="get" class="rounded-2xl bg-slate-800 border border-slate-700 p-4 mb-6 grid grid-cols-1 sm:grid-cols-4 gap-3">
+      {{ search_form.q }}
+      {{ search_form.category }}
+      {{ search_form.stock_state }}
+      {{ search_form.status }}
+      <button type="submit" class="sm:col-span-4 sm:w-auto justify-self-start text-xs font-semibold text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Filter</button>
+    </form>
+
+    <form method="post" action="{% url 'inventory:item_bulk_action' %}" id="bulk-form">
+      {% csrf_token %}
+      {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+      <div class="flex items-center gap-2 mb-3">
+        <select name="action" class="text-xs rounded-lg border border-slate-700 px-2 py-2">
+          <option value="activate">Mark Active</option>
+          <option value="deactivate">Mark Inactive</option>
+        </select>
+        <button type="submit" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2">Apply to selected</button>
+      </div>
+      {% endif %}
+
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+        {% if page_obj.object_list %}
+        <table class="w-full text-sm">
+          <thead class="bg-slate-700 text-left text-gray-500">
+            <tr>
+              <th class="px-4 py-3"><input type="checkbox" data-select-all></th>
+              <th class="px-4 py-3 font-medium">Item</th>
+              <th class="px-4 py-3 font-medium">Category</th>
+              <th class="px-4 py-3 font-medium">Stock</th>
+              <th class="px-4 py-3 font-medium">Available</th>
+              <th class="px-4 py-3 font-medium">Reorder Lvl</th>
+              <th class="px-4 py-3 font-medium">Value (KSh)</th>
+              <th class="px-4 py-3 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-700">
+            {% for item in page_obj.object_list %}
+            <tr class="hover:bg-slate-700/60 transition-colors">
+              <td class="px-4 py-3"><input type="checkbox" name="selected" value="{{ item.public_id }}"></td>
+              <td class="px-4 py-3">
+                <a href="{% url 'inventory:item_detail' item.public_id %}" class="font-medium text-white hover:text-blue-400">{{ item.name }}</a>
+                <p class="text-xs text-gray-500">{{ item.sku }}</p>
+              </td>
+              <td class="px-4 py-3 text-gray-500">{{ item.category.name }}</td>
+              <td class="px-4 py-3 text-gray-500">{{ item.current_stock }} {{ item.get_unit_display }}</td>
+              <td class="px-4 py-3">
+                {% if item.is_low_stock %}
+                  <span class="inline-flex items-center gap-1 text-xs font-semibold text-pink-400"><i class="fa-solid fa-triangle-exclamation"></i> {{ item.available_stock }}</span>
+                {% else %}
+                  <span class="text-gray-500">{{ item.available_stock }}</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3 text-gray-500">{{ item.reorder_level }}</td>
+              <td class="px-4 py-3 text-gray-500">{{ item.stock_value|floatformat:2 }}</td>
+              <td class="px-4 py-3">
+                {% if item.is_active %}
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+                {% else %}
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inactive</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="p-12 text-center">
+          <p class="font-medium text-white mb-1">No items match these filters</p>
+          <p class="text-sm text-gray-500">Try clearing a filter, or add your first inventory item.</p>
+        </div>
+        {% endif %}
+      </div>
+    </form>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-center gap-2 mt-6">
+      {% if page_obj.has_previous %}<a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">&laquo; Prev</a>{% endif %}
+      <span class="text-sm text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">Next &raquo;</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  document.querySelector('[data-select-all]')?.addEventListener('change', function () {
+    document.querySelectorAll('input[name="selected"]').forEach(cb => cb.checked = this.checked);
+  });
+</script>
+{% endblock %}

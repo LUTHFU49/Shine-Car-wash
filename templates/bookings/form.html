@@ -1,0 +1,109 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}New Booking — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}New Booking{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Walk-in / Phone Booking</p>
+      <h1 class="font-display font-bold text-2xl text-white">Create a booking</h1>
+    </div>
+
+    {% if preselected_customer %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4 mb-6 bg-blue-500/5 border-blue-500/20 flex items-center justify-between">
+        <p class="text-sm text-white">
+          <i class="fa-solid fa-user text-blue-400 mr-2"></i>
+          Booking for <strong>{{ preselected_customer.full_name }}</strong> ({{ preselected_customer.customer_code }})
+        </p>
+        <a href="{% url 'bookings:create' %}" class="text-xs font-medium text-gray-500 hover:text-white">Change customer</a>
+      </div>
+      {% if not has_active_vehicle %}
+      <div class="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 mb-6">
+        <p class="text-sm text-amber-400">
+          <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+          This customer has no active vehicles yet.
+          <a href="{% url 'vehicles:create' %}?customer={{ preselected_customer.public_id }}" class="underline font-medium">Register one first</a>.
+        </p>
+      </div>
+      {% endif %}
+    {% else %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 mb-6">
+        <p class="text-sm font-medium text-white mb-3">Which customer is this booking for?</p>
+        <form method="get" class="flex gap-2 mb-4">
+          <input type="text" name="customer_q" value="{{ customer_query }}" placeholder="Search by name or phone"
+                 class="flex-1 rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
+          <button type="submit" class="px-4 py-2.5 rounded-lg border border-slate-700 text-sm font-medium text-white hover:border-blue-500/50">Search</button>
+        </form>
+        {% if customers %}
+        <div class="divide-y divide-slate-700 max-h-72 overflow-y-auto">
+          {% for c in customers %}
+          <a href="?customer={{ c.public_id }}" class="flex items-center justify-between py-2.5 hover:text-blue-400">
+            <span class="text-sm text-white">{{ c.full_name }}</span>
+            <span class="text-xs text-gray-500 font-mono">{{ c.phone_number }}</span>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500">No matching active customers. <a href="{% url 'customers:create' %}" class="text-blue-400 hover:underline">Add a new customer</a> first.</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5 {% if not preselected_customer or not has_active_vehicle %}opacity-50 pointer-events-none{% endif %}">
+      {% csrf_token %}
+      {% if preselected_customer %}<input type="hidden" name="customer" value="{{ preselected_customer.public_id }}">{% endif %}
+
+      <div>
+        <label for="{{ form.vehicle.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Vehicle</label>
+        {{ form.vehicle }}
+        {% for error in form.vehicle.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.service.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Service</label>
+        {{ form.service }}
+        {% for error in form.service.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.scheduled_date.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Date</label>
+          {{ form.scheduled_date }}
+          {% for error in form.scheduled_date.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.scheduled_time.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Time</label>
+          {{ form.scheduled_time }}
+          <p class="text-xs text-gray-500 mt-1">Business hours: {{ business_hours_start }}–{{ business_hours_end }}</p>
+          {% for error in form.scheduled_time.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Customer notes <span class="text-gray-500 font-normal">(optional)</span></label>
+        {{ form.notes }}
+      </div>
+
+      <div>
+        <label for="{{ form.staff_notes.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Staff notes <span class="text-gray-500 font-normal">(internal only)</span></label>
+        {{ form.staff_notes }}
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-3">
+          {% for error in form.non_field_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          Create & Confirm Booking
+          <i class="fa-solid fa-check text-xs"></i>
+        </button>
+        <a href="{% url 'bookings:list' %}" class="text-sm font-medium text-gray-500 hover:text-white">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

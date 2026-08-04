@@ -1,0 +1,141 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{{ vehicle.license_plate }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Vehicle Profile{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+
+    <a href="{% url 'vehicles:list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Vehicles
+    </a>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+        <div class="flex items-start gap-4">
+          {% if vehicle.photo %}
+          <img src="{{ vehicle.photo.url }}" alt="" class="w-14 h-14 rounded-2xl object-cover border border-slate-700 shrink-0">
+          {% else %}
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white shrink-0">
+            <i class="fa-solid fa-car text-xl"></i>
+          </div>
+          {% endif %}
+          <div>
+            <h1 class="font-display font-bold text-2xl text-white">{{ vehicle.display_name }}</h1>
+            <p class="text-sm text-gray-500 font-mono">{{ vehicle.license_plate }}</p>
+            <div class="flex items-center gap-2 mt-2">
+              {% if vehicle.status == 'active' %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+              {% elif vehicle.status == 'sold' %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Sold / Transferred</span>
+              {% else %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inactive</span>
+              {% endif %}
+              {% if vehicle.is_self_registered %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-blue-400"><i class="fa-solid fa-globe text-[10px]"></i> Self-registered</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <a href="{% url 'vehicles:edit' vehicle.public_id %}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+            <i class="fa-solid fa-pen text-xs"></i> Edit
+          </a>
+          {% if vehicle.status != 'active' %}
+          <form method="post" action="{% url 'vehicles:set_status' vehicle.public_id 'active' %}">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-2 text-sm font-medium text-green-400 px-4 py-2 rounded-lg border border-green-500/30 hover:bg-green-500/10 transition-colors">
+              <i class="fa-solid fa-check text-xs"></i> Reactivate
+            </button>
+          </form>
+          {% else %}
+          <form method="post" action="{% url 'vehicles:set_status' vehicle.public_id 'inactive' %}" onsubmit="return confirm('Mark {{ vehicle.license_plate|escapejs }} as inactive?');">
+            {% csrf_token %}
+            <button type="submit" class="inline-flex items-center gap-2 text-sm font-medium text-pink-400 px-4 py-2 rounded-lg border border-pink-500/30 hover:bg-pink-500/5 transition-colors">
+              <i class="fa-solid fa-ban text-xs"></i> Mark Inactive
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6 mt-8 pt-6 border-t border-slate-700">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Customer</p>
+          <a href="{% url 'customers:detail' vehicle.customer.public_id %}" class="text-sm text-blue-400 hover:underline">{{ vehicle.customer.full_name }}</a>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Type</p>
+          <p class="text-sm text-white">{{ vehicle.get_vehicle_type_display }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Color</p>
+          <p class="text-sm text-white">{{ vehicle.color }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Registered</p>
+          <p class="text-sm text-white">{{ vehicle.created_at|date:"F j, Y" }}</p>
+        </div>
+      </div>
+
+      {% if vehicle.notes %}
+      <div class="mt-6 pt-6 border-t border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Staff Notes</p>
+        <p class="text-sm text-gray-500 whitespace-pre-line">{{ vehicle.notes }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 mb-6">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-display font-semibold text-lg text-white">Bookings</h2>
+        <a href="{% url 'bookings:create' %}?customer={{ vehicle.customer.public_id }}" class="inline-flex items-center gap-2 text-xs font-semibold text-white px-3 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          <i class="fa-solid fa-plus text-[10px]"></i> New Booking
+        </a>
+      </div>
+      {% with recent_bookings=vehicle.bookings.all|slice:":5" %}
+      {% if recent_bookings %}
+      <div class="divide-y divide-slate-700">
+        {% for booking in recent_bookings %}
+        <a href="{% url 'bookings:detail' booking.public_id %}" class="flex items-center justify-between py-3 hover:text-blue-400">
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-white truncate">{{ booking.service.name }}</p>
+            <p class="text-xs text-gray-500">{{ booking.scheduled_date|date:"M j, Y" }} at {{ booking.scheduled_time|time:"g:i A" }}</p>
+          </div>
+          {% include 'bookings/_status_badge.html' with status=booking.status %}
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-sm text-gray-500">No bookings yet.</p>
+      {% endif %}
+      {% endwith %}
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8">
+      <h2 class="font-display font-semibold text-lg text-white mb-5">Vehicle History</h2>
+      {% if history %}
+      <div class="space-y-4">
+        {% for entry in history %}
+        <div class="flex gap-3">
+          <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-clock-rotate-left text-gray-500 text-xs"></i>
+          </div>
+          <div>
+            <p class="text-sm text-white">{{ entry.description }}</p>
+            <p class="text-xs text-gray-500">
+              {{ entry.created_at|date:"M j, Y g:i A" }}
+              {% if entry.user %} · by {{ entry.user.get_full_name|default:entry.user.username }}{% endif %}
+            </p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-sm text-gray-500">No activity recorded yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

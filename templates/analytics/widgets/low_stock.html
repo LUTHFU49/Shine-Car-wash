@@ -1,0 +1,19 @@
+<div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 {{ widget.span }}">
+  <div class="flex items-center gap-2 mb-4">
+    <i class="fa-solid {{ widget.icon }} text-pink-400"></i>
+    <h3 class="font-display font-semibold text-white text-sm">{{ widget.title }}</h3>
+    {% if widget.data.count %}<span class="ml-auto text-xs font-semibold text-white bg-pink-500 rounded-full px-2 py-0.5">{{ widget.data.count }}</span>{% endif %}
+  </div>
+  {% if widget.data.items %}
+  <div class="space-y-3">
+    {% for item in widget.data.items %}
+    <div class="flex items-center justify-between text-sm">
+      <p class="text-white font-medium truncate">{{ item.name }}</p>
+      <p class="text-pink-400 font-medium shrink-0 ml-3">{{ item.available_stock }} / {{ item.reorder_level }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-sm text-gray-500">Everything is comfortably stocked.</p>
+  {% endif %}
+</div>

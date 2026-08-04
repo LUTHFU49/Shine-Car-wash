@@ -1,0 +1,147 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{{ item.name }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{{ item.name }}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'inventory:item_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Items
+    </a>
+
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ item.sku }} &middot; {{ item.category.name }}</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ item.name }}</h1>
+        {% if item.is_active %}
+          <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400 mt-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+        {% else %}
+          <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 mt-2"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inactive</span>
+        {% endif %}
+      </div>
+      {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+      <div class="flex items-center gap-3">
+        <a href="{% url 'inventory:item_edit' item.public_id %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Edit</a>
+        {% if item.is_active %}
+        <form method="post" action="{% url 'inventory:item_set_status' item.public_id 'inactive' %}">{% csrf_token %}<button type="submit" class="text-sm font-medium text-pink-400 border border-slate-700 rounded-lg px-4 py-2">Deactivate</button></form>
+        {% else %}
+        <form method="post" action="{% url 'inventory:item_set_status' item.public_id 'active' %}">{% csrf_token %}<button type="submit" class="text-sm font-medium text-green-400 border border-slate-700 rounded-lg px-4 py-2">Activate</button></form>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4">
+        <p class="text-xs text-gray-500 mb-1">On Hand</p>
+        <p class="font-display font-bold text-xl text-white">{{ item.current_stock }} <span class="text-sm font-normal text-gray-500">{{ item.get_unit_display }}</span></p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4">
+        <p class="text-xs text-gray-500 mb-1">Reserved</p>
+        <p class="font-display font-bold text-xl text-white">{{ item.reserved_stock }}</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4">
+        <p class="text-xs text-gray-500 mb-1">Available</p>
+        <p class="font-display font-bold text-xl {% if item.is_low_stock %}text-pink-400{% else %}text-white{% endif %}">{{ item.available_stock }}</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4">
+        <p class="text-xs text-gray-500 mb-1">Stock Value</p>
+        <p class="font-display font-bold text-xl text-white">KSh {{ item.stock_value|floatformat:2 }}</p>
+      </div>
+    </div>
+
+    {% if item.is_low_stock %}
+    <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-4 mb-8 flex items-center gap-3">
+      <i class="fa-solid fa-triangle-exclamation text-pink-400"></i>
+      <p class="text-sm text-white">Available stock is at or below the reorder level of {{ item.reorder_level }} {{ item.get_unit_display }}. Consider raising a purchase order.</p>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+        <h2 class="font-display font-semibold text-white mb-4">Adjust Stock</h2>
+        <form method="post" action="{% url 'inventory:item_adjust_stock' item.public_id %}" class="space-y-4">
+          {% csrf_token %}
+          {% include 'inventory/_form_fields.html' with form=adjustment_form %}
+          <button type="submit" class="text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Record Adjustment</button>
+        </form>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+        <h2 class="font-display font-semibold text-white mb-4">Report Damaged Stock</h2>
+        <form method="post" action="{% url 'inventory:item_report_damage' item.public_id %}" class="space-y-4">
+          {% csrf_token %}
+          {% include 'inventory/_form_fields.html' with form=damage_form %}
+          <button type="submit" class="text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-pink-500">Record Damage</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if item.track_expiry %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden mb-8">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Active Batches</h2></div>
+      {% if batches %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr><th class="px-5 py-3 font-medium">Batch</th><th class="px-5 py-3 font-medium">Remaining</th><th class="px-5 py-3 font-medium">Expiry</th><th class="px-5 py-3 font-medium">Unit Cost</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for batch in batches %}
+          <tr class="{% if batch.is_expired %}bg-pink-500/5{% endif %}">
+            <td class="px-5 py-3 text-gray-500">{{ batch.batch_number|default:batch.pk }}</td>
+            <td class="px-5 py-3 text-white">{{ batch.quantity_remaining }}</td>
+            <td class="px-5 py-3 {% if batch.is_expired %}text-pink-400 font-medium{% else %}text-gray-500{% endif %}">{{ batch.expiry_date|default:"—" }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ batch.unit_cost }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-5 text-sm text-gray-500">No active batches.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if requirements %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden mb-8">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Used By Services</h2></div>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Service</th><th class="px-5 py-3 font-medium">Qty per Booking</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for requirement in requirements %}
+          <tr><td class="px-5 py-3 text-white">{{ requirement.service.name }}</td><td class="px-5 py-3 text-gray-500">{{ requirement.quantity_required }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-700 flex items-center justify-between">
+        <h2 class="font-display font-semibold text-white">Recent Stock Movements</h2>
+        <a href="{% url 'inventory:movement_list' %}?item={{ item.public_id }}" class="text-xs font-medium text-blue-400">View all</a>
+      </div>
+      {% if movements %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr><th class="px-5 py-3 font-medium">Date</th><th class="px-5 py-3 font-medium">Type</th><th class="px-5 py-3 font-medium">Qty</th><th class="px-5 py-3 font-medium">Reason / Booking</th><th class="px-5 py-3 font-medium">By</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for movement in movements %}
+          <tr>
+            <td class="px-5 py-3 text-gray-500">{{ movement.created_at|date:"M j, H:i" }}</td>
+            <td class="px-5 py-3 text-white">{{ movement.get_movement_type_display }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ movement.quantity }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ movement.booking.booking_code|default:movement.reason|default:"—" }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ movement.performed_by.get_full_name|default:"System" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-5 text-sm text-gray-500">No stock movements recorded yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

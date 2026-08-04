@@ -1,0 +1,19 @@
+{% extends 'emails/base_email.html' %}
+{% block email_body %}
+<h1 style="margin:0 0 16px 0; font-size:22px; font-family: Arial, Helvetica, sans-serif;">Welcome to the team, {{ user.first_name|default:user.username }}!</h1>
+<p style="margin:0 0 16px 0; font-size:15px; line-height:1.6; color:#0B1120; font-family: Arial, Helvetica, sans-serif;">
+  You've been added as a staff member at {{ SITE_NAME }}. Set your password below to get started.
+</p>
+<table role="presentation" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="border-radius:8px;" bgcolor="#0013DE">
+      <a href="{{ set_password_url }}" target="_blank" style="display:inline-block; padding:14px 28px; font-family: Arial, Helvetica, sans-serif; font-size:15px; font-weight:bold; color:#ffffff; text-decoration:none; border-radius:8px;">
+        Set My Password
+      </a>
+    </td>
+  </tr>
+</table>
+<p style="margin:20px 0 0 0; font-size:13px; line-height:1.6; color:#4B5468; font-family: Arial, Helvetica, sans-serif;">
+  This link expires in 2 hours for security. If it expires, use "Forgot Password" on the login page to request a new one.
+</p>
+{% endblock %}

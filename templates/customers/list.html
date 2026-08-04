@@ -1,0 +1,141 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Customers — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Customers{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-2">
+        <i class="fa-solid fa-users mr-1.5"></i>Customers
+      </p>
+      <h1 class="font-display font-bold text-2xl sm:text-3xl text-white">{{ total_count }} customer{{ total_count|pluralize }}</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="{% url 'customers:export_csv' %}?{{ querystring }}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-300 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300">
+        <i class="fa-solid fa-file-csv text-xs"></i> CSV
+      </a>
+      <a href="{% url 'customers:export_excel' %}?{{ querystring }}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-300 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition-all duration-300">
+        <i class="fa-solid fa-file-excel text-xs"></i> Excel
+      </a>
+      <a href="{% url 'customers:create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-lg hover:shadow-pink-500/25 hover:scale-105 transition-all duration-300">
+        <i class="fa-solid fa-plus text-xs"></i> Add Customer
+      </a>
+    </div>
+  </div>
+
+  <form method="get" class="rounded-2xl bg-slate-800 border border-slate-700 p-4 grid sm:grid-cols-4 gap-3">
+    <div class="sm:col-span-2">
+      <label for="id_q" class="sr-only">Search</label>
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+        <input type="text" id="id_q" name="q" value="{{ search_form.q.value|default:'' }}"
+               placeholder="Search name, phone, email, or CUST- code"
+               class="w-full rounded-lg border border-slate-700 bg-slate-900/60 pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors">
+      </div>
+    </div>
+    <div>
+      <select name="status" class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none transition-colors">
+        {% for value, label in search_form.fields.status.choices %}
+        <option value="{{ value }}" {% if search_form.status.value == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <select name="source" class="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none transition-colors">
+        {% for value, label in search_form.fields.source.choices %}
+        <option value="{{ value }}" {% if search_form.source.value == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="sm:col-span-4 flex items-center gap-3">
+      <select name="sort" class="rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2.5 text-sm text-white focus:border-blue-500 outline-none transition-colors">
+        {% for value, label in search_form.fields.sort.choices %}
+        <option value="{{ value }}" {% if search_form.sort.value == value or not search_form.sort.value and value == '-created_at' %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300">
+        Filter
+      </button>
+      {% if request.GET %}
+      <a href="{% url 'customers:list' %}" class="text-sm text-gray-500 hover:text-white transition-colors">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+
+  <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+    {% if page_obj.object_list %}
+    <table class="w-full text-sm">
+      <thead class="bg-slate-900/50 text-left text-gray-500">
+        <tr>
+          <th class="px-5 py-3 font-medium">Customer</th>
+          <th class="px-5 py-3 font-medium">Contact</th>
+          <th class="px-5 py-3 font-medium">Source</th>
+          <th class="px-5 py-3 font-medium">Status</th>
+          <th class="px-5 py-3 font-medium">Joined</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-700">
+        {% for customer in page_obj.object_list %}
+        <tr class="hover:bg-slate-700/30 transition-colors">
+          <td class="px-5 py-3">
+            <a href="{% url 'customers:detail' customer.public_id %}" class="font-medium text-white hover:text-blue-400 transition-colors">{{ customer.full_name }}</a>
+            <p class="text-xs text-gray-500 font-mono">{{ customer.customer_code }}</p>
+          </td>
+          <td class="px-5 py-3 text-gray-400">
+            <p>{{ customer.phone_number }}</p>
+            {% if customer.email %}<p class="text-xs">{{ customer.email }}</p>{% endif %}
+          </td>
+          <td class="px-5 py-3">
+            {% if customer.is_linked_account %}
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-blue-400"><i class="fa-solid fa-globe text-[10px]"></i> Online</span>
+            {% else %}
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><i class="fa-solid fa-store text-[10px]"></i> Walk-in</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3">
+            {% if customer.is_active %}
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+            {% else %}
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span> Deactivated</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3 text-gray-400">{{ customer.created_at|date:"M j, Y" }}</td>
+          <td class="px-5 py-3 text-right">
+            <a href="{% url 'customers:detail' customer.public_id %}" class="text-gray-500 hover:text-blue-400 transition-colors"><i class="fa-solid fa-chevron-right text-xs"></i></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="p-12 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-700 flex items-center justify-center">
+        <i class="fa-solid fa-users text-2xl text-gray-500"></i>
+      </div>
+      <p class="font-medium text-white mb-1">No customers found</p>
+      <p class="text-sm text-gray-500 mb-6">Try adjusting your search or filters, or add your first customer.</p>
+      <a href="{% url 'customers:create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300">
+        <i class="fa-solid fa-plus text-xs"></i> Add Customer
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class="flex items-center justify-between text-sm">
+    <p class="text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+    <div class="flex items-center gap-2">
+      {% if page_obj.has_previous %}
+      <a href="?{{ querystring }}&page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-gray-300 hover:border-blue-500/50 transition-all duration-300">Previous</a>
+      {% endif %}
+      {% if page_obj.has_next %}
+      <a href="?{{ querystring }}&page={{ page_obj.next_page_number }}" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-gray-300 hover:border-blue-500/50 transition-all duration-300">Next</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

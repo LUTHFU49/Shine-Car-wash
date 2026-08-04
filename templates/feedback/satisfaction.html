@@ -1,0 +1,92 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Satisfaction — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Satisfaction{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Last 30 Days</p>
+        <h1 class="font-display font-bold text-2xl text-white">Customer Satisfaction</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="{% url 'feedback:review_list' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Reviews</a>
+        <a href="{% url 'feedback:feedback_list' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Complaints &amp; Suggestions</a>
+        <a href="{% url 'feedback:satisfaction_export' %}?format=csv" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-csv mr-1"></i> CSV</a>
+        <a href="{% url 'feedback:satisfaction_export' %}?format=excel" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-excel mr-1"></i> Excel</a>
+        <a href="{% url 'feedback:satisfaction_export' %}?format=pdf" class="text-xs font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-3 py-2"><i class="fa-solid fa-file-pdf mr-1"></i> PDF</a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <p class="text-xs text-gray-500 mb-1">Average Rating</p>
+        <p class="font-display font-bold text-2xl text-white">{{ average_rating|default:"—" }}{% if average_rating %}<span class="text-sm font-normal text-gray-500"> / 5</span>{% endif %}</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <p class="text-xs text-gray-500 mb-1">Reviews</p>
+        <p class="font-display font-bold text-2xl text-white">{{ review_count }}</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <p class="text-xs text-gray-500 mb-1">Feedback Items</p>
+        <p class="font-display font-bold text-2xl text-white">{{ feedback_count }}</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <p class="text-xs text-gray-500 mb-1">Open Complaints</p>
+        <p class="font-display font-bold text-2xl {% if open_complaints %}text-pink-400{% else %}text-white{% endif %}">{{ open_complaints }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 lg:col-span-2">
+        <h2 class="font-display font-semibold text-white mb-4">Rating Trend</h2>
+        <canvas id="trendChart" height="90"></canvas>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+        <h2 class="font-display font-semibold text-white mb-4">Rating Distribution</h2>
+        <canvas id="distributionChart" height="140"></canvas>
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Recent Reviews</h2></div>
+      {% if recent_reviews %}
+      <table class="w-full text-sm">
+        <tbody class="divide-y divide-slate-700">
+          {% for review in recent_reviews %}
+          <tr class="hover:bg-slate-700/60 cursor-pointer" onclick="window.location='{% url 'feedback:review_detail' review.public_id %}'">
+            <td class="px-5 py-3 text-white">{{ review.customer.first_name }} {{ review.customer.last_name }}</td>
+            <td class="px-5 py-3 text-amber-500">{% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</td>
+            <td class="px-5 py-3 text-gray-500 truncate max-w-xs">{{ review.comment|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-6 text-sm text-gray-500">No reviews in this range.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: [{% for row in trend %}'{{ row.day|date:"M j" }}',{% endfor %}],
+      datasets: [{ label: 'Average Rating', data: [{% for row in trend %}{{ row.average|floatformat:2 }},{% endfor %}], borderColor: '#0013DE', backgroundColor: 'rgba(0,19,222,0.15)', fill: true, tension: 0.3 }],
+    },
+    options: { scales: { y: { min: 0, max: 5 } }, plugins: { legend: { display: false } } },
+  });
+  new Chart(document.getElementById('distributionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['1', '2', '3', '4', '5'],
+      datasets: [{ data: [{{ distribution.1 }}, {{ distribution.2 }}, {{ distribution.3 }}, {{ distribution.4 }}, {{ distribution.5 }}], backgroundColor: '#FF0090' }],
+    },
+    options: { plugins: { legend: { display: false } } },
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% for field in form %}
+  <div>
+    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">
+      {{ field.label }}{% if not field.field.required %} <span class="text-gray-500 font-normal">(optional)</span>{% endif %}
+    </label>
+    {{ field }}
+    {% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
+    {% for error in field.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+  </div>
+{% endfor %}
+{% if form.non_field_errors %}
+  <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-3">
+    {% for error in form.non_field_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+  </div>
+{% endif %}

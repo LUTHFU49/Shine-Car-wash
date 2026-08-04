@@ -1,0 +1,75 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}My Vehicles — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}My Vehicles{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">My Vehicles</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ vehicles|length }} vehicle{{ vehicles|length|pluralize }}</h1>
+      </div>
+      <a href="{% url 'vehicles:my_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+        <i class="fa-solid fa-plus text-xs"></i> Add Vehicle
+      </a>
+    </div>
+
+    {% if vehicles %}
+    <div class="grid sm:grid-cols-2 gap-5">
+      {% for vehicle in vehicles %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <div class="flex items-start gap-3">
+          {% if vehicle.photo %}
+          <img src="{{ vehicle.photo.url }}" alt="" class="w-12 h-12 rounded-xl object-cover border border-slate-700 shrink-0">
+          {% else %}
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center text-white shrink-0">
+            <i class="fa-solid fa-car"></i>
+          </div>
+          {% endif %}
+          <div class="flex-1 min-w-0">
+            <p class="font-display font-semibold text-white">{{ vehicle.display_name }}</p>
+            <p class="text-xs text-gray-500 font-mono">{{ vehicle.license_plate }}</p>
+            <div class="mt-2">
+              {% if vehicle.status == 'active' %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+              {% elif vehicle.status == 'sold' %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Sold</span>
+              {% else %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inactive</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 mt-4 pt-4 border-t border-slate-700">
+          <a href="{% url 'vehicles:my_edit' vehicle.public_id %}" class="flex-1 text-center text-xs font-medium text-white px-3 py-2 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+            <i class="fa-solid fa-pen text-[10px] mr-1"></i> Edit
+          </a>
+          {% if vehicle.status == 'active' %}
+          <form method="post" action="{% url 'vehicles:my_mark_sold' vehicle.public_id %}" class="flex-1" onsubmit="return confirm('Mark {{ vehicle.license_plate|escapejs }} as sold? This removes it from your active vehicles.');">
+            {% csrf_token %}
+            <button type="submit" class="w-full text-center text-xs font-medium text-pink-400 px-3 py-2 rounded-lg border border-pink-500/30 hover:bg-pink-500/5 transition-colors">
+              <i class="fa-solid fa-tag text-[10px] mr-1"></i> Mark Sold
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-12 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-slate-700 flex items-center justify-center mx-auto mb-4">
+        <i class="fa-solid fa-car text-gray-500"></i>
+      </div>
+      <p class="font-medium text-white mb-1">No vehicles yet</p>
+      <p class="text-sm text-gray-500 mb-6">Add a vehicle so you can book a wash for it.</p>
+      <a href="{% url 'vehicles:my_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+        <i class="fa-solid fa-plus text-xs"></i> Add Vehicle
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

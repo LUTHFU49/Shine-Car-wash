@@ -1,0 +1,10 @@
+{% extends 'emails/base_email.html' %}
+{% block email_body %}
+<h1 style="margin:0 0 16px 0; font-size:22px; font-family: Arial, Helvetica, sans-serif;">Your account has been deactivated</h1>
+<p style="margin:0 0 16px 0; font-size:15px; line-height:1.6; color:#0B1120; font-family: Arial, Helvetica, sans-serif;">
+  Hi {{ user.first_name|default:user.username }}, your {{ SITE_NAME }} account has been deactivated as requested.
+</p>
+<p style="margin:0; font-size:15px; line-height:1.6; color:#4B5468; font-family: Arial, Helvetica, sans-serif;">
+  If this wasn't you, please contact our support team right away.
+</p>
+{% endblock %}

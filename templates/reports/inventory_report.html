@@ -1,0 +1,56 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Inventory Report — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Inventory Report{% endblock %}
+{% block content %}
+<section class="py-8 print-area">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:hub' %}" class="no-print text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reports
+    </a>
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ start }} to {{ end }}</p>
+        <h1 class="font-display font-bold text-2xl text-white">Inventory Report</h1>
+      </div>
+      <a href="{% url 'inventory:dashboard' %}" class="no-print text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Open Inventory Module</a>
+    </div>
+
+    {% include 'reports/_report_toolbar.html' with export_url_name='reports:inventory_report_export' %}
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Active Items</p><p class="font-display font-bold text-xl text-white">{{ total_items }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Low Stock</p><p class="font-display font-bold text-xl {% if low_stock_count %}text-pink-400{% else %}text-white{% endif %}">{{ low_stock_count }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Current Valuation</p><p class="font-display font-bold text-xl text-white">KSh {{ valuation_total|floatformat:0 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Purchases in Range</p><p class="font-display font-bold text-xl text-white">KSh {{ purchases_total|floatformat:0 }}</p></div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden mb-8">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Top Consumed Items in Range</h2></div>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Item</th><th class="px-5 py-3 font-medium">Unit</th><th class="px-5 py-3 font-medium">Quantity Used</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for row in top_consumed %}
+          <tr><td class="px-5 py-3 text-white">{{ row.item__name }}</td><td class="px-5 py-3 text-gray-500">{{ row.item__unit }}</td><td class="px-5 py-3 text-white font-medium">{{ row.total_used }}</td></tr>
+          {% empty %}
+          <tr><td colspan="3" class="px-5 py-8 text-center text-gray-500">No booking-linked stock usage in this range.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Currently Low on Stock</h2></div>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Item</th><th class="px-5 py-3 font-medium">Available</th><th class="px-5 py-3 font-medium">Reorder Level</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for item in low_stock_items %}
+          <tr><td class="px-5 py-3 text-white">{{ item.name }}</td><td class="px-5 py-3 text-pink-400 font-medium">{{ item.available_stock }}</td><td class="px-5 py-3 text-gray-500">{{ item.reorder_level }}</td></tr>
+          {% empty %}
+          <tr><td colspan="3" class="px-5 py-8 text-center text-gray-500">Everything is comfortably stocked.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

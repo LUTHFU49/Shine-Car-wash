@@ -1,0 +1,50 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Vehicles Report — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Vehicles Report{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8 print-area">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:hub' %}" class="no-print text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reports
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ start }} to {{ end }}</p>
+      <h1 class="font-display font-bold text-2xl text-white">Vehicles Report</h1>
+    </div>
+
+    {% include 'reports/_report_toolbar.html' with export_url_name='reports:vehicles_report_export' %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 lg:col-span-1">
+        <p class="text-xs text-gray-500 mb-1">Total Vehicles on File</p>
+        <p class="font-display font-bold text-2xl text-white mb-4">{{ total_vehicles }}</p>
+        <h2 class="font-display font-semibold text-white mb-3 text-sm">By Type</h2>
+        <canvas id="typeChart" height="200"></canvas>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden lg:col-span-2">
+        <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Most Serviced Vehicles</h2></div>
+        <table class="w-full text-sm">
+          <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Vehicle</th><th class="px-5 py-3 font-medium">Owner</th><th class="px-5 py-3 font-medium">Bookings</th></tr></thead>
+          <tbody class="divide-y divide-slate-700">
+            {% for vehicle in most_serviced %}
+            <tr><td class="px-5 py-3 text-white">{{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.license_plate }})</td><td class="px-5 py-3 text-gray-500">{{ vehicle.customer.first_name }} {{ vehicle.customer.last_name }}</td><td class="px-5 py-3 text-gray-500">{{ vehicle.booking_count }}</td></tr>
+            {% empty %}
+            <tr><td colspan="3" class="px-5 py-8 text-center text-gray-500">No bookings in this range.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  new Chart(document.getElementById('typeChart'), {
+    type: 'doughnut',
+    data: { labels: [{% for row in by_type %}'{{ row.vehicle_type }}',{% endfor %}], datasets: [{ data: [{% for row in by_type %}{{ row.count }},{% endfor %}], backgroundColor: ['#0013DE','#FF0090','#5B69FF','#FF66BC','#000B8F','#A6005E','#B3B9F6','#FFBFE3','#94A3B8'], borderWidth: 0 }] },
+    options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } },
+  });
+</script>
+{% endblock %}

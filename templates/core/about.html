@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<!-- ============ ABOUT HERO ============ -->
+<section class="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28">
+  <!-- Background Image -->
+  <div class="absolute inset-0 -z-10">
+    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1920&q=80" 
+         alt="About ShineHub team" 
+         class="w-full h-full object-cover"
+         loading="eager">
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-900/90 to-blue-900/95"></div>
+    <!-- Accent overlay -->
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);"></div>
+  </div>
+
+  <!-- Grid pattern -->
+  <div class="absolute inset-0 -z-10">
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 32px 32px;"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div class="reveal">
+        <div class="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+          <i class="fa-solid fa-building text-white text-2xl"></i>
+        </div>
+        <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-4">About {{ SITE_NAME }}</p>
+        <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white mb-6">
+          Built for real wash bays,<br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">not just spreadsheets.</span>
+        </h1>
+        <p class="text-lg text-gray-300 leading-relaxed mb-8">
+          {{ SITE_NAME }} is developed by {{ COMPANY_NAME }} to give car washes of every size a single,
+          reliable system for bookings, payments, inventory, staff, and reporting. We're on a mission to 
+          digitize Africa's car wash industry, one bay at a time.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="{% url 'accounts:register' %}" class="px-6 py-3.5 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+            <i class="fa-solid fa-rocket text-xs mr-2"></i>
+            Get Started
+          </a>
+          <a href="{% url 'core:contact' %}" class="px-6 py-3.5 rounded-xl font-semibold text-white border-2 border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+            <i class="fa-solid fa-envelope text-xs mr-2"></i>
+            Contact Us
+          </a>
+        </div>
+      </div>
+
+      <div class="relative reveal">
+        <div class="absolute -inset-4 bg-gradient-to-r from-blue-500 to-pink-500 rounded-2xl blur-xl opacity-20 animate-pulse"></div>
+        <div class="relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="text-center">
+              <p class="font-display font-bold text-4xl text-white">2+</p>
+              <p class="text-sm text-gray-400 mt-1">Years Experience</p>
+            </div>
+            <div class="text-center">
+              <p class="font-display font-bold text-4xl text-white">50+</p>
+              <p class="text-sm text-gray-400 mt-1">Active Branches</p>
+            </div>
+            <div class="text-center">
+              <p class="font-display font-bold text-4xl text-white">15K+</p>
+              <p class="text-sm text-gray-400 mt-1">Happy Customers</p>
+            </div>
+            <div class="text-center">
+              <p class="font-display font-bold text-4xl text-white">99.9%</p>
+              <p class="text-sm text-gray-400 mt-1">Uptime</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #3B82F6 0%, #EC4899 50%, #3B82F6 100%);"></div>
+
+<!-- ============ MISSION & VISION ============ -->
+<section class="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="grid sm:grid-cols-3 gap-8">
+      <!-- Mission -->
+      <div class="reveal group">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center border border-gray-100 dark:border-slate-700 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 h-full">
+          <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            <i class="fa-solid fa-bullseye text-white text-2xl"></i>
+          </div>
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-4">Our Mission</h3>
+          <p class="text-ink-soft dark:text-gray-400 leading-relaxed">
+            To empower car wash businesses across Africa with smart digital tools that streamline operations, 
+            boost revenue, and deliver exceptional customer experiences.
+          </p>
+        </div>
+      </div>
+
+      <!-- Vision -->
+      <div class="reveal group">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center border border-gray-100 dark:border-slate-700 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-500 h-full">
+          <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            <i class="fa-solid fa-eye text-white text-2xl"></i>
+          </div>
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-4">Our Vision</h3>
+          <p class="text-ink-soft dark:text-gray-400 leading-relaxed">
+            To become Africa's leading car wash management platform, setting the standard for digital 
+            transformation in the automotive care industry.
+          </p>
+        </div>
+      </div>
+
+      <!-- Values -->
+      <div class="reveal group">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 text-center border border-gray-100 dark:border-slate-700 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500 h-full">
+          <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            <i class="fa-solid fa-heart text-white text-2xl"></i>
+          </div>
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-4">Our Values</h3>
+          <p class="text-ink-soft dark:text-gray-400 leading-relaxed">
+            Innovation, reliability, and customer-centricity drive everything we build. We believe 
+            technology should simplify, not complicate.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY SHINEHUB ============ -->
+<section class="py-20 bg-white dark:bg-slate-800 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-pink-500/[0.02]"></div>
+  
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 mb-3">Why Choose Us</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white mb-6">
+        The smarter way to run your car wash
+      </h2>
+      <p class="text-lg text-ink-soft dark:text-gray-400">
+        We've replaced notebooks, WhatsApp groups, and guesswork with one powerful platform.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="reveal group text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-200 dark:border-blue-800 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+          <i class="fa-solid fa-bolt text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-600"></i>
+        </div>
+        <h4 class="font-display font-semibold text-lg text-ink dark:text-white mb-2">Lightning Fast</h4>
+        <p class="text-sm text-ink-soft dark:text-gray-400">Book a wash in under 60 seconds</p>
+      </div>
+
+      <div class="reveal group text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-pink-500/10 to-rose-500/10 border border-pink-200 dark:border-pink-800 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+          <i class="fa-solid fa-shield-halved text-3xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500"></i>
+        </div>
+        <h4 class="font-display font-semibold text-lg text-ink dark:text-white mb-2">Secure Payments</h4>
+        <p class="text-sm text-ink-soft dark:text-gray-400">M-Pesa integration with bank-grade security</p>
+      </div>
+
+      <div class="reveal group text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-200 dark:border-purple-800 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+          <i class="fa-solid fa-chart-line text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-600"></i>
+        </div>
+        <h4 class="font-display font-semibold text-lg text-ink dark:text-white mb-2">Real-time Analytics</h4>
+        <p class="text-sm text-ink-soft dark:text-gray-400">Track revenue, queue status, and performance</p>
+      </div>
+
+      <div class="reveal group text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-200 dark:border-green-800 flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+          <i class="fa-solid fa-headset text-3xl text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-500"></i>
+        </div>
+        <h4 class="font-display font-semibold text-lg text-ink dark:text-white mb-2">24/7 Support</h4>
+        <p class="text-sm text-ink-soft dark:text-gray-400">Dedicated support team always ready to help</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OUR STORY / TIMELINE ============ -->
+<section class="py-20 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 relative overflow-hidden">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/5 to-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="text-center mb-16 reveal">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-600 mb-3">Our Journey</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white">
+        From idea to impact
+      </h2>
+    </div>
+
+    <div class="space-y-12">
+      <div class="reveal flex items-start gap-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shrink-0 mt-1">
+          <i class="fa-solid fa-lightbulb text-white"></i>
+        </div>
+        <div>
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-2">2022 — The Spark</h3>
+          <p class="text-ink-soft dark:text-gray-400 leading-relaxed">
+            After watching car wash owners struggle with manual bookings and lost customer data, 
+            {{ COMPANY_NAME }} founder envisioned a digital solution that would transform the industry.
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal flex items-start gap-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shrink-0 mt-1">
+          <i class="fa-solid fa-code text-white"></i>
+        </div>
+        <div>
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-2">2023 — Building the Platform</h3>
+          <p class="text-ink-soft dark:text-gray-400 leading-relaxed">
+            Months of development, testing with real car wash owners, and iterating based on feedback 
+            led to the first version of {{ SITE_NAME }}.
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal flex items-start gap-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shrink-0 mt-1">
+          <i class="fa-solid fa-rocket text-white"></i>
+        </div>
+        <div>
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-2">2024 — Launch & Growth</h3>
+          <p class="text-ink-soft dark:text-gray-400 leading-relaxed">
+            Official launch with 10 pilot branches. Within months, {{ SITE_NAME }} was processing 
+            thousands of washes and helping businesses grow revenue by 30%.
+          </p>
+        </div>
+      </div>
+
+      <div class="reveal flex items-start gap-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shrink-0 mt-1">
+          <i class="fa-solid fa-globe text-white"></i>
+        </div>
+        <div>
+          <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-2">2025 — Scaling Across Kenya</h3>
+          <p class="text-ink-soft dark:text-gray-400 leading-relaxed">
+            Expanding to serve car washes nationwide with new features like M-Pesa integration, 
+            advanced analytics, and multi-branch management.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEAM SECTION ============ -->
+<section class="py-20 bg-white dark:bg-slate-800 relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="text-center mb-16 reveal">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 mb-3">Our Team</p>
+      <h2 class="font-display font-bold text-4xl sm:text-5xl tracking-tight text-ink dark:text-white mb-6">
+        Meet the people behind {{ SITE_NAME }}
+      </h2>
+      <p class="text-lg text-ink-soft dark:text-gray-400 max-w-2xl mx-auto">
+        A passionate team dedicated to transforming car wash management across Africa.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Team Member 1 -->
+      <div class="reveal group text-center">
+        <div class="relative mb-6 inline-block">
+          <div class="w-32 h-32 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 p-1 group-hover:scale-105 transition-all duration-300">
+            <div class="w-full h-full rounded-2xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+              <i class="fa-solid fa-user text-5xl text-gray-400 dark:text-gray-500"></i>
+            </div>
+          </div>
+        </div>
+        <h4 class="font-display font-semibold text-lg text-ink dark:text-white">Brenda Kanini</h4>
+        <p class="text-sm text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 font-medium">Founder & CEO</p>
+        <p class="text-xs text-ink-soft dark:text-gray-400 mt-2">Visionary leader with 10+ years in tech</p>
+      </div>
+
+      <!-- Team Member 2 -->
+      <div class="reveal group text-center">
+        <div class="relative mb-6 inline-block">
+          <div class="w-32 h-32 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-1 group-hover:scale-105 transition-all duration-300">
+            <div class="w-full h-full rounded-2xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+              <i class="fa-solid fa-user text-5xl text-gray-400 dark:text-gray-500"></i>
+            </div>
+          </div>
+        </div>
+        <h4 class="font-display font-semibold text-lg text-ink dark:text-white">Tech Lead</h4>
+        <p class="text-sm text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 font-medium">CTO</p>
+        <p class="text-xs text-ink-soft dark:text-gray-400 mt-2">Full-stack developer & system architect</p>
+      </div>
+
+      <!-- Team Member 3 -->
+      <div class="reveal group text-center">
+        <div class="relative mb-6 inline-block">
+          <div class="w-32 h-32 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 p-1 group-hover:scale-105 transition-all duration-300">
+            <div class="w-full h-full rounded-2xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+              <i class="fa-solid fa-user text-5xl text-gray-400 dark:text-gray-500"></i>
+            </div>
+          </div>
+        </div>
+        <h4 class="font-display font-semibold text-lg text-ink dark:text-white">Customer Success</h4>
+        <p class="text-sm text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 font-medium">Head of Support</p>
+        <p class="text-xs text-ink-soft dark:text-gray-400 mt-2">Ensuring every customer succeeds</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="py-20 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
+  </div>
+  
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative reveal">
+    <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+      <i class="fa-solid fa-handshake text-white text-3xl"></i>
+    </div>
+    <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mb-4">Ready to join the {{ SITE_NAME }} family?</h2>
+    <p class="text-gray-400 text-lg mb-8">
+      Hundreds of car washes trust us to run their daily operations. Be part of the digital revolution.
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <a href="{% url 'accounts:register' %}" class="px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+        <i class="fa-solid fa-rocket text-xs mr-2"></i>
+        Start Free Trial
+      </a>
+      <a href="{% url 'core:contact' %}" class="px-8 py-4 rounded-xl font-semibold text-white border-2 border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+        <i class="fa-solid fa-phone text-xs mr-2"></i>
+        Talk to Sales
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Reveal animations
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+</script>
+
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger children */
+  .grid > .reveal:nth-child(1) { transition-delay: 0.1s; }
+  .grid > .reveal:nth-child(2) { transition-delay: 0.2s; }
+  .grid > .reveal:nth-child(3) { transition-delay: 0.3s; }
+  .grid > .reveal:nth-child(4) { transition-delay: 0.4s; }
+</style>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Pricing — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="py-20">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="font-display font-bold text-4xl text-ink dark:text-white mb-4">Pricing</h1>
+    <p class="text-ink-soft dark:text-gray-400 mb-8">See the full pricing breakdown on the home page.</p>
+    <a href="{% url 'core:landing' %}#pricing" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+      View Pricing <i class="fa-solid fa-arrow-right text-xs"></i>
+    </a>
+  </div>
+</section>
+{% endblock %}

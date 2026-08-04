@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Log In — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="relative min-h-screen py-16 sm:py-24 overflow-hidden">
+  <!-- Background Image Layer -->
+  <div class="absolute inset-0 z-0">
+    <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1920&q=80" 
+         alt="Car wash background" 
+         class="w-full h-full object-cover"
+         loading="eager">
+    
+    <!-- Dark overlay with gradient -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-blue-900/95"></div>
+    
+    <!-- Accent overlay -->
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);"></div>
+    
+    <!-- Animated gradient orbs -->
+    <div class="absolute top-20 right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-20 left-10 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/20 to-pink-500/20 rounded-full blur-3xl"></div>
+    
+    <!-- Grid pattern overlay -->
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
+  </div>
+
+  <!-- Floating decorative elements -->
+  <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <i class="fa-solid fa-droplet absolute top-20 right-[15%] text-4xl text-blue-400/20 animate-bounce" style="animation-duration: 3s;"></i>
+    <i class="fa-solid fa-car-side absolute bottom-32 right-[25%] text-5xl text-pink-300/20 animate-pulse" style="animation-duration: 2.5s;"></i>
+    <i class="fa-solid fa-shield-halved absolute top-40 left-[20%] text-3xl text-blue-300/20 animate-bounce" style="animation-duration: 4s; animation-delay: 1s;"></i>
+    <i class="fa-solid fa-star absolute bottom-40 left-[30%] text-3xl text-pink-400/20 animate-pulse" style="animation-duration: 2s;"></i>
+    <i class="fa-solid fa-sparkles absolute top-60 right-[10%] text-4xl text-blue-200/15 animate-bounce" style="animation-duration: 3.5s; animation-delay: 0.5s;"></i>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-md mx-auto px-4 sm:px-6">
+    <!-- Header Card -->
+    <div class="text-center mb-8 bg-white/5 backdrop-blur-xl rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl reveal">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+        <i class="fa-solid fa-right-to-bracket text-white text-xl"></i>
+      </div>
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-2">Welcome Back</p>
+      <h1 class="font-display font-bold text-3xl sm:text-4xl text-white mb-3">
+        Log in to <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400">{{ SITE_NAME }}</span>
+      </h1>
+      <p class="text-gray-400 text-sm">Pick up right where you left off</p>
+    </div>
+
+    <!-- Form Card -->
+    <form method="post" novalidate id="login-form"
+          class="bg-white/5 backdrop-blur-xl rounded-2xl p-6 sm:p-8 space-y-5 border border-white/10 shadow-2xl relative overflow-hidden reveal">
+      
+      <!-- Card shimmer effect -->
+      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer"></div>
+      
+      {% csrf_token %}
+
+      <!-- Username/Email -->
+      <div class="input-group">
+        <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+          <i class="fa-solid fa-user text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+          Username or email <span class="text-pink-400">*</span>
+        </label>
+        <div class="relative">
+          <input type="text" name="username" id="{{ form.username.id_for_label }}"
+                 class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300"
+                 placeholder="johndoe@example.com"
+                 value="{{ form.username.value|default:'' }}"
+                 required
+                 autocomplete="username">
+          <div class="validation-icon absolute right-3 top-1/2 -translate-y-1/2 hidden">
+            <i class="fa-solid fa-check-circle text-green-400"></i>
+          </div>
+        </div>
+        <div class="error-message text-xs text-pink-400 mt-1.5 hidden" data-error="username">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i>
+          <span></span>
+        </div>
+        {% for error in form.username.errors %}
+          <p class="text-xs text-pink-400 mt-1.5">
+            <i class="fa-solid fa-circle-exclamation mr-1"></i>{{ error }}
+          </p>
+        {% endfor %}
+      </div>
+
+      <!-- Password -->
+      <div class="input-group">
+        <div class="flex items-center justify-between mb-2">
+          <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-gray-300">
+            <i class="fa-solid fa-lock text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mr-1.5"></i>
+            Password <span class="text-pink-400">*</span>
+          </label>
+          <a href="{% url 'accounts:password_reset' %}" class="text-xs text-blue-400 hover:text-pink-400 font-medium transition-colors">
+            Forgot password?
+          </a>
+        </div>
+        <div class="relative">
+          <input type="password" name="password" id="{{ form.password.id_for_label }}"
+                 class="w-full px-4 py-3 pr-12 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 outline-none transition-all duration-300"
+                 placeholder="••••••••"
+                 required
+                 autocomplete="current-password">
+          <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink-400 transition-colors" data-target="{{ form.password.id_for_label }}">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div class="error-message text-xs text-pink-400 mt-1.5 hidden" data-error="password">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i>
+          <span></span>
+        </div>
+        {% for error in form.password.errors %}
+          <p class="text-xs text-pink-400 mt-1.5">
+            <i class="fa-solid fa-circle-exclamation mr-1"></i>{{ error }}
+          </p>
+        {% endfor %}
+      </div>
+
+      <!-- Remember Me -->
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+        <input type="checkbox" name="remember_me" id="{{ form.remember_me.id_for_label }}"
+               class="rounded border-white/30 text-pink-500 focus:ring-pink-500"
+               {% if form.remember_me.value %}checked{% endif %}>
+        <label for="{{ form.remember_me.id_for_label }}" class="text-sm text-gray-400 cursor-pointer select-none">
+          Remember me for 7 days
+        </label>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="rounded-xl border border-pink-500/30 bg-pink-500/10 p-4">
+          {% for error in form.non_field_errors %}
+            <p class="text-xs text-pink-400">
+              <i class="fa-solid fa-circle-exclamation mr-1"></i>{{ error }}
+            </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Submit Button -->
+      <button type="submit" id="submit-btn"
+              class="w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 relative overflow-hidden group bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-[1.02]">
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Log In
+          <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+        </span>
+        <div class="absolute inset-0 bg-gradient-to-r from-pink-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      </button>
+
+      <!-- Register Link -->
+      <p class="text-center text-sm text-gray-400">
+        Don't have an account? 
+        <a href="{% url 'accounts:register' %}" class="text-blue-400 hover:text-pink-400 font-medium transition-colors">
+          Create one
+        </a>
+      </p>
+
+      <!-- Security Badge -->
+      <div class="flex items-center justify-center gap-2 text-xs text-gray-500 pt-2">
+        <i class="fa-solid fa-lock"></i>
+        <span>Secure login with encryption</span>
+      </div>
+    </form>
+
+    <!-- Bottom decorative element -->
+    <div class="text-center mt-8 pb-4 reveal">
+      <div class="inline-flex items-center gap-3 text-gray-500 text-sm">
+        <span class="w-8 h-px bg-gradient-to-r from-transparent to-gray-600"></span>
+        <i class="fa-solid fa-shield-halved"></i>
+        <span class="w-8 h-px bg-gradient-to-l from-transparent to-gray-600"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Loading spinner for button */
+.btn-loading {
+  pointer-events: none;
+}
+.btn-loading .btn-text {
+  opacity: 0;
+}
+.btn-loading .btn-spinner {
+  display: flex;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('login-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const usernameInput = document.getElementById('{{ form.username.id_for_label }}');
+  const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
+
+  // ============ REAL-TIME VALIDATION ============
+  function showError(fieldName, message) {
+    const errorDiv = document.querySelector(`[data-error="${fieldName}"]`);
+    if (errorDiv) {
+      errorDiv.querySelector('span').textContent = message;
+      errorDiv.classList.remove('hidden');
+    }
+    const input = document.querySelector(`[name="${fieldName}"]`);
+    if (input) {
+      input.classList.add('border-pink-500');
+      input.classList.remove('border-green-500');
+      const icon = input.parentElement.querySelector('.validation-icon');
+      if (icon) icon.classList.add('hidden');
+    }
+  }
+
+  function showSuccess(fieldName) {
+    const errorDiv = document.querySelector(`[data-error="${fieldName}"]`);
+    if (errorDiv) errorDiv.classList.add('hidden');
+    const input = document.querySelector(`[name="${fieldName}"]`);
+    if (input) {
+      input.classList.remove('border-pink-500');
+      input.classList.add('border-green-500');
+      const icon = input.parentElement.querySelector('.validation-icon');
+      if (icon) icon.classList.remove('hidden');
+    }
+  }
+
+  function clearValidation(fieldName) {
+    const errorDiv = document.querySelector(`[data-error="${fieldName}"]`);
+    if (errorDiv) errorDiv.classList.add('hidden');
+    const input = document.querySelector(`[name="${fieldName}"]`);
+    if (input) {
+      input.classList.remove('border-pink-500', 'border-green-500');
+      const icon = input.parentElement.querySelector('.validation-icon');
+      if (icon) icon.classList.add('hidden');
+    }
+  }
+
+  // Validate username/email
+  if (usernameInput) {
+    usernameInput.addEventListener('input', function() {
+      const value = this.value.trim();
+      
+      if (value.length === 0) {
+        clearValidation('username');
+        return;
+      }
+      
+      if (value.length < 3) {
+        showError('username', 'Username or email is too short');
+      } else if (value.includes('@')) {
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(value)) {
+          showSuccess('username');
+        } else {
+          showError('username', 'Please enter a valid email address');
+        }
+      } else {
+        // Username validation
+        const usernameRegex = /^[a-zA-Z0-9_@.+\-]{3,}$/;
+        if (usernameRegex.test(value)) {
+          showSuccess('username');
+        } else {
+          showError('username', 'Invalid username format');
+        }
+      }
+    });
+
+    usernameInput.addEventListener('blur', function() {
+      if (this.value.trim().length > 0) {
+        this.dispatchEvent(new Event('input'));
+      }
+    });
+  }
+
+  // Validate password
+  if (passwordInput) {
+    passwordInput.addEventListener('input', function() {
+      const value = this.value;
+      
+      if (value.length === 0) {
+        clearValidation('password');
+        return;
+      }
+      
+      if (value.length >= 1) {
+        showSuccess('password');
+      }
+    });
+
+    passwordInput.addEventListener('blur', function() {
+      if (this.value.length > 0) {
+        this.dispatchEvent(new Event('input'));
+      }
+    });
+  }
+
+  // ============ PASSWORD TOGGLE ============
+  document.querySelectorAll('.password-toggle').forEach(button => {
+    button.addEventListener('click', function() {
+      const targetId = this.dataset.target;
+      const passwordField = document.getElementById(targetId);
+      const icon = this.querySelector('i');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        passwordField.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    });
+  });
+
+  // ============ FORM SUBMISSION WITH LOADING STATE ============
+  form.addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validate username
+    if (usernameInput && usernameInput.value.trim().length === 0) {
+      showError('username', 'Username or email is required');
+      isValid = false;
+    }
+    
+    // Validate password
+    if (passwordInput && passwordInput.value.length === 0) {
+      showError('password', 'Password is required');
+      isValid = false;
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+      const firstError = form.querySelector('.border-pink-500');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstError.focus();
+      }
+      return;
+    }
+    
+    // Show loading state
+    const btnText = submitBtn.querySelector('span');
+    submitBtn.classList.add('btn-loading', 'opacity-80');
+    submitBtn.disabled = true;
+    
+    // Create spinner
+    const originalContent = btnText.innerHTML;
+    btnText.innerHTML = `
+      <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Signing in...
+    `;
+    
+    // Allow form submission to proceed
+    setTimeout(() => {
+      // If there's an error, the page will reload with errors
+      // If successful, redirect will happen
+    }, 100);
+  });
+
+  // ============ KEYBOARD SHORTCUTS ============
+  document.addEventListener('keydown', function(e) {
+    // Ctrl+Enter to submit
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      form.dispatchEvent(new Event('submit'));
+    }
+  });
+
+  // ============ REVEAL ANIMATIONS ============
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  
+  // Trigger reveals immediately
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
+
+  // ============ AUTO-FOCUS ============
+  if (usernameInput && !usernameInput.value) {
+    usernameInput.focus();
+  }
+});
+</script>
+{% endblock %}

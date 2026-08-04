@@ -1,0 +1,137 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{% if is_create %}Register Vehicle{% else %}Edit Vehicle{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if is_create %}Register Vehicle{% else %}Edit Vehicle{% endif %}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <div class="mb-6">
+      {% if not is_create %}
+      <a href="{% url 'vehicles:detail' vehicle.public_id %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-3">
+        <i class="fa-solid fa-arrow-left text-xs"></i> Back to {{ vehicle.license_plate }}
+      </a>
+      {% endif %}
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{% if is_create %}New Vehicle{% else %}Editing{% endif %}</p>
+      <h1 class="font-display font-bold text-2xl text-white">
+        {% if is_create %}Register a vehicle{% else %}{{ vehicle.display_name }}{% endif %}
+      </h1>
+    </div>
+
+    {% if is_create %}
+      {% if preselected_customer %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4 mb-6 bg-blue-500/5 border-blue-500/20 flex items-center justify-between">
+        <p class="text-sm text-white">
+          <i class="fa-solid fa-user text-blue-400 mr-2"></i>
+          Registering for <strong>{{ preselected_customer.full_name }}</strong> ({{ preselected_customer.customer_code }})
+        </p>
+        <a href="{% url 'vehicles:create' %}" class="text-xs font-medium text-gray-500 hover:text-white">Change customer</a>
+      </div>
+      {% else %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 mb-6">
+        <p class="text-sm font-medium text-white mb-3">Which customer is this vehicle for?</p>
+        <form method="get" class="flex gap-2 mb-4">
+          <input type="text" name="customer_q" value="{{ customer_query }}" placeholder="Search by name or phone"
+                 class="flex-1 rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm text-white focus:border-blue-500 outline-none">
+          <button type="submit" class="px-4 py-2.5 rounded-lg border border-slate-700 text-sm font-medium text-white hover:border-blue-500/50">Search</button>
+        </form>
+        {% if customers %}
+        <div class="divide-y divide-slate-700 max-h-72 overflow-y-auto">
+          {% for c in customers %}
+          <a href="?customer={{ c.public_id }}" class="flex items-center justify-between py-2.5 hover:text-blue-400">
+            <span class="text-sm text-white">{{ c.full_name }}</span>
+            <span class="text-xs text-gray-500 font-mono">{{ c.phone_number }}</span>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500">No matching active customers. <a href="{% url 'customers:create' %}" class="text-blue-400 hover:underline">Add a new customer</a> first.</p>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5 {% if is_create and not preselected_customer %}opacity-50 pointer-events-none{% endif %}">
+      {% csrf_token %}
+      {% if preselected_customer %}<input type="hidden" name="customer" value="{{ preselected_customer.public_id }}">{% endif %}
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.license_plate.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">License plate</label>
+          {{ form.license_plate }}
+          <p class="text-xs text-gray-500 mt-1">Format: KDA 001A</p>
+          {% for error in form.license_plate.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.year.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Year</label>
+          {{ form.year }}
+          {% for error in form.year.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.make.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Make</label>
+          {{ form.make }}
+          {% for error in form.make.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.model.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Model</label>
+          {{ form.model }}
+          {% for error in form.model.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.color.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Color</label>
+          {{ form.color }}
+          {% for error in form.color.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.vehicle_type.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Vehicle Type</label>
+          {{ form.vehicle_type }}
+          {% for error in form.vehicle_type.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      {% if not is_create %}
+      <div>
+        <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Status</label>
+        {{ form.status }}
+        {% for error in form.status.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      {% endif %}
+
+      <div>
+        <label for="{{ form.photo.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Photo <span class="text-gray-500 font-normal">(optional)</span></label>
+        {% if vehicle.photo %}<img src="{{ vehicle.photo.url }}" alt="" class="w-24 h-24 rounded-lg object-cover mb-2 border border-slate-700">{% endif %}
+        {{ form.photo }}
+        {% for error in form.photo.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      {% if not is_create %}
+      <div>
+        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Staff notes <span class="text-gray-500 font-normal">(internal only)</span></label>
+        {{ form.notes }}
+        {% for error in form.notes.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+        <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-3">
+          {% for error in form.non_field_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          {% if is_create %}Register Vehicle{% else %}Save Changes{% endif %}
+          <i class="fa-solid fa-check text-xs"></i>
+        </button>
+        <a href="{% if is_create %}{% url 'vehicles:list' %}{% else %}{% url 'vehicles:detail' vehicle.public_id %}{% endif %}"
+           class="text-sm font-medium text-gray-500 hover:text-white">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

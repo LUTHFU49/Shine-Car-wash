@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Email Verification — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<section class="py-24">
+  <div class="max-w-md mx-auto px-4 text-center">
+    {% if success %}
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-pink-500 flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid fa-circle-check text-white text-xl"></i>
+      </div>
+      <h1 class="font-display font-bold text-2xl text-ink dark:text-white mb-3">Email verified!</h1>
+      <p class="text-ink-soft dark:text-gray-400 mb-8">Thanks, {{ user.first_name|default:user.username }} — your address is confirmed.</p>
+      <a href="{% url 'accounts:login' %}" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+        Log In <i class="fa-solid fa-arrow-right text-xs"></i>
+      </a>
+    {% else %}
+      <div class="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-slate-700 border border-gray-100 dark:border-slate-700 flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid fa-triangle-exclamation text-pink-600 dark:text-pink-400 text-xl"></i>
+      </div>
+      {% if reason == 'expired' %}
+        <h1 class="font-display font-bold text-2xl text-ink dark:text-white mb-3">This verification link has expired</h1>
+        <p class="text-ink-soft dark:text-gray-400 mb-8">Log in and request a new verification email from your profile.</p>
+      {% else %}
+        <h1 class="font-display font-bold text-2xl text-ink dark:text-white mb-3">This verification link isn't valid</h1>
+        <p class="text-ink-soft dark:text-gray-400 mb-8">It may have already been used. Log in and check your profile's verification status.</p>
+      {% endif %}
+      <a href="{% url 'accounts:login' %}" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+        Log In <i class="fa-solid fa-arrow-right text-xs"></i>
+      </a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

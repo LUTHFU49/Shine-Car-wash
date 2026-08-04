@@ -1,0 +1,76 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Suppliers — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Suppliers{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'inventory:dashboard' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Inventory
+    </a>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Suppliers</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ suppliers|length }} supplier{{ suppliers|length|pluralize }}</h1>
+      </div>
+      {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+      <a href="{% url 'inventory:supplier_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+        <i class="fa-solid fa-plus text-xs"></i> Add Supplier
+      </a>
+      {% endif %}
+    </div>
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if suppliers %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr>
+            <th class="px-5 py-3 font-medium">Supplier</th>
+            <th class="px-5 py-3 font-medium">Contact</th>
+            <th class="px-5 py-3 font-medium">Phone</th>
+            <th class="px-5 py-3 font-medium">Purchases</th>
+            <th class="px-5 py-3 font-medium">Status</th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for supplier in suppliers %}
+          <tr class="hover:bg-slate-700/60 transition-colors">
+            <td class="px-5 py-3 font-medium text-white">{{ supplier.name }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ supplier.contact_person|default:"—" }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ supplier.phone_number|default:"—" }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ supplier.purchase_count }}</td>
+            <td class="px-5 py-3">
+              {% if supplier.is_active %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+              {% else %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inactive</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-3 text-right">
+              {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+              <div class="flex items-center justify-end gap-3">
+                <a href="{% url 'inventory:supplier_edit' supplier.public_id %}" class="text-gray-500 hover:text-blue-400 text-xs font-medium">Edit</a>
+                {% if supplier.is_active %}
+                <form method="post" action="{% url 'inventory:supplier_set_status' supplier.public_id 'inactive' %}">{% csrf_token %}<button type="submit" class="text-pink-400 text-xs font-medium">Deactivate</button></form>
+                {% else %}
+                <form method="post" action="{% url 'inventory:supplier_set_status' supplier.public_id 'active' %}">{% csrf_token %}<button type="submit" class="text-green-400 text-xs font-medium">Activate</button></form>
+                {% endif %}
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-12 text-center">
+        <p class="font-medium text-white mb-1">No suppliers yet</p>
+        <p class="text-sm text-gray-500 mb-6">Add your first supplier to start raising purchase orders.</p>
+        {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+        <a href="{% url 'inventory:supplier_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500"><i class="fa-solid fa-plus text-xs"></i> Add Supplier</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

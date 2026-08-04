@@ -1,0 +1,25 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Pay for {{ booking.booking_code }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Pay for Your Booking{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-lg mx-auto px-4 sm:px-6">
+    <a href="{% url 'bookings:my_detail' booking.public_id %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Booking
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ booking.booking_code }} &middot; {{ booking.service.name }}</p>
+      <h1 class="font-display font-bold text-2xl text-white">Pay with M-Pesa</h1>
+      <p class="text-sm text-gray-500 mt-2">Outstanding balance: <span class="font-medium text-white">KSh {{ invoice.balance|floatformat:2 }}</span></p>
+    </div>
+    <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+      {% csrf_token %}
+      {% include 'payments/_form_fields.html' %}
+      <button type="submit" class="w-full inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+        <i class="fa-solid fa-mobile-screen text-xs"></i> Send Payment Prompt
+      </button>
+    </form>
+    <p class="text-xs text-gray-500 mt-4 text-center">You'll get a prompt on your phone to enter your M-Pesa PIN.</p>
+  </div>
+</section>
+{% endblock %}

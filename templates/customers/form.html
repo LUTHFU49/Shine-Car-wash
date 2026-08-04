@@ -1,0 +1,95 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{% if is_create %}Add Customer{% else %}Edit Customer{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if is_create %}Add Customer{% else %}Edit Customer{% endif %}{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+
+  <div class="mb-6">
+    {% if not is_create %}
+    <a href="{% url 'customers:detail' customer.public_id %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-3 transition-colors">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to {{ customer.full_name }}
+    </a>
+    {% endif %}
+    <p class="text-xs font-semibold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-2">
+      {% if is_create %}New Customer{% else %}Editing{% endif %}
+    </p>
+    <h1 class="font-display font-bold text-2xl text-white">
+      {% if is_create %}Add a customer{% else %}{{ customer.full_name }}{% endif %}
+    </h1>
+  </div>
+
+  {% if customer.is_linked_account %}
+  <div class="rounded-2xl bg-blue-500/5 border border-blue-500/20 p-4 mb-6">
+    <p class="text-sm text-gray-300">
+      <i class="fa-solid fa-circle-info text-blue-400 mr-2"></i>
+      This customer has their own ShineHub login. Changes here update the staff record only —
+      they don't change what the customer sees on their own profile.
+    </p>
+  </div>
+  {% endif %}
+
+  <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+    {% csrf_token %}
+
+    <div class="grid sm:grid-cols-2 gap-5">
+      <div>
+        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1.5">First name</label>
+        {{ form.first_name }}
+        {% for error in form.first_name.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1.5">Last name</label>
+        {{ form.last_name }}
+        {% for error in form.last_name.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-5">
+      <div>
+        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1.5">Phone number</label>
+        {{ form.phone_number }}
+        {% for error in form.phone_number.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1.5">Email <span class="text-gray-500 font-normal">(optional)</span></label>
+        {{ form.email }}
+        {% for error in form.email.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-5">
+      <div>
+        <label for="{{ form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1.5">Date of birth <span class="text-gray-500 font-normal">(optional)</span></label>
+        {{ form.date_of_birth }}
+        {% for error in form.date_of_birth.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="{{ form.address.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1.5">Address <span class="text-gray-500 font-normal">(optional)</span></label>
+        {{ form.address }}
+        {% for error in form.address.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div>
+      <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1.5">Staff notes <span class="text-gray-500 font-normal">(internal only)</span></label>
+      {{ form.notes }}
+      {% for error in form.notes.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+    </div>
+
+    {% if form.non_field_errors %}
+      <div class="rounded-xl border border-pink-500/30 bg-pink-500/5 p-3">
+        {% for error in form.non_field_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="flex items-center gap-3 pt-2">
+      <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-pink-500 hover:shadow-lg hover:shadow-pink-500/25 hover:scale-105 transition-all duration-300">
+        {% if is_create %}Add Customer{% else %}Save Changes{% endif %}
+        <i class="fa-solid fa-check text-xs"></i>
+      </button>
+      <a href="{% if is_create %}{% url 'customers:list' %}{% else %}{% url 'customers:detail' customer.public_id %}{% endif %}"
+         class="text-sm font-medium text-gray-500 hover:text-white transition-colors">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

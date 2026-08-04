@@ -1,0 +1,146 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{% if is_create %}Add Employee{% else %}Edit Employee{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{% if is_create %}Add Employee{% else %}Edit Employee{% endif %}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <div class="mb-6">
+      {% if not is_create %}
+      <a href="{% url 'employees:detail' employee.public_id %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-3">
+        <i class="fa-solid fa-arrow-left text-xs"></i> Back to {{ employee.full_name }}
+      </a>
+      {% endif %}
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{% if is_create %}New Employee{% else %}Editing{% endif %}</p>
+      <h1 class="font-display font-bold text-2xl text-white">
+        {% if is_create %}Add an employee{% else %}{{ employee.full_name }}{% endif %}
+      </h1>
+    </div>
+
+    <form method="post" novalidate class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 space-y-5">
+      {% csrf_token %}
+
+      {% if is_create %}
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">First name</label>
+          {{ form.first_name }}
+          {% for error in form.first_name.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Last name</label>
+          {{ form.last_name }}
+          {% for error in form.last_name.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Username</label>
+          {{ form.username }}
+          {% for error in form.username.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+          <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Email</label>
+          {{ form.email }}
+          {% for error in form.email.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Phone number</label>
+        {{ form.phone_number }}
+        {% for error in form.phone_number.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4 bg-blue-500/5 border-blue-500/20">
+        <p class="text-xs text-white">
+          <i class="fa-solid fa-circle-info text-blue-400 mr-1"></i>
+          A "set your password" link will be emailed to them — no password is set here.
+        </p>
+      </div>
+
+      <div>
+        <label for="{{ form.position.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Position</label>
+        {{ form.position }}
+        {% for error in form.position.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.hire_date.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Hire date</label>
+        {{ form.hire_date }}
+        {% for error in form.hire_date.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      {% else %}
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4 bg-slate-700">
+        <p class="text-sm text-white">{{ employee.user.get_full_name }} · {{ employee.user.email }} · {{ employee.user.phone_number }}</p>
+        <p class="text-xs text-gray-500 mt-1">Name, email, and phone are managed by the employee on their own profile.</p>
+      </div>
+
+      <div>
+        <label for="{{ form.position.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Position</label>
+        {{ form.position }}
+        {% for error in form.position.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.employment_status.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Employment status</label>
+        {{ form.employment_status }}
+        {% for error in form.employment_status.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.termination_date.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">Termination date <span class="text-gray-500 font-normal">(required only if Terminated)</span></label>
+        {{ form.termination_date }}
+        {% for error in form.termination_date.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      {% endif %}
+
+      <div>
+        <label class="block text-sm font-medium text-white mb-1.5">Weekly schedule</label>
+        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-3">
+          {% for checkbox in form.scheduled_days %}
+          <label class="flex flex-col items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+            {{ checkbox.tag }}
+            <span>{{ checkbox.choice_label|slice:":3" }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="{{ form.shift_start_time.id_for_label }}" class="block text-xs text-gray-500 mb-1.5">Shift start</label>
+            {{ form.shift_start_time }}
+          </div>
+          <div>
+            <label for="{{ form.shift_end_time.id_for_label }}" class="block text-xs text-gray-500 mb-1.5">Shift end</label>
+            {{ form.shift_end_time }}
+          </div>
+        </div>
+        {% for error in form.shift_start_time.errors %}<p class="text-xs text-pink-400 mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      {% if not is_create %}
+      <div>
+        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-white mb-1.5">HR notes <span class="text-gray-500 font-normal">(internal only)</span></label>
+        {{ form.notes }}
+      </div>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+        <div class="rounded-lg border border-pink-500/30 bg-pink-500/5 p-3">
+          {% for error in form.non_field_errors %}<p class="text-xs text-pink-400">{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+          {% if is_create %}Add Employee & Send Invite{% else %}Save Changes{% endif %}
+          <i class="fa-solid fa-check text-xs"></i>
+        </button>
+        <a href="{% if is_create %}{% url 'employees:list' %}{% else %}{% url 'employees:detail' employee.public_id %}{% endif %}"
+           class="text-sm font-medium text-gray-500 hover:text-white">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

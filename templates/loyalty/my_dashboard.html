@@ -1,0 +1,100 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}My Rewards — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}My Rewards{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Loyalty &amp; Rewards</p>
+      <h1 class="font-display font-bold text-2xl text-white">
+        {% if profile.tier %}{{ profile.tier.name }} Member{% else %}Welcome{% endif %}
+      </h1>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <p class="text-xs text-gray-500 mb-1">Points Balance</p>
+        <p class="font-display font-bold text-xl text-white">{{ profile.points_balance }}</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <p class="text-xs text-gray-500 mb-1">Lifetime Points</p>
+        <p class="font-display font-bold text-xl text-white">{{ profile.lifetime_points }}</p>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5">
+        <p class="text-xs text-gray-500 mb-1">Wallet Balance</p>
+        <p class="font-display font-bold text-xl text-white">KSh {{ profile.wallet_balance|floatformat:2 }}</p>
+      </div>
+    </div>
+
+    {% if next_tier %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5 mb-8">
+      <p class="text-sm text-white">
+        <span class="font-semibold">{{ points_to_next_tier }}</span>
+        more points to reach <span class="font-semibold text-blue-400">{{ next_tier.name }}</span>
+      </p>
+      <div class="w-full h-2 rounded-full bg-slate-700 mt-3 overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-blue-500 to-pink-500" style="width: {% widthratio profile.lifetime_points next_tier.minimum_points 100 %}%"></div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 mb-8">
+      <h2 class="font-display font-semibold text-white mb-3">Your Referral Code</h2>
+      <div class="flex items-center gap-3 mb-2">
+        <code class="flex-1 text-sm font-mono bg-slate-700 rounded-lg px-4 py-3 text-white">{{ profile.referral_code }}</code>
+      </div>
+      <p class="text-xs text-gray-500">Share this with friends. When they complete their first booking, you get bonus points and wallet credit. {{ referral_count }} referral{{ referral_count|pluralize }} so far.</p>
+
+      {% if not profile.referred_by %}
+      <form method="post" action="{% url 'loyalty:enter_referral_code' %}" class="flex gap-2 mt-4 pt-4 border-t border-slate-700">
+        {% csrf_token %}
+        {{ referral_form.referral_code }}
+        <button type="submit" class="text-xs font-semibold text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 whitespace-nowrap">Link a Code</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Recent Points Activity</h2></div>
+        {% if points_transactions %}
+        <table class="w-full text-sm">
+          <tbody class="divide-y divide-slate-700">
+            {% for tx in points_transactions %}
+            <tr>
+              <td class="px-5 py-3 text-white">{{ tx.get_transaction_type_display }}</td>
+              <td class="px-5 py-3 text-right {% if tx.transaction_type == 'redeemed' %}text-pink-400{% else %}text-green-400{% endif %} font-medium">
+                {% if tx.transaction_type == 'redeemed' %}-{% else %}+{% endif %}{{ tx.points }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="p-6 text-sm text-gray-500">No points activity yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Recent Wallet Activity</h2></div>
+        {% if wallet_transactions %}
+        <table class="w-full text-sm">
+          <tbody class="divide-y divide-slate-700">
+            {% for tx in wallet_transactions %}
+            <tr>
+              <td class="px-5 py-3 text-white">{{ tx.get_transaction_type_display }}</td>
+              <td class="px-5 py-3 text-right {% if 'debit' in tx.transaction_type %}text-pink-400{% else %}text-green-400{% endif %} font-medium">
+                {% if 'debit' in tx.transaction_type %}-{% else %}+{% endif %}KSh {{ tx.amount|floatformat:2 }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="p-6 text-sm text-gray-500">No wallet activity yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

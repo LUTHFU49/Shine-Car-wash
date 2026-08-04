@@ -1,0 +1,89 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Inventory Categories — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Inventory Categories{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'inventory:dashboard' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Inventory
+    </a>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Categories</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ categories|length }} categor{{ categories|length|pluralize:"y,ies" }}</h1>
+      </div>
+      {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+      <a href="{% url 'inventory:category_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+        <i class="fa-solid fa-plus text-xs"></i> Add Category
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if categories %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr>
+            <th class="px-5 py-3 font-medium">Category</th>
+            <th class="px-5 py-3 font-medium">Items</th>
+            <th class="px-5 py-3 font-medium">Order</th>
+            <th class="px-5 py-3 font-medium">Status</th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for category in categories %}
+          <tr class="hover:bg-slate-700/60 transition-colors">
+            <td class="px-5 py-3">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid {{ category.icon }} text-blue-400"></i>
+                <span class="font-medium text-white">{{ category.name }}</span>
+              </div>
+            </td>
+            <td class="px-5 py-3 text-gray-500">{{ category.item_count }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ category.display_order }}</td>
+            <td class="px-5 py-3">
+              {% if category.is_active %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-400"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
+              {% else %}
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inactive</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-3 text-right">
+              {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+              <div class="flex items-center justify-end gap-3">
+                <a href="{% url 'inventory:category_edit' category.public_id %}" class="text-gray-500 hover:text-blue-400 text-xs font-medium">Edit</a>
+                {% if category.is_active %}
+                <form method="post" action="{% url 'inventory:category_set_status' category.public_id 'inactive' %}">
+                  {% csrf_token %}<button type="submit" class="text-pink-400 text-xs font-medium">Deactivate</button>
+                </form>
+                {% else %}
+                <form method="post" action="{% url 'inventory:category_set_status' category.public_id 'active' %}">
+                  {% csrf_token %}<button type="submit" class="text-green-400 text-xs font-medium">Activate</button>
+                </form>
+                {% endif %}
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="p-12 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-slate-700 flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-boxes-stacked text-gray-500"></i>
+        </div>
+        <p class="font-medium text-white mb-1">No categories yet</p>
+        <p class="text-sm text-gray-500 mb-6">Create your first category to start adding inventory items.</p>
+        {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+        <a href="{% url 'inventory:category_create' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">
+          <i class="fa-solid fa-plus text-xs"></i> Add Category
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

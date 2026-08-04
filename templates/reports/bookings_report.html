@@ -1,0 +1,66 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Bookings Report — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Bookings Report{% endblock %}
+{% block extra_head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<section class="py-8 print-area">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'reports:hub' %}" class="no-print text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reports
+    </a>
+    <div class="mb-6">
+      <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ start }} to {{ end }}</p>
+      <h1 class="font-display font-bold text-2xl text-white">Bookings Report</h1>
+    </div>
+
+    {% include 'reports/_report_toolbar.html' with export_url_name='reports:bookings_report_export' %}
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Total Bookings</p><p class="font-display font-bold text-xl text-white">{{ total_bookings }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Completed</p><p class="font-display font-bold text-xl text-green-400">{{ completed_count }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Cancelled</p><p class="font-display font-bold text-xl text-pink-400">{{ cancelled_count }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">No-shows</p><p class="font-display font-bold text-xl text-white">{{ no_show_count }}</p></div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+        <h2 class="font-display font-semibold text-white mb-4">Bookings per Day</h2>
+        <canvas id="byDayChart" height="200"></canvas>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+        <h2 class="font-display font-semibold text-white mb-4">Peak Hours</h2>
+        <canvas id="byHourChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">By Status</h2></div>
+        <table class="w-full text-sm"><tbody class="divide-y divide-slate-700">
+          {% for row in by_status %}<tr><td class="px-5 py-3 text-white capitalize">{{ row.status }}</td><td class="px-5 py-3 text-right text-gray-500">{{ row.count }}</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">By Day of Week</h2></div>
+        <table class="w-full text-sm"><tbody class="divide-y divide-slate-700">
+          {% for row in by_weekday %}<tr><td class="px-5 py-3 text-white">{{ row.day }}</td><td class="px-5 py-3 text-right text-gray-500">{{ row.count }}</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  new Chart(document.getElementById('byDayChart'), {
+    type: 'line',
+    data: { labels: [{% for row in by_day %}'{{ row.scheduled_date|date:"M j" }}',{% endfor %}], datasets: [{ label: 'Bookings', data: [{% for row in by_day %}{{ row.count }},{% endfor %}], borderColor: '#0013DE', backgroundColor: 'rgba(0,19,222,0.15)', fill: true, tension: 0.3 }] },
+    options: { plugins: { legend: { display: false } } },
+  });
+  new Chart(document.getElementById('byHourChart'), {
+    type: 'bar',
+    data: { labels: [{% for row in by_hour %}'{{ row.hour }}:00',{% endfor %}], datasets: [{ label: 'Bookings', data: [{% for row in by_hour %}{{ row.count }},{% endfor %}], backgroundColor: '#FF0090' }] },
+    options: { plugins: { legend: { display: false } } },
+  });
+</script>
+{% endblock %}

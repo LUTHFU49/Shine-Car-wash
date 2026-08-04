@@ -1,0 +1,117 @@
+{% extends 'layouts/app_base.html' %}
+{% load loyalty_tags %}
+{% load feedback_tags %}
+{% block title %}{{ booking.booking_code }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Booking Details{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+
+    <a href="{% url 'bookings:my_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to My Bookings
+    </a>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8">
+      <div class="flex items-start justify-between gap-4 mb-6">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">{{ booking.booking_code }}</p>
+          <h1 class="font-display font-bold text-2xl text-white">{{ booking.service.name }}</h1>
+        </div>
+        {% if booking.status == 'pending' %}
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-400 px-3 py-1.5 rounded-full bg-amber-500/10"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pending Approval</span>
+        {% elif booking.status == 'confirmed' %}
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-green-400 px-3 py-1.5 rounded-full bg-green-500/10"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Confirmed</span>
+        {% elif booking.status == 'in_queue' %}
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-400 px-3 py-1.5 rounded-full bg-blue-500/10"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> In Queue</span>
+        {% elif booking.status == 'in_progress' %}
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gradient-brand px-3 py-1.5 rounded-full bg-pink-500/10"><span class="w-1.5 h-1.5 rounded-full bg-pink-500"></span> Washing Now</span>
+        {% elif booking.status == 'completed' %}
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 px-3 py-1.5 rounded-full bg-slate-700"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Completed</span>
+        {% elif booking.status == 'no_show' %}
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-pink-400 px-3 py-1.5 rounded-full bg-pink-500/10"><span class="w-1.5 h-1.5 rounded-full bg-pink-500"></span> No Show</span>
+        {% else %}
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 px-3 py-1.5 rounded-full bg-slate-700"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Cancelled</span>
+        {% endif %}
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6 pb-6 border-b border-slate-700">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Vehicle</p>
+          <p class="text-sm text-white">{{ booking.vehicle.display_name }} ({{ booking.vehicle.license_plate }})</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Price</p>
+          <p class="text-sm font-mono text-white">KSh {{ booking.price_at_booking|floatformat:0 }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Date & Time</p>
+          <p class="text-sm text-white">{{ booking.scheduled_date|date:"l, F j, Y" }} at {{ booking.scheduled_time|time:"g:i A" }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Estimated Duration</p>
+          <p class="text-sm text-white">{{ booking.duration_minutes_at_booking }} minutes</p>
+        </div>
+      </div>
+
+      {% if booking.notes %}
+      <div class="py-6 border-b border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Your Notes</p>
+        <p class="text-sm text-gray-500">{{ booking.notes }}</p>
+      </div>
+      {% endif %}
+
+      {% if booking.status == 'cancelled' %}
+      <div class="py-6 border-b border-slate-700">
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Cancellation</p>
+        <p class="text-sm text-gray-500">Cancelled on {{ booking.cancelled_at|date:"M j, Y g:i A" }}{% if booking.cancellation_reason %} — {{ booking.cancellation_reason }}{% endif %}</p>
+      </div>
+      {% endif %}
+
+      {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+      <div class="flex items-center gap-3 pt-6">
+        <a href="{% url 'bookings:my_reschedule' booking.public_id %}" class="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2.5 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-colors">
+          <i class="fa-solid fa-calendar-days text-xs"></i> Reschedule
+        </a>
+        <a href="{% url 'bookings:my_cancel' booking.public_id %}" class="inline-flex items-center gap-2 text-sm font-medium text-pink-400 px-4 py-2.5 rounded-lg border border-pink-500/30 hover:bg-pink-500/5 transition-colors">
+          <i class="fa-solid fa-xmark text-xs"></i> Cancel
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if booking.invoice %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 mt-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">{{ booking.invoice.invoice_number }}</p>
+          <h2 class="font-display font-bold text-lg text-white">Payment</h2>
+        </div>
+        <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full
+          {% if booking.invoice.status == 'paid' %}text-green-400 bg-green-500/10{% elif booking.invoice.status == 'void' %}text-gray-500 bg-slate-700{% elif booking.invoice.status == 'partially_paid' %}text-amber-400 bg-amber-500/10{% else %}text-pink-400 bg-pink-500/10{% endif %}">
+          <span class="w-1.5 h-1.5 rounded-full {% if booking.invoice.status == 'paid' %}bg-green-500{% elif booking.invoice.status == 'void' %}bg-gray-400{% elif booking.invoice.status == 'partially_paid' %}bg-amber-500{% else %}bg-pink-500{% endif %}"></span>
+          {{ booking.invoice.get_status_display }}
+        </span>
+      </div>
+      <div class="flex items-center justify-between mt-4">
+        <p class="text-sm text-gray-500">Balance due</p>
+        <p class="font-display font-bold text-white">KSh {{ booking.invoice.balance|floatformat:2 }}</p>
+      </div>
+      {% if booking.invoice.balance > 0 and booking.invoice.status != 'void' %}
+      <a href="{% url 'payments:my_pay' booking.public_id %}" class="mt-5 w-full inline-flex items-center justify-center gap-2 text-sm font-semibold text-white px-5 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500 hover:opacity-90 transition-opacity">
+        <i class="fa-solid fa-mobile-screen text-xs"></i> Pay with M-Pesa
+      </a>
+      {% loyalty_booking_widget booking %}
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if booking.status == 'completed' %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6 sm:p-8 mt-6">
+      <h2 class="font-display font-semibold text-white">Rate Your Experience</h2>
+      {% review_widget booking %}
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

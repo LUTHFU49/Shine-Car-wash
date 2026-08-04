@@ -1,0 +1,19 @@
+{% extends 'emails/base_email.html' %}
+{% block email_body %}
+<h1 style="margin:0 0 16px 0; font-size:22px; font-family: Arial, Helvetica, sans-serif;">How was your wash?</h1>
+<p style="margin:0 0 16px 0; font-size:15px; line-height:1.6; color:#0B1120; font-family: Arial, Helvetica, sans-serif;">
+  Hi {{ user.first_name|default:user.username }}, thanks for choosing {{ SITE_NAME }} for your {{ booking.service.name }}. We'd love to hear how it went.
+</p>
+<table role="presentation" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="border-radius:8px; background: linear-gradient(90deg, #0013DE 0%, #FF0090 100%);">
+      <a href="{{ SITE_DOMAIN }}{% url 'bookings:my_detail' booking.public_id %}" style="display:inline-block; padding:14px 28px; color:#ffffff; text-decoration:none; font-weight:bold; font-size:14px; font-family: Arial, Helvetica, sans-serif;">
+        Leave a Review
+      </a>
+    </td>
+  </tr>
+</table>
+<p style="margin:16px 0 0 0; font-size:13px; line-height:1.6; color:#4B5468; font-family: Arial, Helvetica, sans-serif;">
+  Your feedback helps us keep improving.
+</p>
+{% endblock %}

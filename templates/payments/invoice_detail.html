@@ -1,0 +1,84 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{{ invoice.invoice_number }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'payments:invoice_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Invoices
+    </a>
+
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ invoice.booking.booking_code }} &middot; {{ invoice.booking.customer.first_name }} {{ invoice.booking.customer.last_name }}</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ invoice.invoice_number }}</h1>
+        <span class="inline-flex items-center gap-1 text-xs font-medium mt-2
+          {% if invoice.status == 'paid' %}text-green-400{% elif invoice.status == 'void' %}text-gray-500{% elif invoice.status == 'partially_paid' %}text-amber-400{% else %}text-pink-400{% endif %}">
+          <span class="w-1.5 h-1.5 rounded-full {% if invoice.status == 'paid' %}bg-green-500{% elif invoice.status == 'void' %}bg-gray-400{% elif invoice.status == 'partially_paid' %}bg-amber-500{% else %}bg-pink-500{% endif %}"></span>
+          {{ invoice.get_status_display }}
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="{% url 'payments:invoice_pdf' invoice.public_id %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2"><i class="fa-solid fa-file-pdf mr-1"></i> PDF</a>
+        {% if invoice.status == 'unpaid' %}
+          {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+        <form method="post" action="{% url 'payments:invoice_void' invoice.public_id %}" onsubmit="return confirm('Void this invoice?');">{% csrf_token %}<button type="submit" class="text-sm font-medium text-pink-400 border border-slate-700 rounded-lg px-4 py-2">Void</button></form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Subtotal</p><p class="font-medium text-white">KSh {{ invoice.subtotal|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Tax</p><p class="font-medium text-white">KSh {{ invoice.tax_amount|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Total</p><p class="font-display font-bold text-white">KSh {{ invoice.total_amount|floatformat:2 }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Balance</p><p class="font-display font-bold {% if invoice.balance > 0 %}text-pink-400{% else %}text-green-400{% endif %}">KSh {{ invoice.balance|floatformat:2 }}</p></div>
+    </div>
+
+    {% if invoice.balance > 0 and invoice.status != 'void' %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+        <h2 class="font-display font-semibold text-white mb-4"><i class="fa-solid fa-money-bill-wave mr-1 text-blue-400"></i> Record Cash Payment</h2>
+        <form method="post" action="{% url 'payments:invoice_record_cash' invoice.public_id %}" class="space-y-4">
+          {% csrf_token %}
+          {% include 'payments/_form_fields.html' with form=cash_form %}
+          <button type="submit" class="text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Record Payment</button>
+        </form>
+      </div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-6">
+        <h2 class="font-display font-semibold text-white mb-4"><i class="fa-solid fa-mobile-screen mr-1 text-pink-400"></i> Send M-Pesa STK Push</h2>
+        <form method="post" action="{% url 'payments:invoice_initiate_mpesa' invoice.public_id %}" class="space-y-4">
+          {% csrf_token %}
+          {% include 'payments/_form_fields.html' with form=mpesa_form %}
+          <button type="submit" class="text-sm font-semibold text-white px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Send Prompt</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-700"><h2 class="font-display font-semibold text-white">Payments</h2></div>
+      {% if payments %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr><th class="px-5 py-3 font-medium">Reference</th><th class="px-5 py-3 font-medium">Method</th><th class="px-5 py-3 font-medium">Amount</th><th class="px-5 py-3 font-medium">Status</th><th class="px-5 py-3 font-medium">Date</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for payment in payments %}
+          <tr class="hover:bg-slate-700/60">
+            <td class="px-5 py-3"><a href="{% url 'payments:payment_detail' payment.public_id %}" class="text-white hover:text-blue-400 font-medium">{{ payment.reference_code }}</a></td>
+            <td class="px-5 py-3 text-gray-500">{{ payment.get_method_display }}</td>
+            <td class="px-5 py-3 text-gray-500">KSh {{ payment.amount|floatformat:2 }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ payment.get_status_display }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ payment.created_at|date:"M j, H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-6 text-sm text-gray-500">No payments recorded against this invoice yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

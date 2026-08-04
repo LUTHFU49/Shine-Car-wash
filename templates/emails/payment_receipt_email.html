@@ -1,0 +1,24 @@
+{% extends 'emails/base_email.html' %}
+{% block email_body %}
+<h1 style="margin:0 0 16px 0; font-size:22px; font-family: Arial, Helvetica, sans-serif;">Payment received</h1>
+<p style="margin:0 0 16px 0; font-size:15px; line-height:1.6; color:#0B1120; font-family: Arial, Helvetica, sans-serif;">
+  Hi {{ user.first_name|default:user.username }}, thanks for your payment. Your receipt is attached to this email.
+</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F6FB; border-radius:8px; margin:0 0 20px 0;">
+  <tr>
+    <td style="padding:20px; font-family: Arial, Helvetica, sans-serif;">
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Reference</p>
+      <p style="margin:0 0 16px 0; font-size:16px; font-weight:bold; color:#0B1120;">{{ payment.reference_code }}</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Amount Paid</p>
+      <p style="margin:0 0 16px 0; font-size:15px; color:#0B1120;">KSh {{ payment.amount|floatformat:2 }}</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Method</p>
+      <p style="margin:0 0 16px 0; font-size:15px; color:#0B1120;">{{ payment.get_method_display }}{% if payment.mpesa_receipt_number %} &middot; {{ payment.mpesa_receipt_number }}{% endif %}</p>
+      <p style="margin:0 0 8px 0; font-size:13px; color:#4B5468;">Invoice Balance</p>
+      <p style="margin:0; font-size:15px; color:#0B1120;">KSh {{ invoice.balance|floatformat:2 }}</p>
+    </td>
+  </tr>
+</table>
+<p style="margin:0; font-size:13px; line-height:1.6; color:#4B5468; font-family: Arial, Helvetica, sans-serif;">
+  Keep this receipt for your records.
+</p>
+{% endblock %}

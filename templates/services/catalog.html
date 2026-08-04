@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Services & Pricing — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}Browse every wash and detailing service {{ SITE_NAME }} offers, with transparent pricing and estimated duration.{% endblock %}
+
+{% block content %}
+<!-- ============ SERVICES HERO ============ -->
+<section class="relative overflow-hidden pt-16 pb-12 sm:pt-20 sm:pb-16">
+  <div class="absolute inset-0 -z-10">
+    <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=1920&q=80" 
+         alt="Car wash services" 
+         class="w-full h-full object-cover"
+         loading="eager">
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-900/90 to-blue-900/95"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);"></div>
+  </div>
+  
+  <div class="absolute inset-0 -z-10">
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 32px 32px;"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-2xl reveal">
+      <div class="w-14 h-14 mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+        <i class="fa-solid fa-spray-can-sparkles text-white text-xl"></i>
+      </div>
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-3">Services & Pricing</p>
+      <h1 class="font-display font-bold text-4xl sm:text-5xl text-white mb-4">Every service, one transparent price list.</h1>
+      <p class="text-lg text-gray-400">Estimated durations help you plan your visit. Prices are per vehicle.</p>
+    </div>
+  </div>
+</section>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #3B82F6 0%, #EC4899 50%, #3B82F6 100%);"></div>
+
+<!-- ============ SERVICE CATEGORIES ============ -->
+<section class="py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    
+    {% if categorized %}
+      {% for category, services in categorized %}
+      <div class="mb-16 last:mb-0 reveal">
+        <!-- Category Header -->
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center shrink-0">
+            <i class="fa-solid {{ category.icon|default:'fa-spray-can-sparkles' }} text-white text-lg"></i>
+          </div>
+          <div>
+            <h2 class="font-display font-semibold text-2xl text-ink dark:text-white">{{ category.name }}</h2>
+            {% if category.description %}
+              <p class="text-sm text-ink-soft dark:text-gray-400 mt-0.5">{{ category.description }}</p>
+            {% endif %}
+          </div>
+          <div class="hidden sm:block flex-1 ml-4">
+            <div class="h-px bg-gradient-to-r from-gray-200 dark:from-slate-700 to-transparent"></div>
+          </div>
+          <span class="text-xs font-medium text-ink-soft dark:text-gray-500 shrink-0">
+            {{ services|length }} service{{ services|length|pluralize }}
+          </span>
+        </div>
+
+        <!-- Service Cards -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for service in services %}
+          <div class="group relative bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 hover:shadow-2xl hover:shadow-pink-500/10 hover:border-pink-500/50 transition-all duration-500 overflow-hidden reveal">
+            <!-- Top gradient bar -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+            
+            <!-- Service Image -->
+            {% if service.image %}
+            <div class="relative h-48 overflow-hidden">
+              <img src="{{ service.image.url }}" alt="{{ service.name }}" 
+                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                   loading="lazy">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            {% else %}
+            <div class="h-48 bg-gradient-to-br from-blue-500/10 to-pink-500/10 flex items-center justify-center">
+              <i class="fa-solid {{ service.icon|default:'fa-spray-can-sparkles' }} text-4xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400"></i>
+            </div>
+            {% endif %}
+
+            <!-- Service Content -->
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <h3 class="font-display font-semibold text-ink dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-pink-500 transition-all duration-300">
+                  {{ service.name }}
+                </h3>
+                <span class="font-mono font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 whitespace-nowrap shrink-0">
+                  KSh {{ service.price|floatformat:0 }}
+                </span>
+              </div>
+              
+              {% if service.description %}
+              <p class="text-sm text-ink-soft dark:text-gray-400 leading-relaxed mb-4">
+                {{ service.description }}
+              </p>
+              {% endif %}
+              
+              <!-- Service Meta -->
+              <div class="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-slate-700">
+                <span class="inline-flex items-center gap-1.5 text-xs text-ink-soft dark:text-gray-500">
+                  <span class="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <i class="fa-solid fa-clock text-[10px] text-blue-500"></i>
+                  </span>
+                  {{ service.duration_display }}
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-xs text-ink-soft dark:text-gray-500">
+                  <span class="w-6 h-6 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                    <i class="fa-solid fa-calendar-check text-[10px] text-pink-500"></i>
+                  </span>
+                  {{ service.available_days_display }}
+                </span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16 reveal">
+      <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-pink-500/10 border border-pink-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-spray-can-sparkles text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400"></i>
+      </div>
+      <h3 class="font-display font-semibold text-xl text-ink dark:text-white mb-2">Service catalog being set up</h3>
+      <p class="text-ink-soft dark:text-gray-400 max-w-md mx-auto">
+        Our team is putting the finishing touches on our service offerings. Check back soon, or 
+        <a href="{% url 'core:contact' %}" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 font-semibold hover:underline">contact us</a> 
+        for current pricing.
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- CTA -->
+    {% if categorized %}
+    <div class="text-center mt-12 reveal">
+      <a href="{% url 'accounts:register' %}" 
+         class="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105 bg-gradient-to-r from-blue-500 to-pink-500">
+        <i class="fa-solid fa-user-plus"></i>
+        Create an Account to Book
+        <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============ CTA SECTION ============ -->
+<section class="py-16 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
+  </div>
+  
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative reveal">
+    <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+      <i class="fa-solid fa-headset text-white text-2xl"></i>
+    </div>
+    <h2 class="font-display font-bold text-3xl text-white mb-4">Need a custom package?</h2>
+    <p class="text-gray-400 text-lg mb-8">
+      We offer fleet packages and custom service bundles. Reach out for a tailored quote.
+    </p>
+    <a href="{% url 'core:contact' %}" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white border-2 border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+      <i class="fa-solid fa-envelope"></i>
+      Contact Us
+    </a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Reveal animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+</script>
+
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger children */
+  .grid > .reveal:nth-child(1) { transition-delay: 0.1s; }
+  .grid > .reveal:nth-child(2) { transition-delay: 0.2s; }
+  .grid > .reveal:nth-child(3) { transition-delay: 0.3s; }
+  .grid > .reveal:nth-child(4) { transition-delay: 0.4s; }
+  .grid > .reveal:nth-child(5) { transition-delay: 0.5s; }
+  .grid > .reveal:nth-child(6) { transition-delay: 0.6s; }
+</style>
+{% endblock %}

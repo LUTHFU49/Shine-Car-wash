@@ -1,0 +1,48 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}Complaints & Suggestions — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}Complaints & Suggestions{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'feedback:satisfaction' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Satisfaction Dashboard
+    </a>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">Feedback</p>
+        <h1 class="font-display font-bold text-2xl text-white">Complaints &amp; Suggestions</h1>
+      </div>
+      <a href="{% url 'feedback:review_list' %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Reviews</a>
+    </div>
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden">
+      {% if page_obj.object_list %}
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500"><tr><th class="px-5 py-3 font-medium">Date</th><th class="px-5 py-3 font-medium">Subject</th><th class="px-5 py-3 font-medium">Customer</th><th class="px-5 py-3 font-medium">Type</th><th class="px-5 py-3 font-medium">Status</th></tr></thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for item in page_obj.object_list %}
+          <tr class="hover:bg-slate-700/60 transition-colors cursor-pointer" onclick="window.location='{% url 'feedback:feedback_detail' item.public_id %}'">
+            <td class="px-5 py-3 text-gray-500">{{ item.created_at|date:"M j, Y" }}</td>
+            <td class="px-5 py-3 text-white">{{ item.subject }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ item.customer.first_name }} {{ item.customer.last_name }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ item.get_feedback_type_display }}</td>
+            <td class="px-5 py-3">
+              <span class="text-xs font-medium {% if item.status == 'resolved' %}text-green-400{% elif item.status == 'closed' %}text-gray-500{% elif item.status == 'in_review' %}text-amber-400{% else %}text-blue-400{% endif %}">{{ item.get_status_display }}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="p-12 text-center text-sm text-gray-500">No complaints or suggestions yet.</p>
+      {% endif %}
+    </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="flex items-center justify-center gap-2 mt-6">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">&laquo; Prev</a>{% endif %}
+      <span class="text-sm text-gray-500">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="text-sm text-gray-500 hover:text-white px-3 py-2">Next &raquo;</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

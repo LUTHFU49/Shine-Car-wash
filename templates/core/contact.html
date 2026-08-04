@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Contact — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<!-- ============ CONTACT HERO ============ -->
+<section class="relative overflow-hidden pt-16 pb-12 sm:pt-20 sm:pb-16">
+  <!-- Background Image -->
+  <div class="absolute inset-0 -z-10">
+    <img src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=1920&q=80" 
+         alt="Contact background" 
+         class="w-full h-full object-cover"
+         loading="eager">
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-900/90 to-blue-900/95"></div>
+    <!-- Accent overlay -->
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);"></div>
+  </div>
+
+  <!-- Grid pattern -->
+  <div class="absolute inset-0 -z-10">
+    <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 32px 32px;"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center max-w-3xl mx-auto reveal">
+      <p class="eyebrow text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 mb-4">Get in Touch</p>
+      <h1 class="font-display font-bold text-4xl sm:text-5xl lg:text-6xl leading-[1.1] tracking-tight text-white mb-6">
+        Talk to the {{ SITE_NAME }} team.
+      </h1>
+      <p class="text-lg text-gray-300 leading-relaxed">
+        Have questions about our platform? Need a demo? We're here to help your car wash business shine.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="streak-divider max-w-7xl mx-auto" style="background: linear-gradient(90deg, #3B82F6 0%, #EC4899 50%, #3B82F6 100%);"></div>
+
+<!-- ============ CONTACT OPTIONS ============ -->
+<section class="py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 relative overflow-hidden">
+  <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/5 rounded-full blur-3xl"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="grid sm:grid-cols-3 gap-8 mb-16">
+      <!-- Email -->
+      <div class="group reveal text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+          <i class="fa-solid fa-envelope text-white text-2xl"></i>
+        </div>
+        <h3 class="font-display font-semibold text-lg text-ink dark:text-white mb-2">Email Us</h3>
+        <p class="text-sm text-ink-soft dark:text-gray-400">hello@shinehub.co.ke</p>
+        <p class="text-xs text-ink-soft dark:text-gray-500 mt-1">We reply within 2 hours</p>
+      </div>
+
+      <!-- Phone -->
+      <div class="group reveal text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+          <i class="fa-solid fa-phone text-white text-2xl"></i>
+        </div>
+        <h3 class="font-display font-semibold text-lg text-ink dark:text-white mb-2">Call Us</h3>
+        <p class="text-sm text-ink-soft dark:text-gray-400">+254 700 000 000</p>
+        <p class="text-xs text-ink-soft dark:text-gray-500 mt-1">Mon-Fri, 8AM-6PM</p>
+      </div>
+
+      <!-- Location -->
+      <div class="group reveal text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+          <i class="fa-solid fa-location-dot text-white text-2xl"></i>
+        </div>
+        <h3 class="font-display font-semibold text-lg text-ink dark:text-white mb-2">Visit Us</h3>
+        <p class="text-sm text-ink-soft dark:text-gray-400">Westlands, Nairobi</p>
+        <p class="text-xs text-ink-soft dark:text-gray-500 mt-1">Book a demo first</p>
+      </div>
+    </div>
+
+    <!-- ============ CONTACT FORM ============ -->
+    <div class="max-w-3xl mx-auto reveal">
+      <form method="post" action="{% url 'core:contact' %}" class="relative bg-white dark:bg-slate-800 rounded-2xl p-8 sm:p-10 shadow-2xl shadow-pink-500/5 border border-gray-100 dark:border-slate-700" novalidate>
+        {% csrf_token %}
+        
+        <!-- Decorative gradient bar -->
+        <div class="absolute top-0 left-8 right-8 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-b-lg"></div>
+        
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div class="sm:col-span-1">
+            <label for="name" class="block text-sm font-semibold text-ink dark:text-white mb-2">
+              <i class="fa-solid fa-user text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 mr-1.5"></i>
+              Full name
+            </label>
+            <input type="text" id="name" name="name" required minlength="2"
+                   value="{{ form_data.name|default:'' }}"
+                   placeholder="John Doe"
+                   class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300 outline-none">
+          </div>
+          
+          <div class="sm:col-span-1">
+            <label for="email" class="block text-sm font-semibold text-ink dark:text-white mb-2">
+              <i class="fa-solid fa-envelope text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 mr-1.5"></i>
+              Email address
+            </label>
+            <input type="email" id="email" name="email" required
+                   value="{{ form_data.email|default:'' }}"
+                   placeholder="john@example.com"
+                   class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300 outline-none">
+          </div>
+          
+          <div class="sm:col-span-2">
+            <label for="subject" class="block text-sm font-semibold text-ink dark:text-white mb-2">
+              <i class="fa-solid fa-tag text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 mr-1.5"></i>
+              Subject
+            </label>
+            <input type="text" id="subject" name="subject" required minlength="3"
+                   value="{{ form_data.subject|default:'' }}"
+                   placeholder="How can we help you?"
+                   class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300 outline-none">
+          </div>
+          
+          <div class="sm:col-span-2">
+            <label for="message" class="block text-sm font-semibold text-ink dark:text-white mb-2">
+              <i class="fa-solid fa-message text-xs text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-pink-500 mr-1.5"></i>
+              Message
+            </label>
+            <textarea id="message" name="message" rows="6" required minlength="10" maxlength="2000"
+                      placeholder="Tell us about your car wash business and how we can help..."
+                      class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-ink dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all duration-300 outline-none resize-none">{{ form_data.message|default:'' }}</textarea>
+            <p class="text-xs text-ink-soft dark:text-gray-500 mt-1.5">
+              <span class="char-count">0</span>/2000 characters
+            </p>
+          </div>
+          
+          <div class="sm:col-span-2">
+            <button type="submit" class="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105 overflow-hidden" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+              <span class="relative z-10 flex items-center gap-2">
+                Send Message
+                <i class="fa-solid fa-paper-plane text-xs group-hover:translate-x-1 transition-transform duration-300"></i>
+              </span>
+              <div class="absolute inset-0 bg-gradient-to-r from-pink-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAP/CTA SECTION ============ -->
+<section class="py-20 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
+  </div>
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative reveal">
+    <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center">
+      <i class="fa-solid fa-rocket text-white text-3xl"></i>
+    </div>
+    <h2 class="font-display font-bold text-3xl sm:text-4xl text-white mb-4">Ready to transform your car wash?</h2>
+    <p class="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+      Join hundreds of car wash businesses already using ShineHub to streamline operations and grow revenue.
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <a href="{% url 'accounts:register' %}" class="px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/25 hover:scale-105" style="background: linear-gradient(135deg, #3B82F6 0%, #EC4899 100%);">
+        Get Started Free
+        <i class="fa-solid fa-arrow-right text-xs ml-2"></i>
+      </a>
+      <a href="{% url 'core:landing' %}#pricing" class="px-8 py-4 rounded-xl font-semibold text-white border-2 border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+        View Pricing
+        <i class="fa-solid fa-tag text-xs ml-2"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Character counter for message field
+  const messageField = document.getElementById('message');
+  const charCount = document.querySelector('.char-count');
+  
+  if (messageField && charCount) {
+    messageField.addEventListener('input', () => {
+      const count = messageField.value.length;
+      charCount.textContent = count;
+      
+      if (count > 1800) {
+        charCount.style.color = '#EC4899';
+      } else {
+        charCount.style.color = '';
+      }
+    });
+    
+    // Initial count
+    charCount.textContent = messageField.value.length;
+  }
+
+  // Reveal animations
+  const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+</script>
+
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+{% endblock %}

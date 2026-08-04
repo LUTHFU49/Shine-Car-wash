@@ -1,0 +1,64 @@
+{% extends 'layouts/app_base.html' %}
+{% block title %}{{ purchase.reference_code }} — {{ SITE_NAME }}{% endblock %}
+{% block page_title %}{{ purchase.reference_code }}{% endblock %}
+{% block content %}
+<section class="py-8">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <a href="{% url 'inventory:purchase_list' %}" class="text-sm text-gray-500 hover:text-white inline-flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Purchases
+    </a>
+
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-2">{{ purchase.supplier.name }}</p>
+        <h1 class="font-display font-bold text-2xl text-white">{{ purchase.reference_code }}</h1>
+        <span class="inline-flex items-center gap-1 text-xs font-medium mt-2
+          {% if purchase.status == 'received' %}text-green-400{% elif purchase.status == 'cancelled' %}text-gray-500{% else %}text-blue-400{% endif %}">
+          <span class="w-1.5 h-1.5 rounded-full {% if purchase.status == 'received' %}bg-green-500{% elif purchase.status == 'cancelled' %}bg-gray-400{% else %}bg-blue-500{% endif %}"></span>
+          {{ purchase.get_status_display }}
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="{% url 'inventory:purchase_export_pdf' purchase.public_id %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2"><i class="fa-solid fa-file-pdf mr-1"></i> PDF</a>
+        {% if request.user.role == 'super_admin' or request.user.role == 'manager' %}
+          {% if purchase.is_editable %}
+          <a href="{% url 'inventory:purchase_edit' purchase.public_id %}" class="text-sm font-medium text-gray-500 hover:text-white border border-slate-700 rounded-lg px-4 py-2">Edit</a>
+          <form method="post" action="{% url 'inventory:purchase_receive' purchase.public_id %}">{% csrf_token %}<button type="submit" class="text-sm font-semibold text-white px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-pink-500">Mark Received</button></form>
+          <form method="post" action="{% url 'inventory:purchase_cancel' purchase.public_id %}">{% csrf_token %}<button type="submit" class="text-sm font-medium text-pink-400 border border-slate-700 rounded-lg px-4 py-2">Cancel</button></form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Order Date</p><p class="font-medium text-white">{{ purchase.order_date }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Expected</p><p class="font-medium text-white">{{ purchase.expected_date|default:"—" }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Received</p><p class="font-medium text-white">{{ purchase.received_date|default:"—" }}</p></div>
+      <div class="rounded-2xl bg-slate-800 border border-slate-700 p-4"><p class="text-xs text-gray-500 mb-1">Total</p><p class="font-display font-bold text-white">KSh {{ purchase.total_amount|floatformat:2 }}</p></div>
+    </div>
+
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden mb-6">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-700 text-left text-gray-500">
+          <tr><th class="px-5 py-3 font-medium">Item</th><th class="px-5 py-3 font-medium">Ordered</th><th class="px-5 py-3 font-medium">Received</th><th class="px-5 py-3 font-medium">Unit Cost</th><th class="px-5 py-3 font-medium">Line Total</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          {% for line in lines %}
+          <tr>
+            <td class="px-5 py-3 text-white">{{ line.item.name }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ line.quantity_ordered }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ line.quantity_received }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ line.unit_cost }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ line.line_total }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if purchase.notes %}
+    <div class="rounded-2xl bg-slate-800 border border-slate-700 p-5"><p class="text-xs text-gray-500 mb-1">Notes</p><p class="text-sm text-white">{{ purchase.notes }}</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
